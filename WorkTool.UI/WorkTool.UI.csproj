@@ -52,4 +52,28 @@
 		<PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="7.0.0" />
 	</ItemGroup>
 
+	<ItemGroup>
+	  <Compile Update="TabItems\DiffPage.xaml.cs">
+	    <DependentUpon>DiffPage.xaml</DependentUpon>
+	  </Compile>
+	  <Compile Update="TabItems\JsonFormatPage.xaml.cs">
+	    <DependentUpon>JsonFormatPage.xaml</DependentUpon>
+	  </Compile>
+	  <Compile Update="TabItems\TextFormatPage.xaml.cs">
+	    <DependentUpon>TextFormatPage.xaml</DependentUpon>
+	  </Compile>
+	</ItemGroup>
+
+	<ItemGroup>
+	  <MauiXaml Update="TabItems\DiffPage.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="TabItems\JsonFormatPage.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="TabItems\TextFormatPage.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	</ItemGroup>
+
 </Project>

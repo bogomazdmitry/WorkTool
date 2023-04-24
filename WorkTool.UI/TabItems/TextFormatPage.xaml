@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="WorkTool.UI.TabItems.TextFormatPage"
+             Title="Text format">
+    <Grid ColumnSpacing="5" RowSpacing="5" Margin="10">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition />
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="50"/>
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+            <HorizontalStackLayout HorizontalOptions="Center">
+            <Button Text="UPPER" Clicked="Button_Upper_Clicked"></Button>
+            <Button Text="lower" Clicked="Button_Lower_Clicked"></Button>
+            <Button Text="Invert" Clicked="Button_Invert_Clicked"></Button>
+            </HorizontalStackLayout>
+
+            <Editor x:Name="editor"
+        Placeholder="Enter your response here"
+                VerticalOptions="Fill"
+                AutoSize="Disabled"
+                Grid.Row="1"/>
+    </Grid>
+</ContentPage>
