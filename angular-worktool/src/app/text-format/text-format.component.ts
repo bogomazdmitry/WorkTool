@@ -7,7 +7,6 @@ import { Component, OnInit } from '@angular/core';
 })
 export class TextFormatComponent {
   text: string = '';
-  caseOption: string = 'upper';
 
   toUpperCase() {
     this.text = this.text.toUpperCase();

@@ -13,7 +13,8 @@ import { MatInputModule } from '@angular/material/input';
 import { MatRadioModule } from '@angular/material/radio';
 import { MatButtonModule } from '@angular/material/button';
 import { FormsModule } from '@angular/forms';
-import {MatButtonToggleModule} from '@angular/material/button-toggle';
+import { MatButtonToggleModule } from '@angular/material/button-toggle';
+import { CommonModule, JsonPipe } from '@angular/common';
 
 @NgModule({
   declarations: [
@@ -32,9 +33,11 @@ import {MatButtonToggleModule} from '@angular/material/button-toggle';
     MatRadioModule,
     MatButtonModule,
     FormsModule,
-    MatButtonToggleModule
+    MatButtonToggleModule,
+    CommonModule,
+    HighlightModule
   ],
-  providers: [],
+  providers: [ JsonPipe ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
