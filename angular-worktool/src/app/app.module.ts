@@ -34,8 +34,7 @@ import { CommonModule, JsonPipe } from '@angular/common';
     MatButtonModule,
     FormsModule,
     MatButtonToggleModule,
-    CommonModule,
-    HighlightModule
+    CommonModule
   ],
   providers: [ JsonPipe ],
   bootstrap: [AppComponent]

@@ -20,4 +20,10 @@ export class JsonFormatComponent implements OnInit {
     } catch (e) {
     }
   }
+
+  onKeyDown(event: KeyboardEvent) {
+    if (event.altKey && event.shiftKey && event.key === 'F') {
+      this.format();
+    }
+  }
 }

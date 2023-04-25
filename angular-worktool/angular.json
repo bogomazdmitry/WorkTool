@@ -109,5 +109,7 @@
       }
     }
   },
-  "defaultProject": "angular-worktool"
+  "cli": {
+    "analytics": "e6fe0754-0d84-4ee4-ba20-2d4a2666a950"
+  }
 }
