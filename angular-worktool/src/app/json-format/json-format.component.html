@@ -7,8 +7,6 @@
             <button class="btn" mat-raised-button color="primary" (click)="format()"
                 matTooltip="CMD/Alt + Shift + F">Format</button>
         </div>
-        <mat-form-field appearance="fill" class="fill-container">
-            <textarea matInput [(ngModel)]="text" placeholder="Enter text" [style.resize]="'none'"></textarea>
-        </mat-form-field>
+        <ngx-monaco-editor [options]="codeEditorOptions" (init)="onEditorInit($event)" [(ngModel)]="text" class="h-100"></ngx-monaco-editor>
     </div>
 </div>

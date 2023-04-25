@@ -1,5 +1,6 @@
 import { JsonPipe } from '@angular/common';
-import { Component, HostListener, OnInit } from '@angular/core';
+import { Component, ElementRef, HostListener, OnInit, ViewChild } from '@angular/core';
+declare const monaco: any;
 
 const localStorageJsonTextKey = 'json-text-format';
 
@@ -11,6 +12,14 @@ const localStorageJsonTextKey = 'json-text-format';
 export class JsonFormatComponent implements OnInit {
   text: string = '';
 
+  codeEditorOptions = {
+    theme: 'vs-light',
+    language: 'json',
+    automaticLayout: true
+  };
+  
+  monacoEditor: any;
+
   constructor(private jsonPipe: JsonPipe) { }
 
   ngOnInit(): void {
@@ -20,8 +29,15 @@ export class JsonFormatComponent implements OnInit {
     }
   }
 
+  onEditorInit(editor: any): void {
+    this.monacoEditor = editor;
+    console.log(editor)
+  }
+
   format(): void {
     try {
+      // this.monacoEditor.trigger("editor", "editor.action.formatDocument");
+
       this.text = this.jsonPipe.transform(JSON.parse(this.text));
     } catch (e) {
     }

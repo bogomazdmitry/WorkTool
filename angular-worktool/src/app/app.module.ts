@@ -16,6 +16,7 @@ import { FormsModule } from '@angular/forms';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { CommonModule, JsonPipe } from '@angular/common';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { MonacoEditorModule } from 'ngx-monaco-editor-v2';
 
 @NgModule({
   declarations: [
@@ -36,7 +37,8 @@ import { MatTooltipModule } from '@angular/material/tooltip';
     FormsModule,
     MatButtonToggleModule,
     CommonModule,
-    MatTooltipModule
+    MatTooltipModule,
+    MonacoEditorModule.forRoot()
   ],
   providers: [ JsonPipe ],
   bootstrap: [AppComponent]
