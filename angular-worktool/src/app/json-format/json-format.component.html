@@ -4,7 +4,8 @@
     </div>
     <div class="card-body d-flex flex-column gap-3 h-100">
         <div class="btn-group">
-            <button class="btn" (keydown)="onKeyDown($event)" mat-raised-button color="primary" (click)="format()">Format</button>
+            <button class="btn" mat-raised-button color="primary" (click)="format()"
+                matTooltip="CMD/Alt + Shift + F">Format</button>
         </div>
         <mat-form-field appearance="fill" class="fill-container">
             <textarea matInput [(ngModel)]="text" placeholder="Enter text" [style.resize]="'none'"></textarea>

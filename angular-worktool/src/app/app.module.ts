@@ -15,6 +15,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { FormsModule } from '@angular/forms';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { CommonModule, JsonPipe } from '@angular/common';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 @NgModule({
   declarations: [
@@ -34,7 +35,8 @@ import { CommonModule, JsonPipe } from '@angular/common';
     MatButtonModule,
     FormsModule,
     MatButtonToggleModule,
-    CommonModule
+    CommonModule,
+    MatTooltipModule
   ],
   providers: [ JsonPipe ],
   bootstrap: [AppComponent]
