@@ -30,6 +30,7 @@ import { MatNativeDateModule } from '@angular/material/core';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { DragDropModule } from '@angular/cdk/drag-drop';
 import { MatBadgeModule } from '@angular/material/badge';
+import {MatTreeModule} from '@angular/material/tree';
 
 @NgModule({
   imports: [
@@ -64,6 +65,7 @@ import { MatBadgeModule } from '@angular/material/badge';
     MatExpansionModule,
     DragDropModule,
     MatBadgeModule,
+    MatTreeModule,
   ],
   exports: [
     DragDropModule,
@@ -97,6 +99,7 @@ import { MatBadgeModule } from '@angular/material/badge';
     MatNativeDateModule,
     MatExpansionModule,
     MatBadgeModule,
+    MatTreeModule,
   ],
 })
-export class AppMaterialModule {}
+export class AppMaterialModule { }

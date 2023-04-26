@@ -3,10 +3,12 @@ import { ThemeService } from "./services/theme.service";
 import { ThemeChangerComponent } from './layout/theme-changer/theme-changer.component';
 import { AppMaterialModule } from "../app-material.module";
 import { CommonModule } from "@angular/common";
+import { FocusDirective } from "./directives/focus-oninit.directive";
 
 @NgModule({
     declarations: [
-        ThemeChangerComponent
+        ThemeChangerComponent,
+        FocusDirective
     ],
     imports: [
         AppMaterialModule,
@@ -15,7 +17,8 @@ import { CommonModule } from "@angular/common";
     exports: [
         CommonModule,
         AppMaterialModule,
-        ThemeChangerComponent
+        ThemeChangerComponent,
+        FocusDirective
     ],
 })
 export class SharedModule { }

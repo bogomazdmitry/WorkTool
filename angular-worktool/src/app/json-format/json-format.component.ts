@@ -42,18 +42,8 @@ export class JsonFormatComponent implements OnInit {
     }
   }
 
-  onEditorInit(editor: any): void {
-    this.monacoEditor = editor;
-    console.log(editor)
-  }
-
   format(): void {
-    try {
-      this.monacoEditor['_editor'].getAction('editor.action.formatDocument').run();
-
-      this.text = this.jsonPipe.transform(JSON.parse(this.text));
-    } catch (e) {
-    }
+    this.monacoEditor['_editor'].getAction('editor.action.formatDocument').run();
   }
 
   @HostListener('document:keydown', ['$event'])
