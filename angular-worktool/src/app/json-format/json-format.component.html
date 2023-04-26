@@ -7,6 +7,6 @@
             <button class="btn" mat-raised-button color="primary" (click)="format()"
                 matTooltip="CMD/Alt + Shift + F">Format</button>
         </div>
-        <ngx-monaco-editor [options]="codeEditorOptions" (init)="onEditorInit($event)" [(ngModel)]="text" class="h-100"></ngx-monaco-editor>
+        <ngx-monaco-editor #monacoEditor [options]="codeEditorOptions" (init)="onEditorInit($event)" [(ngModel)]="text" class="h-100"></ngx-monaco-editor>
     </div>
 </div>

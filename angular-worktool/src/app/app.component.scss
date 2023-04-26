@@ -1,0 +1,10 @@
+.navbar {
+    background:
+        /* top, transparent black, faked with gradient */
+        linear-gradient(rgba(0, 0, 0, 0.2),
+            rgba(0, 0, 0, 0.2));
+
+    a {
+        color: inherit;
+    }
+}

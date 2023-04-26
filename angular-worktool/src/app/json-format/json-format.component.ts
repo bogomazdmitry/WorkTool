@@ -1,9 +1,10 @@
 import { JsonPipe } from '@angular/common';
 import { Component, ElementRef, HostListener, OnInit, ViewChild } from '@angular/core';
+import { EditorComponent } from 'ngx-monaco-editor-v2';
+import { ThemeService } from '../shared/services/theme.service';
 declare const monaco: any;
 
 const localStorageJsonTextKey = 'json-text-format';
-
 @Component({
   selector: 'app-json-format',
   templateUrl: './json-format.component.html',
@@ -11,16 +12,28 @@ const localStorageJsonTextKey = 'json-text-format';
 })
 export class JsonFormatComponent implements OnInit {
   text: string = '';
+  
+  @ViewChild('monacoEditor')
+  monacoEditor!: EditorComponent;
 
   codeEditorOptions = {
     theme: 'vs-light',
     language: 'json',
-    automaticLayout: true
+    automaticLayout: true,
+    minimap: {
+      enabled: false
+    },
+    formatOnPaste: true,
+    formatOnType: true
   };
-  
-  monacoEditor: any;
 
-  constructor(private jsonPipe: JsonPipe) { }
+  constructor(private jsonPipe: JsonPipe, private themeService: ThemeService) {
+    this.codeEditorOptions.theme = this.themeService.getVsTheme();
+
+    this.themeService.getChangingThemeSubject().subscribe(() => {
+      this.codeEditorOptions = { ...this.codeEditorOptions, theme: this.themeService.getVsTheme() };
+    });
+  }
 
   ngOnInit(): void {
     const savedText = localStorage.getItem(localStorageJsonTextKey);
@@ -36,7 +49,7 @@ export class JsonFormatComponent implements OnInit {
 
   format(): void {
     try {
-      // this.monacoEditor.trigger("editor", "editor.action.formatDocument");
+      this.monacoEditor['_editor'].getAction('editor.action.formatDocument').run();
 
       this.text = this.jsonPipe.transform(JSON.parse(this.text));
     } catch (e) {
@@ -58,7 +71,7 @@ export class JsonFormatComponent implements OnInit {
   onBeforeUnload(event: BeforeUnloadEvent) {
     this.saveText();
   }
-  
+
   ngOnDestroy() {
     this.saveText();
   }
