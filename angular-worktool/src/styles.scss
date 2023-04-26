@@ -2,8 +2,15 @@
 @use '@angular/material' as mat;
 @include mat.core();
 
-html, body { height: 100%; }
-body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+html,
+body {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+}
 
 .mat-form-field.fill-container,
 .mat-form-field.fill-container .mat-form-field-infix,
@@ -12,6 +19,7 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
   height: 100%;
   width: 100%;
 }
+
 .mat-form-field.fill-container textarea {
   height: 100%;
 }
@@ -20,15 +28,11 @@ $my-custom-accent: mat.define-palette(mat.$pink-palette, A200, A100, A400);
 $my-custom-primary: mat.define-palette(mat.$teal-palette, A700, A700, A700);
 $my-custom-warn: mat.define-palette(mat.$red-palette);
 
-$my-custom-dark-theme: mat.define-dark-theme(
-  (
-    color: (
-      primary: $my-custom-primary,
-      accent: $my-custom-accent,
-      warn: $my-custom-warn,
-    ),
-  )
-);
+$my-custom-dark-theme: mat.define-dark-theme((color: (primary: $my-custom-primary,
+        accent: $my-custom-accent,
+        warn: $my-custom-warn,
+      ),
+    ));
 
 .dark-theme {
   @include mat.all-component-colors($my-custom-dark-theme);
@@ -36,14 +40,29 @@ $my-custom-dark-theme: mat.define-dark-theme(
 
 .card {
   background-color: inherit;
-  border: 1px solid rgba(0,0,0,.25);
+  border: 1px solid rgba(0, 0, 0, .25);
+
   .card-header {
-    border-bottom: 1px solid rgba(0,0,0,.25);
+    border-bottom: 1px solid rgba(0, 0, 0, .25);
   }
 }
 
 ngx-monaco-editor {
-    .editor-container {
-        height: 100%!important;
-    }
+  .editor-container {
+    height: 100% !important;
+  }
+}
+
+.dark-theme .mat-form-field-appearance-fill .mat-form-field-flex {
+  background-color: #1e1e1e;
+}
+
+.no-padding-form-wrapper {
+  .mat-form-field-wrapper {
+    padding-bottom: 0%;
+  }
+  
+  .mat-form-field-underline {
+    bottom: 0%;
+  }
 }
