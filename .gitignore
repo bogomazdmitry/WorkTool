@@ -458,3 +458,7 @@ baseline.json
 aio/content/examples/.DS_Store
 
 .vscode
+
+dist
+
+.angular
