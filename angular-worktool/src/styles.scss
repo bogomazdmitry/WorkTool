@@ -41,3 +41,9 @@ $my-custom-dark-theme: mat.define-dark-theme(
     border-bottom: 1px solid rgba(0,0,0,.25);
   }
 }
+
+ngx-monaco-editor {
+    .editor-container {
+        height: 100%!important;
+    }
+}
