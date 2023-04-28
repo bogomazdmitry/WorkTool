@@ -4,6 +4,7 @@ import { ThemeChangerComponent } from './layout/theme-changer/theme-changer.comp
 import { AppMaterialModule } from "../app-material.module";
 import { CommonModule } from "@angular/common";
 import { FocusDirective } from "./directives/focus-oninit.directive";
+import { HttpClientModule } from "@angular/common/http";
 
 @NgModule({
     declarations: [
@@ -12,7 +13,8 @@ import { FocusDirective } from "./directives/focus-oninit.directive";
     ],
     imports: [
         AppMaterialModule,
-        CommonModule
+        CommonModule,
+        HttpClientModule 
     ],
     exports: [
         CommonModule,

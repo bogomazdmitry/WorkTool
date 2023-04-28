@@ -11,13 +11,15 @@ import { FormsModule } from '@angular/forms';
 import { CommonModule, JsonPipe } from '@angular/common';
 import { MonacoEditorModule } from 'ngx-monaco-editor-v2';
 import { SharedModule } from './shared/shared.module';
+import { CheckEnglishComponent } from './check-english/check-english.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     DiffTextComponent,
     JsonFormatComponent,
-    TextFormatComponent
+    TextFormatComponent,
+    CheckEnglishComponent
   ],
   imports: [
     BrowserModule,
