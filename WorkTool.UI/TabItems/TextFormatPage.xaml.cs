@@ -5,7 +5,9 @@ public partial class TextFormatPage : ContentPage
 	public TextFormatPage()
 	{
 		InitializeComponent();
-	}
+        editor.Text ??= "";
+
+    }
 
     private void Button_Upper_Clicked(object sender, EventArgs e)
     {

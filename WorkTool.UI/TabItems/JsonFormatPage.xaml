@@ -16,6 +16,6 @@
         </HorizontalStackLayout>
 
         <Editor x:Name="editor"
-                Grid.Row="1"  Keyboard="Create(KeyboardFlags.AllCapable | KeyboardFlags.Spellcheck | KeyboardFlags.Suggestions)" />
+                Grid.Row="1"  />
     </Grid>
-</ContentPage>
+</ContentPage>  
