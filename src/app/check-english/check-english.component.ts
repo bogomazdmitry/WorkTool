@@ -13,6 +13,7 @@ const localStorageCheckEnglishTextKey = 'check-english-text';
 export class CheckEnglishComponent implements OnInit {
 
   diffHidden: boolean = true;
+  loaderHidden: boolean = true;
   
   leftText: string = '';
   rightText: string = '';
@@ -23,6 +24,7 @@ export class CheckEnglishComponent implements OnInit {
     theme: 'vs-dark',
     wordWrap: "on"
   };
+
   originalModel: DiffEditorModel = {
     code: '',
     language: 'text/plain'
@@ -52,6 +54,9 @@ export class CheckEnglishComponent implements OnInit {
 
   checkEnglish() {
     const prompt = this.leftText;
+    this.diffHidden = true;
+    this.loaderHidden = false;
+
     this.chatGptService.getResponse(this.apiSessionResponse, prompt).subscribe(
       (response) => {
         this.rightText = response;
@@ -60,6 +65,7 @@ export class CheckEnglishComponent implements OnInit {
         this.modifiedModel = { ...this.modifiedModel, code: this.rightText };
         
         this.diffHidden = false;
+        this.loaderHidden = true;
       }
     );
   }

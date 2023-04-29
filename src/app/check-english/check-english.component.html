@@ -22,6 +22,9 @@
                 <textarea focusOnInit matInput [(ngModel)]="leftText" placeholder="Enter text"
                     [style.resize]="'none'"></textarea>
             </mat-form-field>
+            <div class="h-100 mt-3 d-flex d-flex justify-content-center align-items-center" *ngIf="!loaderHidden">
+                <mat-spinner></mat-spinner>
+            </div>
             <ngx-monaco-diff-editor class="h-100 mt-3" *ngIf="!diffHidden" [options]="codeEditorOptions"
                 [originalModel]="originalModel" [modifiedModel]="modifiedModel">
             </ngx-monaco-diff-editor>
