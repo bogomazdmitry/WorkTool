@@ -20,7 +20,8 @@ export class CheckEnglishComponent implements OnInit {
   apiSessionResponse: string = '';
 
   codeEditorOptions = {
-    theme: 'vs-dark'
+    theme: 'vs-dark',
+    wordWrap: "on"
   };
   originalModel: DiffEditorModel = {
     code: '',
@@ -50,16 +51,17 @@ export class CheckEnglishComponent implements OnInit {
   }
 
   checkEnglish() {
-    // this.chatGptService.getChatGPTAccessToken().subscribe(
-      // (response) => {
-        // this.rightText = response;
-        // console.log(response);
+    const prompt = this.leftText;
+    this.chatGptService.getResponse(this.apiSessionResponse, prompt).subscribe(
+      (response) => {
+        this.rightText = response;
+        console.log(response);
         this.originalModel = { ...this.originalModel, code: this.leftText };
         this.modifiedModel = { ...this.modifiedModel, code: this.rightText };
         
         this.diffHidden = false;
-      // }
-    // );
+      }
+    );
   }
 
   @HostListener('document:keydown', ['$event'])
@@ -74,7 +76,6 @@ export class CheckEnglishComponent implements OnInit {
 
   saveText() {
     localStorage.setItem(localStorageCheckEnglishTextKey, this.leftText);
-    console.log(this.chatGptService);
     this.chatGptService.saveSessionResponse(this.apiSessionResponse);
   }
 
