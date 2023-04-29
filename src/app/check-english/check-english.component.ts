@@ -14,7 +14,7 @@ export class CheckEnglishComponent implements OnInit {
 
   diffHidden: boolean = true;
   loaderHidden: boolean = true;
-  
+
   leftText: string = '';
   rightText: string = '';
 
@@ -63,7 +63,7 @@ export class CheckEnglishComponent implements OnInit {
         console.log(response);
         this.originalModel = { ...this.originalModel, code: this.leftText };
         this.modifiedModel = { ...this.modifiedModel, code: this.rightText };
-        
+
         this.diffHidden = false;
         this.loaderHidden = true;
       }
@@ -89,7 +89,7 @@ export class CheckEnglishComponent implements OnInit {
   onBeforeUnload(event: BeforeUnloadEvent) {
     this.saveText();
   }
-  
+
   ngOnDestroy() {
     this.saveText();
   }
