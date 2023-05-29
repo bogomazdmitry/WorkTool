@@ -57,7 +57,7 @@ export class CheckEnglishComponent implements OnInit {
     this.diffHidden = true;
     this.loaderHidden = false;
 
-    this.chatGptService.getResponse(this.apiSessionResponse, prompt).subscribe(
+    this.chatGptService.checkEnglish(this.apiSessionResponse, prompt).subscribe(
       (response) => {
         this.rightText = response;
         console.log(response);

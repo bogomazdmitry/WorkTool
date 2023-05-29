@@ -5,6 +5,7 @@ import { AppMaterialModule } from "../app-material.module";
 import { CommonModule } from "@angular/common";
 import { FocusDirective } from "./directives/focus-oninit.directive";
 import { HttpClientModule } from "@angular/common/http";
+import { FirestoreModule } from '@angular/fire/firestore';
 
 @NgModule({
     declarations: [
@@ -14,7 +15,8 @@ import { HttpClientModule } from "@angular/common/http";
     imports: [
         AppMaterialModule,
         CommonModule,
-        HttpClientModule 
+        HttpClientModule,
+        FirestoreModule,
     ],
     exports: [
         CommonModule,

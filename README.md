@@ -10,6 +10,7 @@ Create web applications on github pages for any text operations.
 - Working with json
 - Text comparison
 - Check English text with chat-gpt
+- Quiz with chat-gpt with saving
 
 ## Features
 
@@ -19,6 +20,7 @@ Create web applications on github pages for any text operations.
 - Shortcuts for every button
 - Github pages
 - Adaptive to mobile
+- Firestore for quiz
 
 ## How to build to github pages
 
