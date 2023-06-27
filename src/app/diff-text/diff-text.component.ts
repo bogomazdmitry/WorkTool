@@ -1,9 +1,11 @@
 import { Component, HostListener, OnInit, ViewChild } from '@angular/core';
-import { DiffEditorModel, EditorComponent } from 'ngx-monaco-editor-v2';
+import { MatSliderChange } from '@angular/material/slider';
+import { DiffEditorComponent, DiffEditorModel, EditorComponent } from 'ngx-monaco-editor-v2';
 import { ThemeService } from '../shared/services/theme.service';
 
 const localStorageLeftTextKey = 'left-diff-text';
 const localStorageRightTextKey = 'right-diff-text';
+const localStorageWrappedKey = 'wrap-diff-text';
 
 @Component({
   selector: 'app-diff-text',
@@ -11,24 +13,30 @@ const localStorageRightTextKey = 'right-diff-text';
   styleUrls: ['./diff-text.component.scss']
 })
 export class DiffTextComponent implements OnInit {
+  @ViewChild(DiffEditorComponent) diffEditorComponent: DiffEditorComponent|undefined;
 
-  diffHidden: boolean = true;
-  
-  leftText: string = '';
-  rightText: string = '';
+  wrapText: boolean = false;
 
   codeEditorOptions = {
-    theme: 'vs-dark'
+    theme: 'vs-dark',
+    originalEditable: true,
+    readOnly: false,
+    wordWrap: this.getWrappedText()
   };
-  originalModel: DiffEditorModel = {
+  originalModel = {
     code: '',
     language: 'text/plain'
   };
 
-  modifiedModel: DiffEditorModel = {
+  modifiedModel = {
     code: '',
     language: 'text/plain'
   };
+  editor: any;
+
+  onInitEditor(editor: any) {
+    this.editor = editor;
+  }
 
   constructor(private themeService: ThemeService) {
     this.codeEditorOptions.theme = this.themeService.getVsTheme();
@@ -41,34 +49,33 @@ export class DiffTextComponent implements OnInit {
   ngOnInit(): void {
     const savedLeftText = localStorage.getItem(localStorageLeftTextKey);
     if (savedLeftText !== null) {
-      this.leftText = savedLeftText;
+      this.originalModel = { ...this.originalModel, code: savedLeftText };
     }
     const savedRightText = localStorage.getItem(localStorageRightTextKey);
     if (savedRightText !== null) {
-      this.rightText = savedRightText;
+      this.modifiedModel = { ...this.modifiedModel, code: savedRightText };
+    }
+    const savedWrapText = localStorage.getItem(localStorageWrappedKey);
+    if (savedWrapText !== null) {
+      this.wrapText = savedWrapText === 'true';
+      this.codeEditorOptions = { ...this.codeEditorOptions, wordWrap: this.getWrappedText()  };
     }
   }
 
-  diff() {
-    this.originalModel = { ...this.originalModel, code: this.leftText };
-    this.modifiedModel = { ...this.modifiedModel, code: this.rightText };
-
-    this.diffHidden = false;
+  onWrapToggleChange(): void {
+    this.originalModel = { ...this.originalModel, code: this.getOriginalText() };
+    this.modifiedModel = { ...this.modifiedModel, code: this.getModifiedText() };
+    this.codeEditorOptions = { ...this.codeEditorOptions, wordWrap: this.getWrappedText()  };
   }
 
-  @HostListener('document:keydown', ['$event'])
-  onKeyDown(event: KeyboardEvent) {
-    if ((event.altKey || event.metaKey) && event.shiftKey) {
-      if (event.key === 'C' || event.key === 'С') {
-        this.diff();
-        return;
-      }
-    }
+  getWrappedText(): string {
+    return this.wrapText ? 'on' : 'off';
   }
 
   saveText() {
-    localStorage.setItem(localStorageLeftTextKey, this.leftText);
-    localStorage.setItem(localStorageRightTextKey, this.rightText);
+    localStorage.setItem(localStorageLeftTextKey, this.getOriginalText());
+    localStorage.setItem(localStorageRightTextKey, this.getModifiedText());
+    localStorage.setItem(localStorageWrappedKey, String(this.wrapText));
   }
 
   @HostListener('window:beforeunload', ['$event'])
@@ -78,5 +85,13 @@ export class DiffTextComponent implements OnInit {
   
   ngOnDestroy() {
     this.saveText();
+  }
+
+  getOriginalText(): string {
+    return this.editor.getModel().original.getValue();
+  }
+
+  getModifiedText(): string {
+    return this.editor.getModel().modified.getValue();
   }
 }
