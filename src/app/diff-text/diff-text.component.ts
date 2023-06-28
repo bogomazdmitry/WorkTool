@@ -36,6 +36,12 @@ export class DiffTextComponent implements OnInit {
 
   onInitEditor(editor: any) {
     this.editor = editor;
+    editor.getModel().original.onDidChangeContent((e: any) => {
+      this.saveOriginalText();
+    });
+    editor.getModel().modified.onDidChangeContent((e: any) => {
+      this.saveModifiedText();
+    });
   }
 
   constructor(private themeService: ThemeService) {
@@ -72,19 +78,35 @@ export class DiffTextComponent implements OnInit {
     return this.wrapText ? 'on' : 'off';
   }
 
-  saveText() {
-    localStorage.setItem(localStorageLeftTextKey, this.getOriginalText());
-    localStorage.setItem(localStorageRightTextKey, this.getModifiedText());
+  saveModel() {
+    this.saveText();
+    this.saveSettings();
+  }
+
+  saveSettings() {
     localStorage.setItem(localStorageWrappedKey, String(this.wrapText));
+  }
+
+  saveText() {
+    this.saveOriginalText();
+    this.saveModifiedText();
   }
 
   @HostListener('window:beforeunload', ['$event'])
   onBeforeUnload(event: BeforeUnloadEvent) {
-    this.saveText();
+    this.saveModel();
   }
   
   ngOnDestroy() {
-    this.saveText();
+    this.saveSettings();
+  }
+
+  saveOriginalText(): void {
+    localStorage.setItem(localStorageLeftTextKey, this.getOriginalText());
+  }
+
+  saveModifiedText(): void {
+    localStorage.setItem(localStorageRightTextKey, this.getModifiedText());
   }
 
   getOriginalText(): string {

@@ -1,9 +1,8 @@
 import { BehaviorSubject, map, Observable, of, Subject } from 'rxjs';
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { ChatGptSessionResponse } from "../models/chat-gpt-session-response"
 
-const localStorageChatGptSessionResponseKey = 'chat-gpt-session-response';
+const localStorageChatGptApiKey = 'chat-gpt-key';
 
 @Injectable({ providedIn: 'root' })
 export class ChatGptService {
@@ -11,46 +10,20 @@ export class ChatGptService {
     }
 
     getSessionResponse(): string {
-        let response = localStorage.getItem(localStorageChatGptSessionResponseKey) ?? '';
-        if (response && !this.isValidSessionResponse(response)) {
-            localStorage.removeItem(localStorageChatGptSessionResponseKey);
-            response = '';
-        }
+        let response = localStorage.getItem(localStorageChatGptApiKey) ?? '';
         return response;
     }
 
     saveSessionResponse(response: string) {
-        localStorage.setItem(localStorageChatGptSessionResponseKey, response);
-    }
-
-    private isValidSessionResponse(response: string): boolean {
-        try {
-            const responseObject = this.convertSessionResponseToObject(response);
-            return responseObject.expires.getTime() > new Date().getTime();
-        }
-        catch (ex) {
-            console.log(ex);
-            return false;
-        }
-    }
-
-    private convertSessionResponseToObject(response: string): ChatGptSessionResponse {
-        const responseObject = JSON.parse(response) as ChatGptSessionResponse;
-        responseObject.expires = new Date(responseObject.expires);
-        return responseObject;
+        localStorage.setItem(localStorageChatGptApiKey, response);
     }
 
     apiUrl: string = 'https://api.openai.com/v1/chat/completions';
 
-    getResponse(sessionResponse: string, prompt: string): Observable<string> {
-        if (!this.isValidSessionResponse(sessionResponse)) {
-            console.log('is not valid')
-            return new Subject<string>();
-        }
-        const responseObject = this.convertSessionResponseToObject(sessionResponse);
+    getResponse(apiKey: string, prompt: string): Observable<string> {
         const headers = new HttpHeaders()
             .set('Content-Type', 'application/json')
-            .set('Authorization', `Bearer ${responseObject.accessToken}`);
+            .set('Authorization', `Bearer ${apiKey}`);
 
         const postData = {
             model: "gpt-3.5-turbo",

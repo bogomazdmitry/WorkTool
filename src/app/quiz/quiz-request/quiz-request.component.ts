@@ -16,7 +16,7 @@ export class QuizRequestComponent implements OnInit {
 
   quizText: string = '';
 
-  apiSessionResponse: string = '';
+  apiKey: string = '';
 
   quiz: Quiz | undefined;
 
@@ -25,7 +25,7 @@ export class QuizRequestComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.apiSessionResponse = this.chatGptService.getSessionResponse();
+    this.apiKey = this.chatGptService.getSessionResponse();
 
     const savedQuizText = localStorage.getItem(localStorageQuizTextKey);
     if (savedQuizText !== null) {
@@ -38,7 +38,7 @@ export class QuizRequestComponent implements OnInit {
     this.quizHidden = true;
     this.loaderHidden = false;
 
-    this.chatGptService.generateQuiz(this.apiSessionResponse, prompt).subscribe(
+    this.chatGptService.generateQuiz(this.apiKey, prompt).subscribe(
       (response) => {
         console.log(response);
         this.quiz = JSON.parse(response);
@@ -64,7 +64,7 @@ export class QuizRequestComponent implements OnInit {
 
   saveText() {
     localStorage.setItem(localStorageQuizTextKey, this.quizText);
-    this.chatGptService.saveSessionResponse(this.apiSessionResponse);
+    this.chatGptService.saveSessionResponse(this.apiKey);
   }
 
   @HostListener('window:beforeunload', ['$event'])

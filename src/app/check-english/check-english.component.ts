@@ -18,7 +18,7 @@ export class CheckEnglishComponent implements OnInit {
   leftText: string = '';
   rightText: string = '';
 
-  apiSessionResponse: string = '';
+  apiKey: string = '';
 
   codeEditorOptions = {
     theme: 'vs-dark',
@@ -44,7 +44,7 @@ export class CheckEnglishComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.apiSessionResponse = this.chatGptService.getSessionResponse();
+    this.apiKey = this.chatGptService.getSessionResponse();
 
     const savedLeftText = localStorage.getItem(localStorageCheckEnglishTextKey);
     if (savedLeftText !== null) {
@@ -57,7 +57,7 @@ export class CheckEnglishComponent implements OnInit {
     this.diffHidden = true;
     this.loaderHidden = false;
 
-    this.chatGptService.checkEnglish(this.apiSessionResponse, prompt).subscribe(
+    this.chatGptService.checkEnglish(this.apiKey, prompt).subscribe(
       (response) => {
         this.rightText = response;
         console.log(response);
@@ -82,7 +82,7 @@ export class CheckEnglishComponent implements OnInit {
 
   saveText() {
     localStorage.setItem(localStorageCheckEnglishTextKey, this.leftText);
-    this.chatGptService.saveSessionResponse(this.apiSessionResponse);
+    this.chatGptService.saveSessionResponse(this.apiKey);
   }
 
   @HostListener('window:beforeunload', ['$event'])
