@@ -17,12 +17,14 @@
           <li class="nav-item">
             <a class="nav-link active" aria-current="page" routerLink="/diff-text">Diff Text</a>
           </li>
-          <li class="nav-item">
-            <a class="nav-link active" aria-current="page" routerLink="/check-english">Check English</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link active" aria-current="page" routerLink="/quiz">Quiz</a>
-          </li>
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+              Chat-gpt
+            </a>
+            <ul class="dropdown-menu mat-app-background" aria-labelledby="navbarDropdown">
+              <li><a class="dropdown-item" routerLink="/check-english">Check English</a></li>
+              <li><a class="dropdown-item" routerLink="/quiz">Quiz</a></li>
+            </ul>
         </ul>
         <shared-theme-changer class="ml-auto"></shared-theme-changer>
       </div>
