@@ -8,9 +8,8 @@ describe('ThemeChangerComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ ThemeChangerComponent ]
-    })
-    .compileComponents();
+      declarations: [ThemeChangerComponent],
+    }).compileComponents();
 
     fixture = TestBed.createComponent(ThemeChangerComponent);
     component = fixture.componentInstance;

@@ -18,9 +18,7 @@ export class ThemeService {
       this.isDarkTheme = themeString === this.darkThemeString;
       document.body.classList.add(this.darkThemeString);
     }
-    this.subjectIsDarkTheme = new BehaviorSubject<boolean>(
-      this.isDarkTheme
-    );
+    this.subjectIsDarkTheme = new BehaviorSubject<boolean>(this.isDarkTheme);
   }
 
   public toggleTheme(): void {

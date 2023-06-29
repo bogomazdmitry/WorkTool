@@ -1,27 +1,29 @@
 <div class="card h-100">
-    <div class="card-header">
-        <h1 class="card-title">Text Format</h1>
-    </div>
-    <div class="card-body d-flex flex-column gap-3 h-100">
-        <div class="btn-group">
-            <button class="btn" mat-raised-button color="primary" matTooltip="CMD/Alt + Shift + C"
-                (click)="diff()">Diff</button>
+  <div class="card-header">
+    <h1 class="card-title">
+      <div class="d-flex justify-content-between">
+        <div class="mr-auto p-2">Diff Text</div>
+        <div class="p-2">
+          <mat-slide-toggle
+            [(ngModel)]="wrapText"
+            (change)="onWrapToggleChange()"
+          >
+            Wrap
+          </mat-slide-toggle>
         </div>
-        <div class="h-100 d-flex flex-column">
-            <div class="d-flex gap-2 h-100">
-                <mat-form-field appearance="fill" class="fill-container no-padding">
-                    <textarea focusOnInit matInput [(ngModel)]="leftText" placeholder="Enter text"
-                    [style.resize]="'none'"></textarea>
-                </mat-form-field>
-                <div class="line"></div>
-                <mat-form-field appearance="fill" class="fill-container no-padding">
-                    <textarea matInput [(ngModel)]="rightText" placeholder="Enter text"
-                    [style.resize]="'none'"></textarea>
-                </mat-form-field>
-            </div>
-            <ngx-monaco-diff-editor class="h-100 mt-3" *ngIf="!diffHidden" [options]="codeEditorOptions"
-                [originalModel]="originalModel" [modifiedModel]="modifiedModel">
-            </ngx-monaco-diff-editor>
-        </div>
+      </div>
+    </h1>
+  </div>
+  <div class="card-body d-flex flex-column gap-3 h-100">
+    <div class="h-100 d-flex flex-column">
+      <ngx-monaco-diff-editor
+        (onInit)="onInitEditor($event)"
+        class="h-100 mt-3"
+        [options]="codeEditorOptions"
+        [originalModel]="originalModel"
+        [modifiedModel]="modifiedModel"
+      >
+      </ngx-monaco-diff-editor>
     </div>
+  </div>
 </div>

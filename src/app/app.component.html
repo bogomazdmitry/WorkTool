@@ -1,28 +1,78 @@
 <div class="container-fluid d-flex flex-column h-100 p-0 pb-3">
-  <nav class="navbar navbar-expand-lg mb-3" [class.navbar-light]="!isDarkTheme" [class.navbar-dark]="isDarkTheme">
+  <nav
+    class="navbar navbar-expand-lg mb-3"
+    [class.navbar-light]="!isDarkTheme"
+    [class.navbar-dark]="isDarkTheme"
+  >
     <div class="container-fluid">
       <a class="navbar-brand">Tools</a>
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
-        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <button
+        class="navbar-toggler"
+        type="button"
+        data-bs-toggle="collapse"
+        data-bs-target="#navbarSupportedContent"
+        aria-controls="navbarSupportedContent"
+        aria-expanded="false"
+        aria-label="Toggle navigation"
+      >
         <span class="navbar-toggler-icon"></span>
       </button>
       <div class="collapse navbar-collapse" id="navbarSupportedContent">
         <ul class="navbar-nav mb-2 mb-lg-0 me-auto">
           <li class="nav-item">
-            <a class="nav-link active" aria-current="page" routerLink="/text-format">Text Format</a>
+            <a
+              class="nav-link active"
+              aria-current="page"
+              routerLink="/text-format"
+              >Text Format</a
+            >
           </li>
           <li class="nav-item">
-            <a class="nav-link active" aria-current="page" routerLink="/json-format">JSON Format</a>
+            <a
+              class="nav-link active"
+              aria-current="page"
+              routerLink="/json-format"
+              >JSON Format</a
+            >
           </li>
           <li class="nav-item">
-            <a class="nav-link active" aria-current="page" routerLink="/diff-text">Diff Text</a>
+            <a
+              class="nav-link active"
+              aria-current="page"
+              routerLink="/diff-text"
+              >Diff Text</a
+            >
+          </li>
+          <li class="nav-item dropdown">
+            <a
+              class="nav-link dropdown-toggle"
+              href="#"
+              id="navbarDropdown"
+              role="button"
+              data-bs-toggle="dropdown"
+              aria-expanded="false"
+            >
+              Chat-gpt
+            </a>
+            <ul
+              class="dropdown-menu mat-app-background"
+              aria-labelledby="navbarDropdown"
+            >
+              <li>
+                <a class="dropdown-item" routerLink="/check-english"
+                  >Check English</a
+                >
+              </li>
+              <li><a class="dropdown-item" routerLink="/quiz">Quiz</a></li>
+            </ul>
           </li>
         </ul>
+
         <shared-theme-changer class="ml-auto"></shared-theme-changer>
       </div>
     </div>
   </nav>
-  <div class="flex-grow-1" style="min-height: 0; overflow-y: auto;">
+  <div class="flex-grow-1" style="min-height: 0; overflow-y: auto">
     <div class="row justify-content-center h-100 w-100 m-0">
       <div class="col-md-8">
         <router-outlet></router-outlet>
