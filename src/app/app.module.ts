@@ -12,16 +12,16 @@ import { MonacoEditorModule } from 'ngx-monaco-editor-v2';
 import { SharedModule } from './shared/shared.module';
 import { CheckEnglishComponent } from './check-english/check-english.component';
 import { QuizModule } from './quiz/quiz.module';
-import { initializeApp,provideFirebaseApp } from '@angular/fire/app';
+import { initializeApp, provideFirebaseApp } from '@angular/fire/app';
 import { environment } from '../environments/environment';
-import { provideFirestore,getFirestore } from '@angular/fire/firestore';
+import { provideFirestore, getFirestore } from '@angular/fire/firestore';
 @NgModule({
   declarations: [
     AppComponent,
     DiffTextComponent,
     JsonFormatComponent,
     TextFormatComponent,
-    CheckEnglishComponent
+    CheckEnglishComponent,
   ],
   imports: [
     BrowserModule,
@@ -33,9 +33,9 @@ import { provideFirestore,getFirestore } from '@angular/fire/firestore';
     QuizModule,
     MonacoEditorModule.forRoot(),
     provideFirebaseApp(() => initializeApp(environment.firebase)),
-    provideFirestore(() => getFirestore())
+    provideFirestore(() => getFirestore()),
   ],
   providers: [JsonPipe],
-  bootstrap: [AppComponent]
+  bootstrap: [AppComponent],
 })
-export class AppModule { }
+export class AppModule {}

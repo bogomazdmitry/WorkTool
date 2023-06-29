@@ -16,7 +16,7 @@ Create web applications on github pages for any text operations.
 
 - Dark theme
 - Saving to local storage
-- Using ```monaco-editor``` for json and diff
+- Using `monaco-editor` for json and diff
 - Shortcuts for every button
 - Github pages
 - Adaptive to mobile

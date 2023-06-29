@@ -1,17 +1,21 @@
 import { inject, Injectable } from '@angular/core';
-import { collection, doc, docData, DocumentData, Firestore, getDoc, setDoc } from '@angular/fire/firestore';
+import {
+  collection,
+  doc,
+  docData,
+  DocumentData,
+  Firestore,
+  setDoc,
+} from '@angular/fire/firestore';
 import { Observable } from 'rxjs';
 import { Quiz } from './quiz.models';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class FirebaseQuizService {
-  private collectionName = 'quizzes';
-
   firestore: Firestore = inject(Firestore);
-
-  constructor() { }
+  private collectionName = 'quizzes';
 
   addQuizWithId(quiz: Quiz, id: string): Promise<void> {
     const quizzes = collection(this.firestore, this.collectionName);

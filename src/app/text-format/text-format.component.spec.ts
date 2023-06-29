@@ -8,9 +8,8 @@ describe('TextFormatComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ TextFormatComponent ]
-    })
-    .compileComponents();
+      declarations: [TextFormatComponent],
+    }).compileComponents();
   });
 
   beforeEach(() => {

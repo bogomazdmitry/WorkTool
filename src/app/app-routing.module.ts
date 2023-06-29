@@ -11,13 +11,17 @@ const routes: Routes = [
   { path: 'json-format', component: JsonFormatComponent },
   { path: 'diff-text', component: DiffTextComponent },
   { path: 'check-english', component: CheckEnglishComponent },
-  { path: 'quiz', loadChildren: () => import('./quiz/quiz-routing.module').then(m => m.QuizRoutingModule) },
-
+  {
+    path: 'quiz',
+    loadChildren: () =>
+      import('./quiz/quiz-routing.module').then((m) => m.QuizRoutingModule),
+  },
 ];
 
-
 @NgModule({
-  imports: [RouterModule.forRoot(routes, { preloadingStrategy: PreloadAllModules })],
-  exports: [RouterModule]
+  imports: [
+    RouterModule.forRoot(routes, { preloadingStrategy: PreloadAllModules }),
+  ],
+  exports: [RouterModule],
 })
-export class AppRoutingModule { }
+export class AppRoutingModule {}

@@ -102,4 +102,4 @@ import { MatTreeModule } from '@angular/material/tree';
     MatTreeModule,
   ],
 })
-export class AppMaterialModule { }
+export class AppMaterialModule {}
