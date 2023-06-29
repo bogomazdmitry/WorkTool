@@ -9,6 +9,7 @@ Create web applications on github pages for any text operations.
 - Working with text
 - Working with json
 - Text comparison
+- Check English text with chat-gpt
 
 ## Features
 
