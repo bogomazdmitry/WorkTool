@@ -1,0 +1,14 @@
+{
+  "projects": {
+    "default": "work-tool-fa4f2"
+  },
+  "targets": {
+    "work-tool-fa4f2": {
+      "hosting": {
+        "angular-worktool": [
+          "work-tool-fa4f2"
+        ]
+      }
+    }
+  }
+}

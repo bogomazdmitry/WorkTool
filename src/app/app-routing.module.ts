@@ -11,6 +11,8 @@ const routes: Routes = [
   { path: 'json-format', component: JsonFormatComponent },
   { path: 'diff-text', component: DiffTextComponent },
   { path: 'check-english', component: CheckEnglishComponent },
+  { path: 'quiz', loadChildren: () => import('./quiz/quiz-routing.module').then(m => m.QuizRoutingModule) },
+
 ];
 
 
