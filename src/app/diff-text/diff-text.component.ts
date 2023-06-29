@@ -1,6 +1,11 @@
-import { Component, HostListener, OnInit, ViewChild } from '@angular/core';
-import { MatSliderChange } from '@angular/material/slider';
-import { DiffEditorComponent, DiffEditorModel, EditorComponent } from 'ngx-monaco-editor-v2';
+import {
+  Component,
+  HostListener,
+  OnDestroy,
+  OnInit,
+  ViewChild,
+} from '@angular/core';
+import { DiffEditorComponent } from 'ngx-monaco-editor-v2';
 import { ThemeService } from '../shared/services/theme.service';
 
 const localStorageLeftTextKey = 'left-diff-text';
@@ -10,49 +15,62 @@ const localStorageWrappedKey = 'wrap-diff-text';
 @Component({
   selector: 'app-diff-text',
   templateUrl: './diff-text.component.html',
-  styleUrls: ['./diff-text.component.scss']
+  styleUrls: ['./diff-text.component.scss'],
 })
-export class DiffTextComponent implements OnInit {
-  @ViewChild(DiffEditorComponent) diffEditorComponent: DiffEditorComponent|undefined;
-
-  wrapText: boolean = false;
-
-  codeEditorOptions = {
+export class DiffTextComponent implements OnInit, OnDestroy {
+  @ViewChild(DiffEditorComponent) public diffEditorComponent:
+    | DiffEditorComponent
+    | undefined;
+  public codeEditorOptions = {
     theme: 'vs-dark',
     originalEditable: true,
     readOnly: false,
-    wordWrap: this.getWrappedText()
+    wordWrap: this.getWrappedText(),
   };
-  originalModel = {
+  public editor: any;
+  public modifiedModel = {
     code: '',
-    language: 'text/plain'
+    language: 'text/plain',
   };
-
-  modifiedModel = {
+  public originalModel = {
     code: '',
-    language: 'text/plain'
+    language: 'text/plain',
   };
-  editor: any;
-
-  onInitEditor(editor: any) {
-    this.editor = editor;
-    editor.getModel().original.onDidChangeContent((e: any) => {
-      this.saveOriginalText();
-    });
-    editor.getModel().modified.onDidChangeContent((e: any) => {
-      this.saveModifiedText();
-    });
-  }
+  public wrapText = false;
 
   constructor(private themeService: ThemeService) {
     this.codeEditorOptions.theme = this.themeService.getVsTheme();
 
     this.themeService.getChangingThemeSubject().subscribe(() => {
-      this.codeEditorOptions = { ...this.codeEditorOptions, theme: this.themeService.getVsTheme() };
+      this.codeEditorOptions = {
+        ...this.codeEditorOptions,
+        theme: this.themeService.getVsTheme(),
+      };
     });
   }
 
-  ngOnInit(): void {
+  @HostListener('window:beforeunload', ['$event'])
+  public onBeforeUnload() {
+    this.saveModel();
+  }
+
+  public getModifiedText(): string {
+    return this.editor.getModel().modified.getValue();
+  }
+
+  public getOriginalText(): string {
+    return this.editor.getModel().original.getValue();
+  }
+
+  public getWrappedText(): string {
+    return this.wrapText ? 'on' : 'off';
+  }
+
+  public ngOnDestroy() {
+    this.saveSettings();
+  }
+
+  public ngOnInit(): void {
     const savedLeftText = localStorage.getItem(localStorageLeftTextKey);
     if (savedLeftText !== null) {
       this.originalModel = { ...this.originalModel, code: savedLeftText };
@@ -64,56 +82,57 @@ export class DiffTextComponent implements OnInit {
     const savedWrapText = localStorage.getItem(localStorageWrappedKey);
     if (savedWrapText !== null) {
       this.wrapText = savedWrapText === 'true';
-      this.codeEditorOptions = { ...this.codeEditorOptions, wordWrap: this.getWrappedText()  };
+      this.codeEditorOptions = {
+        ...this.codeEditorOptions,
+        wordWrap: this.getWrappedText(),
+      };
     }
   }
 
-  onWrapToggleChange(): void {
-    this.originalModel = { ...this.originalModel, code: this.getOriginalText() };
-    this.modifiedModel = { ...this.modifiedModel, code: this.getModifiedText() };
-    this.codeEditorOptions = { ...this.codeEditorOptions, wordWrap: this.getWrappedText()  };
+  public onInitEditor(editor: any) {
+    this.editor = editor;
+    editor.getModel().original.onDidChangeContent(() => {
+      this.saveOriginalText();
+    });
+    editor.getModel().modified.onDidChangeContent(() => {
+      this.saveModifiedText();
+    });
   }
 
-  getWrappedText(): string {
-    return this.wrapText ? 'on' : 'off';
+  public onWrapToggleChange(): void {
+    this.originalModel = {
+      ...this.originalModel,
+      code: this.getOriginalText(),
+    };
+    this.modifiedModel = {
+      ...this.modifiedModel,
+      code: this.getModifiedText(),
+    };
+    this.codeEditorOptions = {
+      ...this.codeEditorOptions,
+      wordWrap: this.getWrappedText(),
+    };
   }
 
-  saveModel() {
+  public saveModel() {
     this.saveText();
     this.saveSettings();
   }
 
-  saveSettings() {
-    localStorage.setItem(localStorageWrappedKey, String(this.wrapText));
-  }
-
-  saveText() {
-    this.saveOriginalText();
-    this.saveModifiedText();
-  }
-
-  @HostListener('window:beforeunload', ['$event'])
-  onBeforeUnload(event: BeforeUnloadEvent) {
-    this.saveModel();
-  }
-  
-  ngOnDestroy() {
-    this.saveSettings();
-  }
-
-  saveOriginalText(): void {
-    localStorage.setItem(localStorageLeftTextKey, this.getOriginalText());
-  }
-
-  saveModifiedText(): void {
+  public saveModifiedText(): void {
     localStorage.setItem(localStorageRightTextKey, this.getModifiedText());
   }
 
-  getOriginalText(): string {
-    return this.editor.getModel().original.getValue();
+  public saveOriginalText(): void {
+    localStorage.setItem(localStorageLeftTextKey, this.getOriginalText());
   }
 
-  getModifiedText(): string {
-    return this.editor.getModel().modified.getValue();
+  public saveSettings() {
+    localStorage.setItem(localStorageWrappedKey, String(this.wrapText));
+  }
+
+  public saveText() {
+    this.saveOriginalText();
+    this.saveModifiedText();
   }
 }

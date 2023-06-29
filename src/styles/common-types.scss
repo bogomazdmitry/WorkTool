@@ -1,33 +1,32 @@
 mat-form-field.fill-container {
+  .mat-form-field-infix,
+  .mat-form-field-flex,
+  .mat-form-field-wrapper {
+    height: 100% !important;
+    width: 100% !important;
+  }
 
-    .mat-form-field-infix,
-    .mat-form-field-flex,
-    .mat-form-field-wrapper {
-        height: 100%!important;
-        width: 100%!important;
-    }
+  textarea {
+    height: 100% !important;
+  }
 
-    textarea {
-        height: 100%!important;
-    }
+  .mat-mdc-form-field-flex {
+    height: 100% !important;
+  }
+  .mat-mdc-form-field-infix {
+    height: 100% !important;
+  }
 
-    .mat-mdc-form-field-flex {
-        height: 100%!important;
-    }
-    .mat-mdc-form-field-infix {
-        height: 100%!important;
-    }
-
-    height: 100%!important;
-    width: 100%!important;
+  height: 100% !important;
+  width: 100% !important;
 }
 
 mat-form-field.no-padding {
-    .mat-form-field-wrapper {
-        padding-bottom: 0%;
-    }
+  .mat-form-field-wrapper {
+    padding-bottom: 0%;
+  }
 
-    .mat-form-field-underline {
-        bottom: 0%;
-    }
+  .mat-form-field-underline {
+    bottom: 0%;
+  }
 }

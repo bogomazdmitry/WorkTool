@@ -1,19 +1,19 @@
 .line {
-    border-right: 1px solid rgba(0, 0, 0, 0.25);
-    width: 1px;
+  border-right: 1px solid rgba(0, 0, 0, 0.25);
+  width: 1px;
 }
 
 .right-answer {
-    background-color: green!important;
-    color: white!important;
+  background-color: green !important;
+  color: white !important;
 }
 
 .selected-answer {
-    background-color: #8B8000!important;
-    color: white!important;
+  background-color: #8b8000 !important;
+  color: white !important;
 }
 
 .wrong-answer {
-    background-color: red!important;
-    color: white!important;
+  background-color: red !important;
+  color: white !important;
 }

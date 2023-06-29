@@ -8,9 +8,8 @@ describe('JsonFormatComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ JsonFormatComponent ]
-    })
-    .compileComponents();
+      declarations: [JsonFormatComponent],
+    }).compileComponents();
   });
 
   beforeEach(() => {

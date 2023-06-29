@@ -8,9 +8,8 @@ describe('DiffTextComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ DiffTextComponent ]
-    })
-    .compileComponents();
+      declarations: [DiffTextComponent],
+    }).compileComponents();
   });
 
   beforeEach(() => {

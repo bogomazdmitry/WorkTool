@@ -1,11 +1,19 @@
 export interface Question {
-    answers: string[];
-    rightAnswer: number;
-    questionText: string;
-} 
+  // #region Properties (3)
+
+  answers: string[];
+  questionText: string;
+  rightAnswer: number;
+
+  // #endregion Properties (3)
+}
 
 export interface Quiz {
-    questions: Question[];
-    requestText: string;
-    id?: string;
+  // #region Properties (3)
+
+  id?: string;
+  questions: Question[];
+  requestText: string;
+
+  // #endregion Properties (3)
 }
