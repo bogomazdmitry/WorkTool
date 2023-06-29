@@ -1,0 +1,60 @@
+<div class="quiz-container">
+  <div class="d-flex justify-content-between">
+    <div class="p-2">
+      <h2>{{ quiz?.requestText }}</h2>
+    </div>
+    <div class="p-2">
+      <button
+        class="btn"
+        mat-raised-button
+        color="primary"
+        matTooltip="CMD/Alt + Shift + U"
+        (click)="copyQuiz()"
+      >
+        Copy quiz
+      </button>
+    </div>
+  </div>
+  <div *ngIf="!theEnd">
+    <p>
+      Question {{ currentQuestionIndex + 1 }} of {{ quiz?.questions?.length }}
+    </p>
+    <h3>{{ getCurrentQuestion()?.questionText }}</h3>
+    <ul>
+      <li
+        *ngFor="let answer of getCurrentQuestion()?.answers; let i = index"
+        class="my-1"
+      >
+        <button
+          mat-raised-button
+          [class]="getColor(i)"
+          (click)="selectAnswer(i)"
+        >
+          {{ answer }}
+        </button>
+      </li>
+    </ul>
+    <button
+      mat-raised-button
+      color="primary"
+      class="m-1"
+      (click)="submitAnswer()"
+      [disabled]="selectedAnswerIndex === null || isAnswerSubmitted"
+    >
+      Submit Answer
+    </button>
+    <button
+      mat-raised-button
+      color="primary"
+      class="m-1"
+      (click)="nextQuestion()"
+      [disabled]="!isAnswerSubmitted"
+    >
+      Next Question
+    </button>
+  </div>
+  <div *ngIf="theEnd">
+    <p>Total Questions: {{ quiz?.questions?.length }}</p>
+    <p>Correct Answers: {{ rightAnswers }}</p>
+  </div>
+</div>

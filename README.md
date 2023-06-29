@@ -9,15 +9,18 @@ Create web applications on github pages for any text operations.
 - Working with text
 - Working with json
 - Text comparison
+- Check English text with chat-gpt
+- Quiz with chat-gpt with saving
 
 ## Features
 
 - Dark theme
 - Saving to local storage
-- Using ```monaco-editor``` for json and diff
+- Using `monaco-editor` for json and diff
 - Shortcuts for every button
 - Github pages
 - Adaptive to mobile
+- Firestore for quiz
 
 ## How to build to github pages
 

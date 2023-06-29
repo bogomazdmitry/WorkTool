@@ -1,0 +1,12 @@
+{
+  "database": {
+    "rules": "database.rules.json"
+  },
+  "hosting": [
+    {
+      "target": "angular-worktool",
+      "source": ".",
+      "frameworksBackend": {}
+    }
+  ]
+}
