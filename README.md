@@ -21,6 +21,7 @@ Create web applications on github pages for any text operations.
 - Github pages
 - Adaptive to mobile
 - Firestore for quiz
+- CI/CD
 
 ## How to build to github pages
 
