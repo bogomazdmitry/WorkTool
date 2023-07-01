@@ -1,6 +1,9 @@
+import { HttpErrorResponse } from '@angular/common/http';
 import { Component, HostListener, OnDestroy, OnInit } from '@angular/core';
-import { ChatGptService } from '../../shared/services/chat-gpt.service';
+import { catchError, throwError } from 'rxjs';
+import { ChatGptService } from 'src/app/shared/services/chat-gpt.service';
 import { Quiz } from '../quiz.models';
+import { QUIZ_TEST } from './quiz-test';
 
 const localStorageQuizTextKey = 'quiz-text';
 
@@ -35,16 +38,26 @@ export class QuizRequestComponent implements OnInit, OnDestroy {
 
     this.chatGptService
       .generateQuiz(this.apiKey, prompt)
+      .pipe(
+        catchError((error: HttpErrorResponse) => {
+          this.loaderHidden = true;
+          return throwError(() => error);
+        })
+      )
       .subscribe((response) => {
-        console.log(response);
         this.quiz = JSON.parse(response);
-        console.log(this.quiz);
         if (this.quiz) {
           this.quiz.requestText = prompt;
         }
         this.quizHidden = false;
         this.loaderHidden = true;
       });
+  }
+
+  public testQuiz() {
+    this.quiz = QUIZ_TEST;
+    this.quiz.requestText = 'TEST';
+    this.quizHidden = false;
   }
 
   public ngOnDestroy() {

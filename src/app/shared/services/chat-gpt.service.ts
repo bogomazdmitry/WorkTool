@@ -1,6 +1,11 @@
-import { map, Observable } from 'rxjs';
+import { catchError, map, Observable, throwError } from 'rxjs';
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import {
+  HttpClient,
+  HttpErrorResponse,
+  HttpHeaders,
+} from '@angular/common/http';
+import { ErrorService } from './global-error.service';
 
 const localStorageChatGptApiKey = 'chat-gpt-key';
 
@@ -8,7 +13,10 @@ const localStorageChatGptApiKey = 'chat-gpt-key';
 export class ChatGptService {
   apiUrl = 'https://api.openai.com/v1/chat/completions';
 
-  public constructor(private http: HttpClient) {}
+  public constructor(
+    private http: HttpClient,
+    private errorService: ErrorService
+  ) {}
 
   getSessionResponse(): string {
     const response = localStorage.getItem(localStorageChatGptApiKey) ?? '';
@@ -36,7 +44,15 @@ export class ChatGptService {
 
     return this.http
       .post(this.apiUrl, postData, { headers })
-      .pipe(map((response: any) => response.choices[0].message.content));
+      .pipe(map((response: any) => response.choices[0].message.content))
+      .pipe(
+        catchError((error: HttpErrorResponse) => {
+          this.errorService.setError({
+            errorMessage: error.error.error.message,
+          });
+          return throwError(() => new Error(error.error.error.message));
+        })
+      );
   }
 
   checkEnglish(sessionResponse: string, prompt: string): Observable<string> {
@@ -47,60 +63,6 @@ export class ChatGptService {
   }
 
   generateQuiz(sessionResponse: string, prompt: string): Observable<string> {
-    // return of(`{
-    //     "questions": [
-    //         {
-    //             "questionText": "Кто считается самым умным человеком в мире?",
-    //             "answers": ["Никола Тесла", "Альберт Эйнштейн", "Стивен Хокинг", "Джейсон Байер"],
-    //             "rightAnswer": 1
-    //         },
-    //         {
-    //             "questionText": "Какой из этих людей был признан самым умным в мире?",
-    //             "answers": ["Никола Тесла", "Альберт Эйнштейн", "Стивен Хокинг", "Джейсон Байер"],
-    //             "rightAnswer": 1
-    //         },
-    //         {
-    //             "questionText": "Какой из этих людей имеет наивысший IQ?",
-    //             "answers": ["Никола Тесла", "Альберт Эйнштейн", "Стивен Хокинг", "Джейсон Байер"],
-    //             "rightAnswer": 2
-    //         },
-    //         {
-    //             "questionText": "Кто из этих людей был признан самым умным в мире по версии журнала 'Time'?",
-    //             "answers": ["Никола Тесла", "Альберт Эйнштейн", "Стивен Хокинг", "Джейсон Байер"],
-    //             "rightAnswer": 1
-    //         },
-    //         {
-    //             "questionText": "Какой из этих людей имеет наивысший показатель ИКС?",
-    //             "answers": ["Никола Тесла", "Альберт Эйнштейн", "Стивен Хокинг", "Джейсон Байер"],
-    //             "rightAnswer": 2
-    //         },
-    //         {
-    //             "questionText": "Кто из этих людей имеет наивысший показатель IQ?",
-    //             "answers": ["Никола Тесла", "Альберт Эйнштейн", "Стивен Хокинг", "Джейсон Байер"],
-    //             "rightAnswer": 2
-    //         },
-    //         {
-    //             "questionText": "Кто из этих людей был признан самым умным в мире по версии журнала 'Forbes'?",
-    //             "answers": ["Никола Тесла", "Альберт Эйнштейн", "Стивен Хокинг", "Джейсон Байер"],
-    //             "rightAnswer": 2
-    //         },
-    //         {
-    //             "questionText": "Кто из этих людей имеет наивысший показатель ИКС?",
-    //             "answers": ["Никола Тесла", "Альберт Эйнштейн", "Стивен Хокинг", "Джейсон Байер"],
-    //             "rightAnswer": 2
-    //         },
-    //         {
-    //             "questionText": "Кто из этих людей был признан самым умным в мире по версии журнала 'Business Insider'?",
-    //             "answers": ["Никола Тесла", "Альберт Эйнштейн", "Стивен Хокинг", "Джейсон Байер"],
-    //             "rightAnswer": 2
-    //         },
-    //         {
-    //             "questionText": "Кто из этих людей имеет наивысший показатель IQ?",
-    //             "answers": ["Никола Тесла", "Альберт Эйнштейн", "Стивен Хокинг", "Джейсон Байер"],
-    //             "rightAnswer": 2
-    //         }
-    //     ]
-    // }`);
     return this.getResponse(
       sessionResponse,
       `Generate 10 questions (like a quiz) with 4 answers for this theme:\n${prompt}\n\n please, give me a json format of question (rightAnswer is index of answers array for right answer):

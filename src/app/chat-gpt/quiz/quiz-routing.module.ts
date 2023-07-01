@@ -4,8 +4,14 @@ import { QuizByIdComponent } from './quiz-by-id/quiz-by-id.component';
 import { QuizRequestComponent } from './quiz-request/quiz-request.component';
 
 const routes: Routes = [
-  { path: '', component: QuizRequestComponent },
-  { path: ':id', component: QuizByIdComponent },
+  {
+    path: 'quiz',
+    component: QuizRequestComponent,
+  },
+  {
+    path: 'quiz/:id',
+    component: QuizByIdComponent,
+  },
 ];
 
 @NgModule({

@@ -6,7 +6,7 @@ import {
   ViewChild,
 } from '@angular/core';
 import { EditorComponent } from 'ngx-monaco-editor-v2';
-import { ThemeService } from '../shared/services/theme.service';
+import { ThemeService } from '../../shared/services/theme.service';
 
 const localStorageJsonTextKey = 'json-text-format';
 @Component({

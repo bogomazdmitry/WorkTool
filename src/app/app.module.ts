@@ -1,37 +1,21 @@
 import { NgModule } from '@angular/core';
-import { BrowserModule } from '@angular/platform-browser';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import { DiffTextComponent } from './diff-text/diff-text.component';
-import { JsonFormatComponent } from './json-format/json-format.component';
-import { TextFormatComponent } from './text-format/text-format.component';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { FormsModule } from '@angular/forms';
-import { CommonModule, JsonPipe } from '@angular/common';
-import { MonacoEditorModule } from 'ngx-monaco-editor-v2';
 import { SharedModule } from './shared/shared.module';
-import { CheckEnglishComponent } from './check-english/check-english.component';
-import { QuizModule } from './quiz/quiz.module';
 import { initializeApp, provideFirebaseApp } from '@angular/fire/app';
 import { environment } from '../environments/environment';
 import { provideFirestore, getFirestore } from '@angular/fire/firestore';
+import { ChatGptModule } from './chat-gpt/chat-gpt.module';
+import { TextModule } from './text/text.module';
+import { JsonPipe } from '@angular/common';
+
 @NgModule({
-  declarations: [
-    AppComponent,
-    DiffTextComponent,
-    JsonFormatComponent,
-    TextFormatComponent,
-    CheckEnglishComponent,
-  ],
+  declarations: [AppComponent],
   imports: [
-    BrowserModule,
+    TextModule,
+    ChatGptModule,
     AppRoutingModule,
-    BrowserAnimationsModule,
     SharedModule,
-    FormsModule,
-    CommonModule,
-    QuizModule,
-    MonacoEditorModule.forRoot(),
     provideFirebaseApp(() => initializeApp(environment.firebase)),
     provideFirestore(() => getFirestore()),
   ],

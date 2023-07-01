@@ -21,26 +21,24 @@ export class QuizViewerComponent implements OnInit {
   constructor(
     private firebaseQuizService: FirebaseQuizService,
     private clipboard: Clipboard
-  ) {
-    console.log(this.quiz);
-  }
+  ) {}
 
   public copyQuiz() {
     if (this.quiz && !this.quiz?.id) {
       this.quiz.id = uuidv4();
-      console.log(this.quiz.id);
       this.firebaseQuizService
         .addQuizWithId(this.quiz, this.quiz.id)
         .then(() => {
-          console.log('done');
           const url = window.location.href + '/' + this.quiz?.id;
-          console.log(url);
           this.clipboard.copy(url);
         })
-        .catch(console.log);
+        .catch(() => {
+          if (this.quiz) {
+            this.quiz.id = undefined;
+          }
+        });
     } else {
       const url = window.location.href + '/' + this.quiz?.id;
-      console.log(url);
       this.clipboard.copy(url);
     }
   }
@@ -78,10 +76,8 @@ export class QuizViewerComponent implements OnInit {
   }
 
   public loadQuestion(): void {
-    console.log(this.quiz?.questions[this.currentQuestionIndex]);
     if (this.quiz?.questions[this.currentQuestionIndex]) {
       this.currentQuestion = this.quiz?.questions[this.currentQuestionIndex];
-      console.log(this.currentQuestion);
       this.selectedAnswerIndex = undefined;
       this.isAnswerSubmitted = false;
     }
@@ -99,7 +95,6 @@ export class QuizViewerComponent implements OnInit {
   }
 
   public ngOnInit(): void {
-    console.log(this.quiz);
     this.loadQuestion();
   }
 
