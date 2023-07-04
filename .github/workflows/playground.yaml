@@ -26,6 +26,6 @@ jobs:
         run: npm run build:prod
 
       - name: Deploy to GitHub Pages
-        run: npm run deploy
+        run: npx angular-cli-ghpages --dir=dist/angular-worktool --no-silent --name="Bogomaz Dmitry" --email="bogomaz.dima2013@gmail.com"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

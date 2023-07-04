@@ -118,13 +118,6 @@
             "scripts": []
           }
         },
-        "deploy": {
-          "builder": "@angular/fire:deploy",
-          "options": {
-            "version": 2,
-            "browserTarget": "angular-worktool:build:production"
-          }
-        },
         "lint": {
           "builder": "@angular-eslint/builder:lint",
           "options": {
