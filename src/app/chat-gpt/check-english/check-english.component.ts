@@ -1,7 +1,7 @@
 import { Component, HostListener, OnDestroy, OnInit } from '@angular/core';
 import { DiffEditorModel } from 'ngx-monaco-editor-v2';
-import { ChatGptService } from '../shared/services/chat-gpt.service';
-import { ThemeService } from '../shared/services/theme.service';
+import { ChatGptService } from '../../shared/services/chat-gpt.service';
+import { ThemeService } from '../../shared/services/theme.service';
 
 const localStorageCheckEnglishTextKey = 'check-english-text';
 
@@ -67,7 +67,6 @@ export class CheckEnglishComponent implements OnInit, OnDestroy {
       .checkEnglish(this.apiKey, prompt)
       .subscribe((response) => {
         this.rightText = response;
-        console.log(response);
         this.originalModel = { ...this.originalModel, code: this.leftText };
         this.modifiedModel = { ...this.modifiedModel, code: this.rightText };
 

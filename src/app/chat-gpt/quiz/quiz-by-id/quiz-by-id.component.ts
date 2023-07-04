@@ -19,10 +19,8 @@ export class QuizByIdComponent implements OnInit {
   ngOnInit(): void {
     this.route.params.subscribe((params) => {
       const id = params['id'];
-      console.log(id);
 
       this.firebaseQuizService.getQuizById(id).subscribe((quiz) => {
-        console.log(quiz);
         this.quiz = quiz as Quiz;
       });
     });

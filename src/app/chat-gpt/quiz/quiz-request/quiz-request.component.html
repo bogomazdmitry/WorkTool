@@ -26,6 +26,14 @@
       >
         Generate quiz
       </button>
+      <button
+        class="btn"
+        mat-raised-button
+        color="primary"
+        (click)="testQuiz()"
+      >
+        Test quiz
+      </button>
     </div>
     <div class="h-100 d-flex flex-column" *ngIf="quizHidden">
       <mat-form-field
