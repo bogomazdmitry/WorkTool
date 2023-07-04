@@ -13,7 +13,6 @@ const localStorageQuizTextKey = 'quiz-text';
   styleUrls: ['./quiz-request.component.scss'],
 })
 export class QuizRequestComponent implements OnInit, OnDestroy {
-  public apiKey = '';
   public loaderHidden = true;
   public quiz: Quiz | undefined;
   public quizHidden = true;
@@ -37,7 +36,7 @@ export class QuizRequestComponent implements OnInit, OnDestroy {
     this.loaderHidden = false;
 
     this.chatGptService
-      .generateQuiz(this.apiKey, prompt)
+      .generateQuiz(prompt)
       .pipe(
         catchError((error: HttpErrorResponse) => {
           this.loaderHidden = true;
@@ -65,8 +64,6 @@ export class QuizRequestComponent implements OnInit, OnDestroy {
   }
 
   public ngOnInit(): void {
-    this.apiKey = this.chatGptService.getSessionResponse();
-
     const savedQuizText = localStorage.getItem(localStorageQuizTextKey);
     if (savedQuizText !== null) {
       this.quizText = savedQuizText;
@@ -75,6 +72,5 @@ export class QuizRequestComponent implements OnInit, OnDestroy {
 
   public saveText() {
     localStorage.setItem(localStorageQuizTextKey, this.quizText);
-    this.chatGptService.saveSessionResponse(this.apiKey);
   }
 }

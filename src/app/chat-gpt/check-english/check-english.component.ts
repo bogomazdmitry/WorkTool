@@ -11,7 +11,6 @@ const localStorageCheckEnglishTextKey = 'check-english-text';
   styleUrls: ['./check-english.component.scss'],
 })
 export class CheckEnglishComponent implements OnInit, OnDestroy {
-  public apiKey = '';
   public codeEditorOptions = {
     theme: 'vs-dark',
     wordWrap: 'on',
@@ -63,16 +62,14 @@ export class CheckEnglishComponent implements OnInit, OnDestroy {
     this.diffHidden = true;
     this.loaderHidden = false;
 
-    this.chatGptService
-      .checkEnglish(this.apiKey, prompt)
-      .subscribe((response) => {
-        this.rightText = response;
-        this.originalModel = { ...this.originalModel, code: this.leftText };
-        this.modifiedModel = { ...this.modifiedModel, code: this.rightText };
+    this.chatGptService.checkEnglish(prompt).subscribe((response) => {
+      this.rightText = response;
+      this.originalModel = { ...this.originalModel, code: this.leftText };
+      this.modifiedModel = { ...this.modifiedModel, code: this.rightText };
 
-        this.diffHidden = false;
-        this.loaderHidden = true;
-      });
+      this.diffHidden = false;
+      this.loaderHidden = true;
+    });
   }
 
   public ngOnDestroy() {
@@ -80,8 +77,6 @@ export class CheckEnglishComponent implements OnInit, OnDestroy {
   }
 
   public ngOnInit(): void {
-    this.apiKey = this.chatGptService.getSessionResponse();
-
     const savedLeftText = localStorage.getItem(localStorageCheckEnglishTextKey);
     if (savedLeftText !== null) {
       this.leftText = savedLeftText;
@@ -90,6 +85,5 @@ export class CheckEnglishComponent implements OnInit, OnDestroy {
 
   public saveText() {
     localStorage.setItem(localStorageCheckEnglishTextKey, this.leftText);
-    this.chatGptService.saveSessionResponse(this.apiKey);
   }
 }

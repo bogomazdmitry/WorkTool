@@ -10,6 +10,7 @@ import { QuizRequestComponent } from './quiz-request/quiz-request.component';
 import { MatInputModule } from '@angular/material/input';
 import { QuizByIdComponent } from './quiz-by-id/quiz-by-id.component';
 import { SharedModule } from 'src/app/shared/shared.module';
+import { ChatGptCommonModule } from '../chat-gpt-common/chat-gpt-common.module';
 
 @NgModule({
   imports: [
@@ -19,6 +20,7 @@ import { SharedModule } from 'src/app/shared/shared.module';
     FormsModule,
     MatInputModule,
     QuizRoutingModule,
+    ChatGptCommonModule,
   ],
   declarations: [QuizRequestComponent, QuizViewerComponent, QuizByIdComponent],
   providers: [JsonPipe],

@@ -18,19 +18,19 @@ export class ChatGptService {
     private errorService: ErrorService
   ) {}
 
-  getSessionResponse(): string {
+  getToken(): string {
     const response = localStorage.getItem(localStorageChatGptApiKey) ?? '';
     return response;
   }
 
-  saveSessionResponse(response: string) {
+  saveToken(response: string) {
     localStorage.setItem(localStorageChatGptApiKey, response);
   }
 
-  getResponse(apiKey: string, prompt: string): Observable<string> {
+  getResponse(prompt: string): Observable<string> {
     const headers = new HttpHeaders()
       .set('Content-Type', 'application/json')
-      .set('Authorization', `Bearer ${apiKey}`);
+      .set('Authorization', `Bearer ${this.getToken()}`);
 
     const postData = {
       model: 'gpt-3.5-turbo',
@@ -55,16 +55,14 @@ export class ChatGptService {
       );
   }
 
-  checkEnglish(sessionResponse: string, prompt: string): Observable<string> {
+  checkEnglish(prompt: string): Observable<string> {
     return this.getResponse(
-      sessionResponse,
       `Fix my english without any additional comments:\n${prompt}`
     );
   }
 
-  generateQuiz(sessionResponse: string, prompt: string): Observable<string> {
+  generateQuiz(prompt: string): Observable<string> {
     return this.getResponse(
-      sessionResponse,
       `Generate 10 questions (like a quiz) with 4 answers for this theme:\n${prompt}\n\n please, give me a json format of question (rightAnswer is index of answers array for right answer):
             {
                 "questions": [
