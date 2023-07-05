@@ -1,0 +1,7 @@
+{
+    "files.eol": "\n",
+    "files.insertFinalNewline": false,
+    "editor.defaultFormatter": "dbaeumer.vscode-eslint",
+    "files.autoSave": "onFocusChange",
+    "editor.formatOnSave": true
+}
