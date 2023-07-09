@@ -9,8 +9,7 @@
         mat-raised-button
         color="primary"
         matTooltip="CMD/Alt + Shift + U"
-        (click)="toUpperCase()"
-      >
+        (click)="toUpperCase()">
         Upper Case
       </button>
       <button
@@ -18,8 +17,7 @@
         mat-raised-button
         color="primary"
         matTooltip="CMD/Alt + Shift + L"
-        (click)="toLowerCase()"
-      >
+        (click)="toLowerCase()">
         Lower Case
       </button>
       <button
@@ -27,9 +25,16 @@
         mat-raised-button
         color="primary"
         matTooltip="CMD/Alt + Shift + C"
-        (click)="invertCase()"
-      >
+        (click)="invertCase()">
         Invert Case
+      </button>
+      <button
+        class="btn"
+        mat-raised-button
+        color="primary"
+        matTooltip="CMD/Alt + Shift + F"
+        (click)="pdfFormat()">
+        Pdf format
       </button>
     </div>
     <mat-form-field appearance="fill" class="fill-container no-padding">
@@ -38,8 +43,7 @@
         matInput
         [(ngModel)]="text"
         placeholder="Enter text"
-        [style.resize]="'none'"
-      ></textarea>
+        [style.resize]="'none'"></textarea>
     </mat-form-field>
   </div>
 </div>

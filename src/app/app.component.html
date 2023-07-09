@@ -2,8 +2,7 @@
   <nav
     class="navbar navbar-expand-lg mb-3"
     [class.navbar-light]="!isDarkTheme"
-    [class.navbar-dark]="isDarkTheme"
-  >
+    [class.navbar-dark]="isDarkTheme">
     <div class="container-fluid">
       <a class="navbar-brand">Tools</a>
       <button
@@ -13,8 +12,7 @@
         data-bs-target="#navbarSupportedContent"
         aria-controls="navbarSupportedContent"
         aria-expanded="false"
-        aria-label="Toggle navigation"
-      >
+        aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
       </button>
       <div class="collapse navbar-collapse" id="navbarSupportedContent">
@@ -23,25 +21,19 @@
             <a
               class="nav-link active"
               aria-current="page"
-              routerLink="/text-format"
-              >Text Format</a
-            >
+              routerLink="/text-format">Text Format</a>
           </li>
           <li class="nav-item">
             <a
               class="nav-link active"
               aria-current="page"
-              routerLink="/json-format"
-              >JSON Format</a
-            >
+              routerLink="/json-format">JSON Format</a>
           </li>
           <li class="nav-item">
             <a
               class="nav-link active"
               aria-current="page"
-              routerLink="/diff-text"
-              >Diff Text</a
-            >
+              routerLink="/diff-text">Diff Text</a>
           </li>
           <li class="nav-item dropdown">
             <a
@@ -50,18 +42,15 @@
               id="navbarDropdown"
               role="button"
               data-bs-toggle="dropdown"
-              aria-expanded="false"
-            >
+              aria-expanded="false">
               Chat-gpt
             </a>
             <ul
               class="dropdown-menu mat-app-background"
-              aria-labelledby="navbarDropdown"
-            >
+              aria-labelledby="navbarDropdown">
               <li>
-                <a class="dropdown-item" routerLink="/check-english"
-                  >Check English</a
-                >
+                <a class="dropdown-item" routerLink="/check-english">Check
+                  English</a>
               </li>
               <li><a class="dropdown-item" routerLink="/quiz">Quiz</a></li>
             </ul>

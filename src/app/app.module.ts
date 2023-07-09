@@ -8,9 +8,10 @@ import { provideFirestore, getFirestore } from '@angular/fire/firestore';
 import { ChatGptModule } from './chat-gpt/chat-gpt.module';
 import { TextModule } from './text/text.module';
 import { JsonPipe } from '@angular/common';
+import { RedirectComponent } from './redirect.component';
 
 @NgModule({
-  declarations: [AppComponent],
+  declarations: [AppComponent, RedirectComponent],
   imports: [
     TextModule,
     ChatGptModule,

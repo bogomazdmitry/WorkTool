@@ -46,6 +46,9 @@ export class TextFormatComponent implements OnInit, OnDestroy {
     this.text = result;
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
+  public pdfFormat() {}
+
   public ngOnDestroy() {
     this.saveText();
   }

@@ -5,7 +5,6 @@ import { JsonFormatComponent } from './json-format/json-format.component';
 import { TextFormatComponent } from './text-format/text-format.component';
 
 const routes: Routes = [
-  { path: '', component: TextFormatComponent },
   { path: 'text-format', component: TextFormatComponent },
   { path: 'json-format', component: JsonFormatComponent },
   { path: 'diff-text', component: DiffTextComponent },
