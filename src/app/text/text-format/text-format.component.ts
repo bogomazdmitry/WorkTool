@@ -46,8 +46,12 @@ export class TextFormatComponent implements OnInit, OnDestroy {
     this.text = result;
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-empty-function
-  public pdfFormat() {}
+  public pdfFormat() {
+    this.text = this.text.replaceAll('\n', ' ');
+    if (!this.text.startsWith('\t')) {
+      this.text = '\t' + this.text;
+    }
+  }
 
   public ngOnDestroy() {
     this.saveText();
