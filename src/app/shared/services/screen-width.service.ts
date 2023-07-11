@@ -25,6 +25,11 @@ export class ScreenWidthService {
 
   public setWide(wide: number) {
     this.subjectWide.next(wide);
+    // for fixing monaco editor resize
+    setTimeout(() => {
+      const event = new Event('resize');
+      window.dispatchEvent(event);
+    });
     localStorage.setItem(STORAGE_KEYS.wide, wide.toString());
   }
 
