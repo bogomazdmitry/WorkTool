@@ -9,6 +9,7 @@ const darkVsTheme = 'vs-dark';
 export class ThemeService {
   private isDarkTheme = false;
   private darkThemeString = 'dark-theme';
+  private bodyTransitionClass = 'body-transition';
   private subjectIsDarkTheme: BehaviorSubject<boolean>;
 
   public constructor() {
@@ -23,6 +24,7 @@ export class ThemeService {
   public toggleTheme(): void {
     this.isDarkTheme = !this.isDarkTheme;
     this.subjectIsDarkTheme.next(this.isDarkTheme);
+    document.body.classList.add(this.bodyTransitionClass);
     if (this.isDarkTheme) {
       document.body.classList.add(this.darkThemeString);
       localStorage.setItem(STORAGE_KEYS.theme, this.darkThemeString);
