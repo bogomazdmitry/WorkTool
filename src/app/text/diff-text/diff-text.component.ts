@@ -6,11 +6,8 @@ import {
   ViewChild,
 } from '@angular/core';
 import { DiffEditorComponent } from 'ngx-monaco-editor-v2';
+import { STORAGE_KEYS } from 'src/app/shared/static/local-storage-keys';
 import { ThemeService } from '../../shared/services/theme.service';
-
-const localStorageLeftTextKey = 'left-diff-text';
-const localStorageRightTextKey = 'right-diff-text';
-const localStorageWrappedKey = 'wrap-diff-text';
 
 @Component({
   selector: 'app-diff-text',
@@ -71,15 +68,15 @@ export class DiffTextComponent implements OnInit, OnDestroy {
   }
 
   public ngOnInit(): void {
-    const savedLeftText = localStorage.getItem(localStorageLeftTextKey);
+    const savedLeftText = localStorage.getItem(STORAGE_KEYS.diffText.left);
     if (savedLeftText !== null) {
       this.originalModel = { ...this.originalModel, code: savedLeftText };
     }
-    const savedRightText = localStorage.getItem(localStorageRightTextKey);
+    const savedRightText = localStorage.getItem(STORAGE_KEYS.diffText.right);
     if (savedRightText !== null) {
       this.modifiedModel = { ...this.modifiedModel, code: savedRightText };
     }
-    const savedWrapText = localStorage.getItem(localStorageWrappedKey);
+    const savedWrapText = localStorage.getItem(STORAGE_KEYS.diffText.wrap);
     if (savedWrapText !== null) {
       this.wrapText = savedWrapText === 'true';
       this.codeEditorOptions = {
@@ -120,15 +117,15 @@ export class DiffTextComponent implements OnInit, OnDestroy {
   }
 
   public saveModifiedText(): void {
-    localStorage.setItem(localStorageRightTextKey, this.getModifiedText());
+    localStorage.setItem(STORAGE_KEYS.diffText.right, this.getModifiedText());
   }
 
   public saveOriginalText(): void {
-    localStorage.setItem(localStorageLeftTextKey, this.getOriginalText());
+    localStorage.setItem(STORAGE_KEYS.diffText.left, this.getOriginalText());
   }
 
   public saveSettings() {
-    localStorage.setItem(localStorageWrappedKey, String(this.wrapText));
+    localStorage.setItem(STORAGE_KEYS.diffText.wrap, String(this.wrapText));
   }
 
   public saveText() {

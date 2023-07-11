@@ -2,10 +2,9 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { Component, HostListener, OnDestroy, OnInit } from '@angular/core';
 import { catchError, throwError } from 'rxjs';
 import { ChatGptService } from 'src/app/shared/services/chat-gpt.service';
+import { STORAGE_KEYS } from 'src/app/shared/static/local-storage-keys';
 import { Quiz } from '../quiz.models';
 import { QUIZ_TEST } from './quiz-test';
-
-const localStorageQuizTextKey = 'quiz-text';
 
 @Component({
   selector: 'app-quiz-request',
@@ -64,13 +63,13 @@ export class QuizRequestComponent implements OnInit, OnDestroy {
   }
 
   public ngOnInit(): void {
-    const savedQuizText = localStorage.getItem(localStorageQuizTextKey);
+    const savedQuizText = localStorage.getItem(STORAGE_KEYS.quiz.text);
     if (savedQuizText !== null) {
       this.quizText = savedQuizText;
     }
   }
 
   public saveText() {
-    localStorage.setItem(localStorageQuizTextKey, this.quizText);
+    localStorage.setItem(STORAGE_KEYS.quiz.text, this.quizText);
   }
 }

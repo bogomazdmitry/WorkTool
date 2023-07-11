@@ -1,7 +1,6 @@
 import { BehaviorSubject } from 'rxjs';
 import { Injectable } from '@angular/core';
-
-const localStorageThemeKey = 'theme';
+import { STORAGE_KEYS } from '../static/local-storage-keys';
 
 const lightVsTheme = 'vs-light';
 const darkVsTheme = 'vs-dark';
@@ -13,7 +12,7 @@ export class ThemeService {
   private subjectIsDarkTheme: BehaviorSubject<boolean>;
 
   public constructor() {
-    const themeString = localStorage.getItem(localStorageThemeKey);
+    const themeString = localStorage.getItem(STORAGE_KEYS.theme);
     if (themeString) {
       this.isDarkTheme = themeString === this.darkThemeString;
       document.body.classList.add(this.darkThemeString);
@@ -26,10 +25,10 @@ export class ThemeService {
     this.subjectIsDarkTheme.next(this.isDarkTheme);
     if (this.isDarkTheme) {
       document.body.classList.add(this.darkThemeString);
-      localStorage.setItem(localStorageThemeKey, this.darkThemeString);
+      localStorage.setItem(STORAGE_KEYS.theme, this.darkThemeString);
     } else {
       document.body.classList.remove(this.darkThemeString);
-      localStorage.removeItem(localStorageThemeKey);
+      localStorage.removeItem(STORAGE_KEYS.theme);
     }
   }
 

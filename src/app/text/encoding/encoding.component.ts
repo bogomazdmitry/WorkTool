@@ -1,8 +1,6 @@
 import { Component, HostListener, OnDestroy, OnInit } from '@angular/core';
 import * as pako from 'pako';
-
-const localStorageLeftTextKey = 'left-encoding-text';
-const localStorageRightTextKey = 'right-encoding-text';
+import { STORAGE_KEYS } from 'src/app/shared/static/local-storage-keys';
 
 @Component({
   selector: 'app-encoding',
@@ -19,11 +17,11 @@ export class EncodingComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    const savedLeftText = localStorage.getItem(localStorageLeftTextKey);
+    const savedLeftText = localStorage.getItem(STORAGE_KEYS.encoding.left);
     if (savedLeftText !== null) {
       this.leftText = savedLeftText;
     }
-    const savedRightText = localStorage.getItem(localStorageRightTextKey);
+    const savedRightText = localStorage.getItem(STORAGE_KEYS.encoding.right);
     if (savedRightText !== null) {
       this.rightText = savedRightText;
     }
@@ -78,8 +76,8 @@ export class EncodingComponent implements OnInit, OnDestroy {
   }
 
   saveText() {
-    localStorage.setItem(localStorageLeftTextKey, this.leftText);
-    localStorage.setItem(localStorageRightTextKey, this.rightText);
+    localStorage.setItem(STORAGE_KEYS.encoding.left, this.leftText);
+    localStorage.setItem(STORAGE_KEYS.encoding.right, this.rightText);
   }
 
   ngOnDestroy() {

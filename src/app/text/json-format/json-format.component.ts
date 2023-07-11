@@ -6,9 +6,9 @@ import {
   ViewChild,
 } from '@angular/core';
 import { EditorComponent } from 'ngx-monaco-editor-v2';
+import { STORAGE_KEYS } from 'src/app/shared/static/local-storage-keys';
 import { ThemeService } from '../../shared/services/theme.service';
 
-const localStorageJsonTextKey = 'json-text-format';
 @Component({
   selector: 'app-json-format',
   templateUrl: './json-format.component.html',
@@ -67,13 +67,13 @@ export class JsonFormatComponent implements OnInit, OnDestroy {
   }
 
   public ngOnInit(): void {
-    const savedText = localStorage.getItem(localStorageJsonTextKey);
+    const savedText = localStorage.getItem(STORAGE_KEYS.jsonFormatText.text);
     if (savedText !== null) {
       this.text = savedText;
     }
   }
 
   public saveText() {
-    localStorage.setItem(localStorageJsonTextKey, this.text);
+    localStorage.setItem(STORAGE_KEYS.jsonFormatText.text, this.text);
   }
 }

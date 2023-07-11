@@ -1,9 +1,8 @@
 import { Component, HostListener, OnDestroy, OnInit } from '@angular/core';
 import { DiffEditorModel } from 'ngx-monaco-editor-v2';
+import { STORAGE_KEYS } from 'src/app/shared/static/local-storage-keys';
 import { ChatGptService } from '../../shared/services/chat-gpt.service';
 import { ThemeService } from '../../shared/services/theme.service';
-
-const localStorageCheckEnglishTextKey = 'check-english-text';
 
 @Component({
   selector: 'app-check-english',
@@ -77,13 +76,13 @@ export class CheckEnglishComponent implements OnInit, OnDestroy {
   }
 
   public ngOnInit(): void {
-    const savedLeftText = localStorage.getItem(localStorageCheckEnglishTextKey);
+    const savedLeftText = localStorage.getItem(STORAGE_KEYS.checkEnglish.text);
     if (savedLeftText !== null) {
       this.leftText = savedLeftText;
     }
   }
 
   public saveText() {
-    localStorage.setItem(localStorageCheckEnglishTextKey, this.leftText);
+    localStorage.setItem(STORAGE_KEYS.checkEnglish.text, this.leftText);
   }
 }

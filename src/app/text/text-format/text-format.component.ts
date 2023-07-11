@@ -1,6 +1,5 @@
 import { Component, HostListener, OnDestroy, OnInit } from '@angular/core';
-
-const localStorageTextKey = 'format-text';
+import { STORAGE_KEYS } from 'src/app/shared/static/local-storage-keys';
 
 @Component({
   selector: 'app-text-format',
@@ -58,14 +57,14 @@ export class TextFormatComponent implements OnInit, OnDestroy {
   }
 
   public ngOnInit() {
-    const savedText = localStorage.getItem(localStorageTextKey);
+    const savedText = localStorage.getItem(STORAGE_KEYS.formatText.text);
     if (savedText !== null) {
       this.text = savedText;
     }
   }
 
   public saveText() {
-    localStorage.setItem(localStorageTextKey, this.text);
+    localStorage.setItem(STORAGE_KEYS.formatText.text, this.text);
   }
 
   public toLowerCase() {

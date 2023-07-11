@@ -2,8 +2,7 @@ import { Injectable } from '@angular/core';
 import { Router, NavigationEnd } from '@angular/router';
 import { filter } from 'rxjs/operators';
 import { Location } from '@angular/common';
-
-const localStoragePreviousRouteKey = 'previous-route';
+import { STORAGE_KEYS } from '../static/local-storage-keys';
 
 @Injectable({
   providedIn: 'root',
@@ -14,13 +13,13 @@ export class UrlTrackingService {
       .pipe(filter((event) => event instanceof NavigationEnd))
       .subscribe((event) => {
         localStorage.setItem(
-          localStoragePreviousRouteKey,
+          STORAGE_KEYS.previousRoute,
           (event as NavigationEnd).url
         );
       });
   }
 
   public getUrlFromPreviousSession() {
-    return localStorage.getItem(localStoragePreviousRouteKey);
+    return localStorage.getItem(STORAGE_KEYS.previousRoute);
   }
 }

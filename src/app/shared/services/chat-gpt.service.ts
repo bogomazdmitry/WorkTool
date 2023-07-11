@@ -6,8 +6,7 @@ import {
   HttpHeaders,
 } from '@angular/common/http';
 import { ErrorService } from './global-error.service';
-
-const localStorageChatGptApiKey = 'chat-gpt-key';
+import { STORAGE_KEYS } from '../static/local-storage-keys';
 
 @Injectable({ providedIn: 'root' })
 export class ChatGptService {
@@ -19,12 +18,12 @@ export class ChatGptService {
   ) {}
 
   getToken(): string {
-    const response = localStorage.getItem(localStorageChatGptApiKey) ?? '';
+    const response = localStorage.getItem(STORAGE_KEYS.chatGpt.apiKey) ?? '';
     return response;
   }
 
   saveToken(response: string) {
-    localStorage.setItem(localStorageChatGptApiKey, response);
+    localStorage.setItem(STORAGE_KEYS.chatGpt.apiKey, response);
   }
 
   getResponse(prompt: string): Observable<string> {
