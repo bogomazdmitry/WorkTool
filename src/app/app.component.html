@@ -1,6 +1,10 @@
 <div class="container-fluid d-flex flex-column h-100 p-0 pb-3">
+  <!--
+    If no need to use expand toolbar 
   <nav
-    class="navbar navbar-expand-sm mb-3"
+    class="navbar navbar-expand-sm mb-3" -->
+  <nav
+    class="navbar navbar-expand mb-3"
     [class.navbar-light]="!isDarkTheme"
     [class.navbar-dark]="isDarkTheme">
     <div class="container-fluid">
@@ -15,25 +19,47 @@
         aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
       </button>
-      <div class="collapse navbar-collapse" id="navbarSupportedContent">
-        <ul class="navbar-nav mb-2 mb-lg-0 me-auto">
-          <li class="nav-item">
+      <div class="collapse navbar-collapse"
+        id="navbarSupportedContent">
+        <ul class="navbar-nav mb-2 mb-lg-0 me-auto align-items-center">
+          <li class="nav-item dropdown">
             <a
-              class="nav-link active"
-              aria-current="page"
-              routerLink="/text-format">Text Format</a>
-          </li>
-          <li class="nav-item">
-            <a
-              class="nav-link active"
-              aria-current="page"
-              routerLink="/json-format">JSON Format</a>
-          </li>
-          <li class="nav-item">
-            <a
-              class="nav-link active"
-              aria-current="page"
-              routerLink="/diff-text">Diff Text</a>
+              class="nav-link dropdown-toggle"
+              href="#"
+              id="navbarDropdown"
+              role="button"
+              data-bs-toggle="dropdown"
+              aria-expanded="false">
+              Text
+            </a>
+            <ul
+              class="dropdown-menu mat-app-background"
+              aria-labelledby="navbarDropdown">
+              <li>
+                <a
+                  class="dropdown-item"
+                  aria-current="page"
+                  routerLink="/text-format">Text Format</a>
+              </li>
+              <li>
+                <a
+                  class="dropdown-item"
+                  aria-current="page"
+                  routerLink="/json-format">JSON Format</a>
+              </li>
+              <li>
+                <a
+                  class="dropdown-item"
+                  aria-current="page"
+                  routerLink="/diff-text">Diff Text</a>
+              </li>
+              <li>
+                <a
+                  class="dropdown-item"
+                  aria-current="page"
+                  routerLink="/encoding">Encoding</a>
+              </li>
+            </ul>
           </li>
           <li class="nav-item dropdown">
             <a

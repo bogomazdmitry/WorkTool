@@ -1,1 +1,55 @@
-<p>encoding works!</p>
+<div class="card h-100">
+    <div class="card-body d-flex flex-column gap-3 h-100">
+        <div class="container ">
+            <div class="row gap-2">
+                <div class="col-sm">
+                    <h3 class="m-0">Encode</h3>
+                    <div class="btn-group">
+                        <button class="btn" mat-raised-button
+                            color="primary" (click)="urlEncode()">URL</button>
+                        <button class="btn" mat-raised-button
+                            color="primary" (click)="gzipEncode()">GZIP</button>
+                        <button class="btn" mat-raised-button
+                            color="primary" (click)="base64Encode()">Base64</button>
+                        <button class="btn" mat-raised-button
+                            color="primary" (click)="gzipBase64Encode()">GZIP +
+                            Base64</button>
+                    </div>
+                </div>
+                <div class="col-sm">
+                    <h3 class="m-0">Decode</h3>
+                    <div class="btn-group">
+
+                        <button class="btn" mat-raised-button
+                            color="primary" (click)="urlDecode()">URL</button>
+                        <button class="btn" mat-raised-button
+                            color="primary" (click)="gzipDecode()">GZIP</button>
+                        <button class="btn" mat-raised-button
+                            color="primary" (click)="base64Decode()">Base64</button>
+                        <button class="btn" mat-raised-button
+                            color="primary" (click)="gzipBase64Decode()">GZIP +
+                            Base64</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="h-100 d-flex flex-column">
+            <div class="d-flex gap-2 h-100">
+                <mat-form-field appearance="fill" class="fill-container
+                    no-padding">
+                    <textarea focusOnInit matInput
+                        [(ngModel)]="leftText"
+                        placeholder="Init"
+                        [style.resize]="'none'"></textarea>
+                </mat-form-field>
+                <div class="line"></div>
+                <mat-form-field appearance="fill" class="fill-container
+                    no-padding">
+                    <textarea matInput [(ngModel)]="rightText"
+                        placeholder="Output"
+                        [style.resize]="'none'"></textarea>
+                </mat-form-field>
+            </div>
+        </div>
+    </div>
+</div>
