@@ -1,3 +1,5 @@
+@import "node_modules/bootstrap/scss/bootstrap";
+
 .navbar {
   background:
         /* top, transparent black, faked with gradient */ linear-gradient(
@@ -32,5 +34,15 @@
     ul {
       @extend .mat-app-background !optional;
     }
+  }
+}
+
+@include media-breakpoint-down(md) { 
+  .force-width {
+    width: 100%!important;
+  }
+
+  .wide-changer {
+    display: none;
   }
 }

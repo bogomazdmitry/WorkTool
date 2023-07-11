@@ -1,0 +1,16 @@
+<button mat-icon-button [matMenuTriggerFor]="widthMenu">
+  <mat-icon>fullscreen</mat-icon>
+</button>
+<mat-menu #widthMenu="matMenu">
+  <div class="win d-flex flex-column">
+    <span>
+      Window width
+    </span>
+    <span></span>
+    <mat-slider min="40" max="100" step="10" class="mt-2"
+      (input)="onWidthChange($event)"
+      showTickMarks discrete [displayWith]="formatWidth.bind(this)">
+      <input matSliderThumb [(value)]="wideValue">
+    </mat-slider>
+  </div>
+</mat-menu>

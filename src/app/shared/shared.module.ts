@@ -12,6 +12,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { BrowserModule } from '@angular/platform-browser';
 import { FormsModule } from '@angular/forms';
 import { UrlTrackingService } from './services/url-tracking.service';
+import { WideChangerComponent } from './layout/wide-changer/wide-changer.component';
 
 @NgModule({
   declarations: [
@@ -19,6 +20,7 @@ import { UrlTrackingService } from './services/url-tracking.service';
     GlobalErrorComponent,
     FocusDirective,
     GlobalErrorDialogComponent,
+    WideChangerComponent,
   ],
   imports: [
     AppMaterialModule,
@@ -40,6 +42,7 @@ import { UrlTrackingService } from './services/url-tracking.service';
     BrowserModule,
     BrowserAnimationsModule,
     FormsModule,
+    WideChangerComponent,
   ],
   providers: [UrlTrackingService],
 })

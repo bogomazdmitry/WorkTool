@@ -24,5 +24,6 @@ export const STORAGE_KEYS = {
     wrap: 'wrap-diff-text',
   },
   theme: 'theme',
+  wide: 'wide',
   previousRoute: 'previous-route',
 };

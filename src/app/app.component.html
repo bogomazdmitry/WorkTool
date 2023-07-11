@@ -84,12 +84,13 @@
         </ul>
 
         <shared-theme-changer class="ml-auto"></shared-theme-changer>
+        <shared-wide-changer class="wide-changer"></shared-wide-changer>
       </div>
     </div>
   </nav>
   <div class="flex-grow-1" style="min-height: 0; overflow-y: auto">
     <div class="row justify-content-center h-100 w-100 m-0">
-      <div class="col-md-8">
+      <div [style.width]="getScreenWidth()" class="force-width">
         <router-outlet></router-outlet>
       </div>
     </div>
