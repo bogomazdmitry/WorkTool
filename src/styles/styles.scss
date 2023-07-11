@@ -13,3 +13,7 @@ body {
   margin: 0;
   font-family: Roboto, "Helvetica Neue", sans-serif;
 }
+
+.body-transition {
+  transition: background-color 0.1s, color 0.1s;
+}

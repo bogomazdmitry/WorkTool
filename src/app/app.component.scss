@@ -17,13 +17,13 @@
     );
   }
 
-  .navbar-collapse {
-    .dropdown-menu {
-      border-radius: var(
-        --mdc-protected-button-container-shape,
-        var(--mdc-shape-small, 4px)
-      );
-    }
+    .navbar-collapse {
+      .dropdown-menu {
+        border-radius: var(
+          --mdc-protected-button-container-shape,
+          var(--mdc-shape-small, 4px)
+        );
+      }
 
     a {
       color: inherit;
