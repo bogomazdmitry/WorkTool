@@ -9,14 +9,10 @@
     rgba(0, 0, 0, 0.2)
   );
 
-  a {
-    color: inherit;
-    border-radius: var(
-      --mdc-protected-button-container-shape,
-      var(--mdc-shape-small, 4px)
-    );
-  }
-
+    .dropdown-button-item {
+      width: 100%;
+    }
+  
     .navbar-collapse {
       .dropdown-menu {
         border-radius: var(
@@ -24,14 +20,6 @@
           var(--mdc-shape-small, 4px)
         );
       }
-
-    a {
-      color: inherit;
-    }
-
-    a:hover {
-      background: linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.3));
-    }
 
     ul {
       @extend .mat-app-background !optional;
