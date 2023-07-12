@@ -21,64 +21,67 @@
       </button>
       <div class="collapse navbar-collapse"
         id="navbarSupportedContent">
-        <ul class="navbar-nav mb-2 mb-lg-0 me-auto align-items-center">
+        <ul class="navbar-nav me-auto align-items-center">
           <li class="nav-item dropdown">
-            <a
-              class="nav-link dropdown-toggle"
+            <button mat-button color="primary"
+              class="dropdown-toggle"
               href="#"
               id="navbarDropdown"
               role="button"
               data-bs-toggle="dropdown"
               aria-expanded="false">
               Text
-            </a>
+            </button>
             <ul
               class="dropdown-menu mat-app-background"
               aria-labelledby="navbarDropdown">
               <li>
-                <a
-                  class="dropdown-item"
+                <button mat-button color="primary"
+                  class="dropdown-button-item"
                   aria-current="page"
-                  routerLink="/text-format">Text Format</a>
+                  routerLink="/text-format">Text Format</button>
               </li>
               <li>
-                <a
-                  class="dropdown-item"
+                <button mat-button color="primary"
+                  class="dropdown-button-item"
                   aria-current="page"
-                  routerLink="/json-format">JSON Format</a>
+                  routerLink="/json-format">JSON Format</button>
               </li>
               <li>
-                <a
-                  class="dropdown-item"
+                <button mat-button color="primary"
+                  class="dropdown-button-item"
                   aria-current="page"
-                  routerLink="/diff-text">Diff Text</a>
+                  routerLink="/diff-text">Diff Text</button>
               </li>
               <li>
-                <a
-                  class="dropdown-item"
+                <button mat-button color="primary"
+                  class="dropdown-button-item"
                   aria-current="page"
-                  routerLink="/encoding">Encoding</a>
+                  routerLink="/encoding">Encoding</button>
               </li>
             </ul>
           </li>
           <li class="nav-item dropdown">
-            <a
-              class="nav-link dropdown-toggle"
+            <button mat-button color="primary"
+              class="dropdown-toggle"
               href="#"
               id="navbarDropdown"
               role="button"
               data-bs-toggle="dropdown"
               aria-expanded="false">
               Chat-gpt
-            </a>
+            </button>
             <ul
               class="dropdown-menu mat-app-background"
               aria-labelledby="navbarDropdown">
               <li>
-                <a class="dropdown-item" routerLink="/check-english">Check
-                  English</a>
+                <button mat-button color="primary" class="dropdown-button-item"
+                  routerLink="/check-english">Check
+                  English</button>
               </li>
-              <li><a class="dropdown-item" routerLink="/quiz">Quiz</a></li>
+              <li><button mat-button color="primary"
+                  class="dropdown-button-item"
+                  routerLink="/quiz">Quiz</button></li>
             </ul>
           </li>
         </ul>
