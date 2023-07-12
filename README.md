@@ -9,21 +9,30 @@ Create web applications on github pages for any text operations.
 - Working with text
 - Working with json
 - Text comparison
+- Encoding with gunzip+base64
 - Check English text with chat-gpt
 - Quiz with chat-gpt with saving
 
 ## Features
 
-- Dark theme
-- Saving to local storage
-- Using `monaco-editor` for json and diff
-- Shortcuts for every button
-- Github pages
-- Adaptive to mobile
-- Firestore for quiz
-- CI/CD
+### Beauty
 
-## How to build to github pages
+- Dark theme
+- Changing width of active zone
+- Saving to local storage
+- Small animations
+- Shortcuts for most buttons
+- Save router state (If you move to "/" you will be redirect to previous page)
+
+### Tech
+
+- CI/CD with actions
+- Firestore for quiz
+- Adaptive to mobile
+- Github pages
+- Using `monaco-editor` for json and diff
+
+## How to build to github pages manually
 
 ng build --base-href "https://bogomazdmitry.github.io/WorkTool/"
 
