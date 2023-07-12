@@ -13,6 +13,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { FormsModule } from '@angular/forms';
 import { UrlTrackingService } from './services/url-tracking.service';
 import { WideChangerComponent } from './layout/wide-changer/wide-changer.component';
+import { KeyboardShortcutsModule } from 'ng-keyboard-shortcuts';
 
 @NgModule({
   declarations: [
@@ -31,6 +32,7 @@ import { WideChangerComponent } from './layout/wide-changer/wide-changer.compone
     BrowserAnimationsModule,
     FormsModule,
     MonacoEditorModule.forRoot(),
+    KeyboardShortcutsModule.forRoot(),
   ],
   exports: [
     CommonModule,
@@ -43,6 +45,7 @@ import { WideChangerComponent } from './layout/wide-changer/wide-changer.compone
     BrowserAnimationsModule,
     FormsModule,
     WideChangerComponent,
+    KeyboardShortcutsModule,
   ],
   providers: [UrlTrackingService],
 })

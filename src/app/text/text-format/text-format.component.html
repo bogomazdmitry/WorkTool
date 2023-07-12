@@ -1,3 +1,4 @@
+<ng-keyboard-shortcuts [shortcuts]="shortcuts"></ng-keyboard-shortcuts>
 <div class="card h-100">
     <div class="card-header">
         <h1 class="card-title">Text Format</h1>
@@ -8,7 +9,7 @@
                 class="btn"
                 mat-raised-button
                 color="primary"
-                matTooltip="CMD/Alt + Shift + U"
+                matTooltip="CMD/Ctrl + Alt + U"
                 (click)="toUpperCase()">
                 Upper Case
             </button>
@@ -16,7 +17,7 @@
                 class="btn"
                 mat-raised-button
                 color="primary"
-                matTooltip="CMD/Alt + Shift + L"
+                matTooltip="CMD/Ctrl + Alt + L"
                 (click)="toLowerCase()">
                 Lower Case
             </button>
@@ -24,7 +25,7 @@
                 class="btn"
                 mat-raised-button
                 color="primary"
-                matTooltip="CMD/Alt + Shift + C"
+                matTooltip="CMD/Ctrl + Alt + I"
                 (click)="invertCase()">
                 Invert Case
             </button>
@@ -32,7 +33,7 @@
                 class="btn"
                 mat-raised-button
                 color="primary"
-                matTooltip="CMD/Alt + Shift + F"
+                matTooltip="CMD/Ctrl + Alt + F"
                 (click)="pdfFormat()">
                 Pdf format
             </button>

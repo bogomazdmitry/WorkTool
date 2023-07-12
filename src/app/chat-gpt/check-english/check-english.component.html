@@ -1,3 +1,4 @@
+<ng-keyboard-shortcuts [shortcuts]="shortcuts"></ng-keyboard-shortcuts>
 <div class="card h-100">
   <div class="card-header">
     <h1 class="card-title">Check English</h1>
@@ -11,13 +12,12 @@
           matInput
           [(ngModel)]="leftText"
           placeholder="Enter text"
-          [style.resize]="'none'"
-        ></textarea>
+          [style.resize]="'none'"></textarea>
       </mat-form-field>
       <div
-        class="h-100 mt-3 d-flex d-flex justify-content-center align-items-center"
-        *ngIf="!loaderHidden"
-      >
+        class="h-100 mt-3 d-flex d-flex justify-content-center
+        align-items-center"
+        *ngIf="!loaderHidden">
         <mat-spinner></mat-spinner>
       </div>
       <ngx-monaco-diff-editor
@@ -25,8 +25,7 @@
         *ngIf="!diffHidden"
         [options]="codeEditorOptions"
         [originalModel]="originalModel"
-        [modifiedModel]="modifiedModel"
-      >
+        [modifiedModel]="modifiedModel">
       </ngx-monaco-diff-editor>
     </div>
   </div>

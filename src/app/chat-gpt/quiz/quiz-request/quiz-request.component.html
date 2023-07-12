@@ -1,3 +1,4 @@
+<ng-keyboard-shortcuts [shortcuts]="shortcuts"></ng-keyboard-shortcuts>
 <div class="card h-100">
   <div class="card-header">
     <h1 class="card-title">Quiz request</h1>
@@ -10,16 +11,14 @@
         mat-raised-button
         color="primary"
         matTooltip="CMD/Alt + Shift + C"
-        (click)="generateQuiz()"
-      >
+        (click)="generateQuiz()">
         Generate quiz
       </button>
       <button
         class="btn"
         mat-raised-button
         color="primary"
-        (click)="testQuiz()"
-      >
+        (click)="testQuiz()">
         Test quiz
       </button>
     </div>
@@ -27,20 +26,18 @@
       <mat-form-field
         appearance="fill"
         class="fill-container no-padding"
-        *ngIf="loaderHidden"
-      >
+        *ngIf="loaderHidden">
         <textarea
           focusOnInit
           matInput
           [(ngModel)]="quizText"
           placeholder="Enter text"
-          [style.resize]="'none'"
-        ></textarea>
+          [style.resize]="'none'"></textarea>
       </mat-form-field>
       <div
-        class="h-100 mt-3 d-flex d-flex justify-content-center align-items-center"
-        *ngIf="!loaderHidden"
-      >
+        class="h-100 mt-3 d-flex d-flex justify-content-center
+        align-items-center"
+        *ngIf="!loaderHidden">
         <mat-spinner></mat-spinner>
       </div>
     </div>

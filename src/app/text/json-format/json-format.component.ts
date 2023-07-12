@@ -1,4 +1,5 @@
 import {
+  AfterViewInit,
   Component,
   HostListener,
   OnDestroy,
@@ -8,13 +9,14 @@ import {
 import { EditorComponent } from 'ngx-monaco-editor-v2';
 import { STORAGE_KEYS } from 'src/app/shared/static/local-storage-keys';
 import { ThemeService } from '../../shared/services/theme.service';
+import { ShortcutInput, AllowIn } from 'ng-keyboard-shortcuts';
 
 @Component({
   selector: 'app-json-format',
   templateUrl: './json-format.component.html',
   styleUrls: ['./json-format.component.scss'],
 })
-export class JsonFormatComponent implements OnInit, OnDestroy {
+export class JsonFormatComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild('monacoEditor')
   monacoEditor!: EditorComponent;
   public codeEditorOptions = {
@@ -28,6 +30,7 @@ export class JsonFormatComponent implements OnInit, OnDestroy {
     formatOnType: true,
   };
   public text = '';
+  shortcuts: ShortcutInput[] = [];
 
   constructor(private themeService: ThemeService) {
     this.codeEditorOptions.theme = this.themeService.getVsTheme();
@@ -45,15 +48,12 @@ export class JsonFormatComponent implements OnInit, OnDestroy {
     this.saveText();
   }
 
-  @HostListener('document:keydown', ['$event'])
-  public onKeyDown(event: KeyboardEvent) {
-    if (
-      (event.altKey || event.metaKey) &&
-      event.shiftKey &&
-      (event.key === 'F' || 'А')
-    ) {
-      this.format();
-    }
+  ngAfterViewInit(): void {
+    this.shortcuts.push({
+      key: 'cmd + alt + f',
+      allowIn: [AllowIn.Textarea, AllowIn.Input],
+      command: this.format.bind(this),
+    });
   }
 
   public format(): void {

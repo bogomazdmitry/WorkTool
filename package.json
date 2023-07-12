@@ -28,6 +28,7 @@
     "bootstrap": "^5.0.2",
     "firebase-tools": "^12.2.1",
     "monaco-editor": "^0.34.1",
+    "ng-keyboard-shortcuts": "^13.0.8",
     "ngx-monaco-editor-v2": "^15.0.1",
     "pako": "^2.1.0",
     "rxjs": "~7.5.0",

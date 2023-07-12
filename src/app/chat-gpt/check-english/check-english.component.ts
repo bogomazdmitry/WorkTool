@@ -1,15 +1,22 @@
-import { Component, HostListener, OnDestroy, OnInit } from '@angular/core';
+import {
+  AfterViewInit,
+  Component,
+  HostListener,
+  OnDestroy,
+  OnInit,
+} from '@angular/core';
 import { DiffEditorModel } from 'ngx-monaco-editor-v2';
 import { STORAGE_KEYS } from 'src/app/shared/static/local-storage-keys';
 import { ChatGptService } from '../../shared/services/chat-gpt.service';
 import { ThemeService } from '../../shared/services/theme.service';
+import { ShortcutInput, AllowIn } from 'ng-keyboard-shortcuts';
 
 @Component({
   selector: 'app-check-english',
   templateUrl: './check-english.component.html',
   styleUrls: ['./check-english.component.scss'],
 })
-export class CheckEnglishComponent implements OnInit, OnDestroy {
+export class CheckEnglishComponent implements OnInit, AfterViewInit, OnDestroy {
   public codeEditorOptions = {
     theme: 'vs-dark',
     wordWrap: 'on',
@@ -26,6 +33,7 @@ export class CheckEnglishComponent implements OnInit, OnDestroy {
     language: 'text/plain',
   };
   public rightText = '';
+  shortcuts: ShortcutInput[] = [];
 
   constructor(
     private themeService: ThemeService,
@@ -46,14 +54,12 @@ export class CheckEnglishComponent implements OnInit, OnDestroy {
     this.saveText();
   }
 
-  @HostListener('document:keydown', ['$event'])
-  public onKeyDown(event: KeyboardEvent) {
-    if ((event.altKey || event.metaKey) && event.shiftKey) {
-      if (event.key === 'C' || event.key === 'С') {
-        this.checkEnglish();
-        return;
-      }
-    }
+  ngAfterViewInit(): void {
+    this.shortcuts.push({
+      key: 'cmd + alt + c',
+      allowIn: [AllowIn.Textarea, AllowIn.Input],
+      command: this.checkEnglish.bind(this),
+    });
   }
 
   public checkEnglish() {

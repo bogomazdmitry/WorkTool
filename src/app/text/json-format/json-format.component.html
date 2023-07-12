@@ -1,3 +1,4 @@
+<ng-keyboard-shortcuts [shortcuts]="shortcuts"></ng-keyboard-shortcuts>
 <div class="card h-100">
   <div class="card-header">
     <h1 class="card-title">Json Format</h1>
@@ -9,8 +10,7 @@
         mat-raised-button
         color="primary"
         (click)="format()"
-        matTooltip="CMD/Alt + Shift + F"
-      >
+        matTooltip="CMD/Ctrl + Alt + F">
         Format
       </button>
     </div>
@@ -19,7 +19,6 @@
       #monacoEditor
       [options]="codeEditorOptions"
       [(ngModel)]="text"
-      class="h-100"
-    ></ngx-monaco-editor>
+      class="h-100"></ngx-monaco-editor>
   </div>
 </div>

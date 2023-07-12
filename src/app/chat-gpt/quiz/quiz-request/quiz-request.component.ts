@@ -1,32 +1,32 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, HostListener, OnDestroy, OnInit } from '@angular/core';
+import { AfterViewInit, Component, OnDestroy, OnInit } from '@angular/core';
 import { catchError, throwError } from 'rxjs';
 import { ChatGptService } from 'src/app/shared/services/chat-gpt.service';
 import { STORAGE_KEYS } from 'src/app/shared/static/local-storage-keys';
 import { Quiz } from '../quiz.models';
 import { QUIZ_TEST } from './quiz-test';
+import { ShortcutInput, AllowIn } from 'ng-keyboard-shortcuts';
 
 @Component({
   selector: 'app-quiz-request',
   templateUrl: './quiz-request.component.html',
   styleUrls: ['./quiz-request.component.scss'],
 })
-export class QuizRequestComponent implements OnInit, OnDestroy {
+export class QuizRequestComponent implements OnInit, AfterViewInit, OnDestroy {
   public loaderHidden = true;
   public quiz: Quiz | undefined;
   public quizHidden = true;
   public quizText = '';
+  shortcuts: ShortcutInput[] = [];
 
   constructor(private chatGptService: ChatGptService) {}
 
-  @HostListener('document:keydown', ['$event'])
-  public onKeyDown(event: KeyboardEvent) {
-    if ((event.altKey || event.metaKey) && event.shiftKey) {
-      if (event.key === 'C' || event.key === 'С') {
-        this.generateQuiz();
-        return;
-      }
-    }
+  ngAfterViewInit(): void {
+    this.shortcuts.push({
+      key: 'cmd + alt + c',
+      allowIn: [AllowIn.Textarea, AllowIn.Input],
+      command: this.generateQuiz.bind(this),
+    });
   }
 
   public generateQuiz() {

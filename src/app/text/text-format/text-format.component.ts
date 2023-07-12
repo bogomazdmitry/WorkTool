@@ -1,35 +1,50 @@
-import { Component, HostListener, OnDestroy, OnInit } from '@angular/core';
+import {
+  AfterViewInit,
+  Component,
+  HostListener,
+  OnDestroy,
+  OnInit,
+} from '@angular/core';
 import { STORAGE_KEYS } from 'src/app/shared/static/local-storage-keys';
+import { ShortcutInput, AllowIn } from 'ng-keyboard-shortcuts';
 
 @Component({
   selector: 'app-text-format',
   templateUrl: './text-format.component.html',
   styleUrls: ['./text-format.component.scss'],
 })
-export class TextFormatComponent implements OnInit, OnDestroy {
+export class TextFormatComponent implements OnInit, AfterViewInit, OnDestroy {
   public text = '';
+  shortcuts: ShortcutInput[] = [];
 
   @HostListener('window:beforeunload', ['$event'])
   public onBeforeUnload() {
     this.saveText();
   }
 
-  @HostListener('document:keydown', ['$event'])
-  public onKeyDown(event: KeyboardEvent) {
-    if ((event.altKey || event.metaKey) && event.shiftKey) {
-      if (event.key === 'U' || event.key === 'Г') {
-        this.toUpperCase();
-        return;
+  ngAfterViewInit(): void {
+    this.shortcuts.push(
+      {
+        key: 'cmd + alt + u',
+        allowIn: [AllowIn.Textarea, AllowIn.Input],
+        command: this.toUpperCase.bind(this),
+      },
+      {
+        key: 'cmd + alt + l',
+        allowIn: [AllowIn.Textarea, AllowIn.Input],
+        command: this.toLowerCase.bind(this),
+      },
+      {
+        key: 'cmd + alt + i',
+        allowIn: [AllowIn.Textarea, AllowIn.Input],
+        command: this.invertCase.bind(this),
+      },
+      {
+        key: 'cmd + alt + f',
+        allowIn: [AllowIn.Textarea, AllowIn.Input],
+        command: this.pdfFormat.bind(this),
       }
-      if (event.key === 'L' || event.key === 'Д') {
-        this.toLowerCase();
-        return;
-      }
-      if (event.key === 'C' || event.key === 'С') {
-        this.invertCase();
-        return;
-      }
-    }
+    );
   }
 
   public invertCase() {
