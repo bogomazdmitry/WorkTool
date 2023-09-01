@@ -1,6 +1,6 @@
 {
   "configVersion": 1,
-  "timestamp": 1693574537980,
+  "timestamp": 1693575427371,
   "index": "https://bogomazdmitry.github.io/WorkTool/index.html",
   "assetGroups": [
     {
@@ -13,7 +13,7 @@
       "urls": [
         "https://bogomazdmitry.github.io/WorkTool/favicon.ico",
         "https://bogomazdmitry.github.io/WorkTool/index.html",
-        "https://bogomazdmitry.github.io/WorkTool/main.a2f49246ea99d211.js",
+        "https://bogomazdmitry.github.io/WorkTool/main.13e289f37a1562d7.js",
         "https://bogomazdmitry.github.io/WorkTool/manifest.webmanifest",
         "https://bogomazdmitry.github.io/WorkTool/polyfills.83f50a6209979ed8.js",
         "https://bogomazdmitry.github.io/WorkTool/runtime.e5bb7377f40a7ebb.js",
@@ -2308,8 +2308,8 @@
     "https://bogomazdmitry.github.io/WorkTool/assets/monaco/monaco.d.ts": "4e1c6a78ef45c2a7c3eeda3068994f8af97442f9",
     "https://bogomazdmitry.github.io/WorkTool/assets/monaco/package.json": "ff39971934ce9f618b59aced9b40d77867e51983",
     "https://bogomazdmitry.github.io/WorkTool/favicon.ico": "a6805b415768a73bf9aef81770abb101530678f5",
-    "https://bogomazdmitry.github.io/WorkTool/index.html": "69836bcee5c7121f691a2623587581ac85bfb944",
-    "https://bogomazdmitry.github.io/WorkTool/main.a2f49246ea99d211.js": "e1d6b4d53b6384a27641d47653f370424958a29d",
+    "https://bogomazdmitry.github.io/WorkTool/index.html": "14745c655f8ea3b5e9501f7bd781799ffe74c8dc",
+    "https://bogomazdmitry.github.io/WorkTool/main.13e289f37a1562d7.js": "cf854f9626ead11518b1c09824e810f8290ca919",
     "https://bogomazdmitry.github.io/WorkTool/manifest.webmanifest": "9355fefca6936d708414e1ffb2710fcb7f849f05",
     "https://bogomazdmitry.github.io/WorkTool/polyfills.83f50a6209979ed8.js": "449e3c8d9788882ae84da66aba4350c9768c16d4",
     "https://bogomazdmitry.github.io/WorkTool/runtime.e5bb7377f40a7ebb.js": "ead93aba82346f8895da1091ddfccf84e1769fe3",
