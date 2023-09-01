@@ -1,5 +1,13 @@
-import { Component, HostListener, OnDestroy, OnInit } from '@angular/core';
+import {
+  Component,
+  HostListener,
+  OnDestroy,
+  OnInit,
+  ViewChild,
+} from '@angular/core';
+import { EditorComponent } from 'ngx-monaco-editor-v2';
 import * as pako from 'pako';
+import { ThemeService } from 'src/app/shared/services/theme.service';
 import { STORAGE_KEYS } from 'src/app/shared/static/local-storage-keys';
 
 @Component({
@@ -8,8 +16,51 @@ import { STORAGE_KEYS } from 'src/app/shared/static/local-storage-keys';
   styleUrls: ['./encoding.component.scss'],
 })
 export class EncodingComponent implements OnInit, OnDestroy {
+  @ViewChild('monacoEditorOutput')
+  monacoEditorOutput!: EditorComponent;
+
   leftText = '';
   rightText = '';
+
+  codeEditorOptionsInput = {
+    theme: 'vs-light',
+    language: 'json',
+    automaticLayout: true,
+    minimap: {
+      enabled: false,
+    },
+    formatOnPaste: true,
+    formatOnType: true,
+    wordWrap: 'on',
+  };
+
+  codeEditorOptionsOutput = {
+    theme: 'vs-light',
+    language: 'json',
+    automaticLayout: true,
+    minimap: {
+      enabled: false,
+    },
+    formatOnPaste: true,
+    formatOnType: true,
+    wordWrap: 'on',
+  };
+
+  constructor(private themeService: ThemeService) {
+    this.codeEditorOptionsInput.theme = this.themeService.getVsTheme();
+    this.codeEditorOptionsOutput.theme = this.themeService.getVsTheme();
+
+    this.themeService.getChangingThemeSubject().subscribe(() => {
+      this.codeEditorOptionsInput = {
+        ...this.codeEditorOptionsInput,
+        theme: this.themeService.getVsTheme(),
+      };
+      this.codeEditorOptionsOutput = {
+        ...this.codeEditorOptionsOutput,
+        theme: this.themeService.getVsTheme(),
+      };
+    });
+  }
 
   @HostListener('window:beforeunload', ['$event'])
   onBeforeUnload() {
@@ -31,27 +82,14 @@ export class EncodingComponent implements OnInit, OnDestroy {
     this.rightText = encodeURIComponent(this.leftText);
   }
 
-  base64Encode() {
-    this.rightText = btoa(unescape(encodeURIComponent(this.leftText)));
-  }
-
   gzipEncode() {
-    const binaryString = pako.gzip(this.leftText).toString();
+    const compressed = pako.gzip(this.leftText);
+    const binaryString = String.fromCharCode(...compressed);
     this.rightText = btoa(binaryString);
-  }
-
-  gzipBase64Encode() {
-    const binaryString = pako.gzip(this.leftText).toString();
-    this.rightText = btoa(binaryString);
-    this.rightText = btoa(this.rightText);
   }
 
   urlDecode() {
     this.rightText = decodeURIComponent(this.leftText);
-  }
-
-  base64Decode() {
-    this.rightText = decodeURIComponent(escape(atob(this.leftText)));
   }
 
   gzipDecode() {
@@ -61,23 +99,18 @@ export class EncodingComponent implements OnInit, OnDestroy {
         binaryString.split('').map((letter) => letter.charCodeAt(0))
       )
     );
-    this.rightText = decompressed.toString();
-  }
-
-  gzipBase64Decode() {
-    const temp = atob(this.leftText);
-    const binaryString = atob(temp);
-    const decompressed = pako.ungzip(
-      Uint8Array.from(
-        binaryString.split('').map((letter) => letter.charCodeAt(0))
-      )
-    );
-    this.rightText = decompressed.toString();
+    this.rightText = new TextDecoder().decode(decompressed);
   }
 
   saveText() {
     localStorage.setItem(STORAGE_KEYS.encoding.left, this.leftText);
     localStorage.setItem(STORAGE_KEYS.encoding.right, this.rightText);
+  }
+
+  public format(): void {
+    this.monacoEditorOutput['_editor']
+      .getAction('editor.action.formatDocument')
+      .run();
   }
 
   ngOnDestroy() {
