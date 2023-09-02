@@ -17,6 +17,7 @@ export const STORAGE_KEYS = {
   encoding: {
     left: 'left-encoding-text',
     right: 'right-encoding-text',
+    leftWidth: 'left-width-encoding-text',
   },
   diffText: {
     left: 'left-diff-text',

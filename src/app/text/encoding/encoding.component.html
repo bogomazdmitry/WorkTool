@@ -20,13 +20,13 @@
             </div>
         </div>
         <div class="h-100 d-flex flex-column">
-            <div class="d-flex gap-2 h-100">
+            <div class="d-flex gap-2 h-100 right-left-container">
                 <ngx-monaco-editor focusOnInit #monacoEditorInput [options]="codeEditorOptionsInput"
-                    [(ngModel)]="leftText" class="w-50 h-100"></ngx-monaco-editor>
-                <div class="line"></div>
-
+                    [(ngModel)]="leftText" class="left h-100"
+                    [ngStyle]="{'width': leftWidth + '%'}"></ngx-monaco-editor>
+                <div class="divider" (mousedown)="onMouseDown($event)"></div>
                 <ngx-monaco-editor #monacoEditorOutput [options]="codeEditorOptionsOutput" [(ngModel)]="rightText"
-                    class="w-50 h-100"></ngx-monaco-editor>
+                    class="right h-100" [ngStyle]="{'width': rightWidth + '%'}"></ngx-monaco-editor>
             </div>
         </div>
     </div>

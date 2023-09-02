@@ -22,6 +22,13 @@ export class EncodingComponent implements OnInit, OnDestroy {
   leftText = '';
   rightText = '';
 
+  leftWidth = 50;
+  rightWidth = 50;
+  isResizing = false;
+
+  startX = 0;
+  startWidth = 50;
+
   codeEditorOptionsInput = {
     theme: 'vs-light',
     language: 'json',
@@ -60,6 +67,12 @@ export class EncodingComponent implements OnInit, OnDestroy {
         theme: this.themeService.getVsTheme(),
       };
     });
+
+    this.leftWidth =
+      (localStorage.getItem(STORAGE_KEYS.encoding.leftWidth) as
+        | number
+        | null) || 50;
+    this.rightWidth = 100 - this.leftWidth;
   }
 
   @HostListener('window:beforeunload', ['$event'])
@@ -77,6 +90,43 @@ export class EncodingComponent implements OnInit, OnDestroy {
       this.rightText = savedRightText;
     }
   }
+
+  onMouseDown(event: MouseEvent): void {
+    this.isResizing = true;
+    this.startX = event.clientX;
+    this.startWidth = (
+      document.querySelector('.left') as HTMLElement
+    ).offsetWidth;
+    document.addEventListener('mousemove', this.onMouseMove);
+    document.addEventListener('mouseup', this.onMouseUp);
+  }
+
+  onMouseMove = (event: MouseEvent): void => {
+    if (!this.isResizing) return;
+
+    const containerWidth = (
+      document.querySelector('.right-left-container') as HTMLElement
+    ).offsetWidth;
+    const moveX = event.clientX - this.startX; // насколько сместился курсор
+
+    // Вычисляем новую ширину левой части в процентах
+    this.leftWidth = ((this.startWidth + moveX) / containerWidth) * 100;
+    this.rightWidth = 100 - this.leftWidth;
+  };
+
+  onMouseUp = (): void => {
+    if (this.isResizing) {
+      this.isResizing = false;
+
+      localStorage.setItem(
+        STORAGE_KEYS.encoding.leftWidth,
+        this.leftWidth.toString()
+      );
+
+      document.removeEventListener('mousemove', this.onMouseMove);
+      document.removeEventListener('mouseup', this.onMouseUp);
+    }
+  };
 
   urlEncode() {
     this.rightText = encodeURIComponent(this.leftText);
