@@ -1,6 +1,6 @@
 {
   "name": "angular-worktool",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
@@ -26,6 +26,7 @@
     "@angular/router": "^16.1.4",
     "@angular/service-worker": "^16.1.4",
     "bootstrap": "^5.0.2",
+    "firebase": "^10.3.1",
     "firebase-tools": "^12.2.1",
     "monaco-editor": "^0.41.0",
     "ng-keyboard-shortcuts": "^13.0.8",

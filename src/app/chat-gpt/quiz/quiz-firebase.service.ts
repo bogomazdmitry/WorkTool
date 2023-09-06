@@ -7,7 +7,7 @@ import {
   Firestore,
   setDoc,
 } from '@angular/fire/firestore';
-import { catchError, Observable, throwError } from 'rxjs';
+import { catchError, map, Observable, throwError } from 'rxjs';
 import { ErrorService } from 'src/app/shared/services/global-error.service';
 import { Quiz } from './quiz.models';
 
@@ -35,12 +35,21 @@ export class FirebaseQuizService {
   getQuizById(id: string): Observable<DocumentData> {
     const quizzes = collection(this.firestore, this.collectionName);
     const docum = doc(quizzes, id);
+
     return docData(docum).pipe(
+      map((data) => {
+        if (!data) {
+          throw new Error('Document data is undefined');
+        }
+        return data as DocumentData;
+      }),
       catchError((error) => {
         this.errorService.setInternalError({
-          errorMessage: error,
+          errorMessage: error.message || 'An unknown error occurred',
         });
-        return throwError(() => new Error(error));
+        return throwError(
+          () => new Error(error.message || 'An unknown error occurred')
+        );
       })
     );
   }
