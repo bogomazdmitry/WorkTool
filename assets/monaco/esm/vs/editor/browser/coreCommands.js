@@ -97,7 +97,9 @@ export var EditorScroll_;
      */
     EditorScroll_.RawDirection = {
         Up: 'up',
+        Right: 'right',
         Down: 'down',
+        Left: 'left'
     };
     /**
      * Units for editor scroll 'by' argument
@@ -107,7 +109,8 @@ export var EditorScroll_;
         WrappedLine: 'wrappedLine',
         Page: 'page',
         HalfPage: 'halfPage',
-        Editor: 'editor'
+        Editor: 'editor',
+        Column: 'column'
     };
     function parse(args) {
         let direction;
@@ -115,8 +118,14 @@ export var EditorScroll_;
             case EditorScroll_.RawDirection.Up:
                 direction = 1 /* Direction.Up */;
                 break;
+            case EditorScroll_.RawDirection.Right:
+                direction = 2 /* Direction.Right */;
+                break;
             case EditorScroll_.RawDirection.Down:
-                direction = 2 /* Direction.Down */;
+                direction = 3 /* Direction.Down */;
+                break;
+            case EditorScroll_.RawDirection.Left:
+                direction = 4 /* Direction.Left */;
                 break;
             default:
                 // Illegal arguments
@@ -138,6 +147,9 @@ export var EditorScroll_;
                 break;
             case EditorScroll_.RawUnit.Editor:
                 unit = 5 /* Unit.Editor */;
+                break;
+            case EditorScroll_.RawUnit.Column:
+                unit = 6 /* Unit.Column */;
                 break;
             default:
                 unit = 2 /* Unit.WrappedLine */;
@@ -252,28 +264,28 @@ export var CoreNavigationCommands;
     class BaseMoveToCommand extends CoreEditorCommand {
         constructor(opts) {
             super(opts);
-            this._minimalReveal = opts.minimalReveal;
             this._inSelectionMode = opts.inSelectionMode;
         }
         runCoreEditorCommand(viewModel, args) {
+            if (!args.position) {
+                return;
+            }
             viewModel.model.pushStackElement();
             const cursorStateChanged = viewModel.setCursorStates(args.source, 3 /* CursorChangeReason.Explicit */, [
                 CursorMoveCommands.moveTo(viewModel, viewModel.getPrimaryCursorState(), this._inSelectionMode, args.position, args.viewPosition)
             ]);
-            if (cursorStateChanged) {
-                viewModel.revealPrimaryCursor(args.source, true, this._minimalReveal);
+            if (cursorStateChanged && args.revealType !== 2 /* NavigationCommandRevealType.None */) {
+                viewModel.revealPrimaryCursor(args.source, true, true);
             }
         }
     }
     CoreNavigationCommands.MoveTo = registerEditorCommand(new BaseMoveToCommand({
         id: '_moveTo',
-        minimalReveal: true,
         inSelectionMode: false,
         precondition: undefined
     }));
     CoreNavigationCommands.MoveToSelect = registerEditorCommand(new BaseMoveToCommand({
         id: '_moveToSelect',
-        minimalReveal: false,
         inSelectionMode: true,
         precondition: undefined
     }));
@@ -281,6 +293,10 @@ export var CoreNavigationCommands;
         runCoreEditorCommand(viewModel, args) {
             viewModel.model.pushStackElement();
             const result = this._getColumnSelectResult(viewModel, viewModel.getPrimaryCursorState(), viewModel.getCursorColumnSelectData(), args);
+            if (result === null) {
+                // invalid arguments
+                return;
+            }
             viewModel.setCursorStates(args.source, 3 /* CursorChangeReason.Explicit */, result.viewStates.map((viewState) => CursorState.fromViewState(viewState)));
             viewModel.setCursorColumnSelectData({
                 isReal: true,
@@ -305,6 +321,9 @@ export var CoreNavigationCommands;
             });
         }
         _getColumnSelectResult(viewModel, primary, prevColumnSelectData, args) {
+            if (typeof args.position === 'undefined' || typeof args.viewPosition === 'undefined' || typeof args.mouseColumn === 'undefined') {
+                return null;
+            }
             // validate `args`
             const validatedPosition = viewModel.model.validatePosition(args.position);
             const validatedViewPosition = viewModel.coordinatesConverter.validateViewPosition(new Position(args.viewPosition.lineNumber, args.viewPosition.column), validatedPosition);
@@ -677,6 +696,9 @@ export var CoreNavigationCommands;
             });
         }
         runCoreEditorCommand(viewModel, args) {
+            if (!args.position) {
+                return;
+            }
             let newState;
             if (args.wholeLine) {
                 newState = CursorMoveCommands.line(viewModel, viewModel.getPrimaryCursorState(), false, args.position, args.viewPosition);
@@ -718,6 +740,9 @@ export var CoreNavigationCommands;
             });
         }
         runCoreEditorCommand(viewModel, args) {
+            if (!args.position) {
+                return;
+            }
             const lastAddedCursorIndex = viewModel.getLastAddedCursorIndex();
             const states = viewModel.getCursorStates();
             const newStates = states.slice(0);
@@ -985,15 +1010,40 @@ export var CoreNavigationCommands;
                 description: EditorScroll_.description
             });
         }
+        determineScrollMethod(args) {
+            const horizontalUnits = [6 /* EditorScroll_.Unit.Column */];
+            const verticalUnits = [
+                1 /* EditorScroll_.Unit.Line */,
+                2 /* EditorScroll_.Unit.WrappedLine */,
+                3 /* EditorScroll_.Unit.Page */,
+                4 /* EditorScroll_.Unit.HalfPage */,
+                5 /* EditorScroll_.Unit.Editor */,
+                6 /* EditorScroll_.Unit.Column */
+            ];
+            const horizontalDirections = [4 /* EditorScroll_.Direction.Left */, 2 /* EditorScroll_.Direction.Right */];
+            const verticalDirections = [1 /* EditorScroll_.Direction.Up */, 3 /* EditorScroll_.Direction.Down */];
+            if (horizontalUnits.includes(args.unit) && horizontalDirections.includes(args.direction)) {
+                return this._runHorizontalEditorScroll.bind(this);
+            }
+            if (verticalUnits.includes(args.unit) && verticalDirections.includes(args.direction)) {
+                return this._runVerticalEditorScroll.bind(this);
+            }
+            return null;
+        }
         runCoreEditorCommand(viewModel, args) {
             const parsed = EditorScroll_.parse(args);
             if (!parsed) {
                 // illegal arguments
                 return;
             }
-            this._runEditorScroll(viewModel, args.source, parsed);
+            const runEditorScroll = this.determineScrollMethod(parsed);
+            if (!runEditorScroll) {
+                // Incompatible unit and direction
+                return;
+            }
+            runEditorScroll(viewModel, args.source, parsed);
         }
-        _runEditorScroll(viewModel, source, args) {
+        _runVerticalEditorScroll(viewModel, source, args) {
             const desiredScrollTop = this._computeDesiredScrollTop(viewModel, args);
             if (args.revealCursor) {
                 // must ensure cursor is in new visible range
@@ -1007,7 +1057,8 @@ export var CoreNavigationCommands;
         _computeDesiredScrollTop(viewModel, args) {
             if (args.unit === 1 /* EditorScroll_.Unit.Line */) {
                 // scrolling by model lines
-                const visibleViewRange = viewModel.getCompletelyVisibleViewRange();
+                const futureViewport = viewModel.viewLayout.getFutureViewport();
+                const visibleViewRange = viewModel.getCompletelyVisibleViewRangeAtScrollTop(futureViewport.top);
                 const visibleModelRange = viewModel.coordinatesConverter.convertViewRangeToModelRange(visibleViewRange);
                 let desiredTopModelLineNumber;
                 if (args.direction === 1 /* EditorScroll_.Direction.Up */) {
@@ -1023,7 +1074,7 @@ export var CoreNavigationCommands;
             }
             if (args.unit === 5 /* EditorScroll_.Unit.Editor */) {
                 let desiredTopModelLineNumber = 0;
-                if (args.direction === 2 /* EditorScroll_.Direction.Down */) {
+                if (args.direction === 3 /* EditorScroll_.Direction.Down */) {
                     desiredTopModelLineNumber = viewModel.model.getLineCount() - viewModel.cursorConfig.pageSize;
                 }
                 return viewModel.viewLayout.getVerticalOffsetForLineNumber(desiredTopModelLineNumber);
@@ -1040,6 +1091,14 @@ export var CoreNavigationCommands;
             }
             const deltaLines = (args.direction === 1 /* EditorScroll_.Direction.Up */ ? -1 : 1) * noOfLines;
             return viewModel.viewLayout.getCurrentScrollTop() + deltaLines * viewModel.cursorConfig.lineHeight;
+        }
+        _runHorizontalEditorScroll(viewModel, source, args) {
+            const desiredScrollLeft = this._computeDesiredScrollLeft(viewModel, args);
+            viewModel.viewLayout.setScrollPosition({ scrollLeft: desiredScrollLeft }, 0 /* ScrollType.Smooth */);
+        }
+        _computeDesiredScrollLeft(viewModel, args) {
+            const deltaColumns = (args.direction === 4 /* EditorScroll_.Direction.Left */ ? -1 : 1) * args.value;
+            return viewModel.viewLayout.getCurrentScrollLeft() + deltaColumns * viewModel.cursorConfig.typicalHalfwidthCharacterWidth;
         }
     }
     CoreNavigationCommands.EditorScrollImpl = EditorScrollImpl;
@@ -1058,12 +1117,13 @@ export var CoreNavigationCommands;
             });
         }
         runCoreEditorCommand(viewModel, args) {
-            CoreNavigationCommands.EditorScroll._runEditorScroll(viewModel, args.source, {
-                direction: 1 /* EditorScroll_.Direction.Up */,
-                unit: 2 /* EditorScroll_.Unit.WrappedLine */,
+            CoreNavigationCommands.EditorScroll.runCoreEditorCommand(viewModel, {
+                to: EditorScroll_.RawDirection.Up,
+                by: EditorScroll_.RawUnit.WrappedLine,
                 value: 1,
                 revealCursor: false,
-                select: false
+                select: false,
+                source: args.source
             });
         }
     });
@@ -1082,12 +1142,13 @@ export var CoreNavigationCommands;
             });
         }
         runCoreEditorCommand(viewModel, args) {
-            CoreNavigationCommands.EditorScroll._runEditorScroll(viewModel, args.source, {
-                direction: 1 /* EditorScroll_.Direction.Up */,
-                unit: 3 /* EditorScroll_.Unit.Page */,
+            CoreNavigationCommands.EditorScroll.runCoreEditorCommand(viewModel, {
+                to: EditorScroll_.RawDirection.Up,
+                by: EditorScroll_.RawUnit.Page,
                 value: 1,
                 revealCursor: false,
-                select: false
+                select: false,
+                source: args.source
             });
         }
     });
@@ -1103,12 +1164,13 @@ export var CoreNavigationCommands;
             });
         }
         runCoreEditorCommand(viewModel, args) {
-            CoreNavigationCommands.EditorScroll._runEditorScroll(viewModel, args.source, {
-                direction: 1 /* EditorScroll_.Direction.Up */,
-                unit: 5 /* EditorScroll_.Unit.Editor */,
+            CoreNavigationCommands.EditorScroll.runCoreEditorCommand(viewModel, {
+                to: EditorScroll_.RawDirection.Up,
+                by: EditorScroll_.RawUnit.Editor,
                 value: 1,
                 revealCursor: false,
-                select: false
+                select: false,
+                source: args.source
             });
         }
     });
@@ -1126,12 +1188,13 @@ export var CoreNavigationCommands;
             });
         }
         runCoreEditorCommand(viewModel, args) {
-            CoreNavigationCommands.EditorScroll._runEditorScroll(viewModel, args.source, {
-                direction: 2 /* EditorScroll_.Direction.Down */,
-                unit: 2 /* EditorScroll_.Unit.WrappedLine */,
+            CoreNavigationCommands.EditorScroll.runCoreEditorCommand(viewModel, {
+                to: EditorScroll_.RawDirection.Down,
+                by: EditorScroll_.RawUnit.WrappedLine,
                 value: 1,
                 revealCursor: false,
-                select: false
+                select: false,
+                source: args.source
             });
         }
     });
@@ -1150,12 +1213,13 @@ export var CoreNavigationCommands;
             });
         }
         runCoreEditorCommand(viewModel, args) {
-            CoreNavigationCommands.EditorScroll._runEditorScroll(viewModel, args.source, {
-                direction: 2 /* EditorScroll_.Direction.Down */,
-                unit: 3 /* EditorScroll_.Unit.Page */,
+            CoreNavigationCommands.EditorScroll.runCoreEditorCommand(viewModel, {
+                to: EditorScroll_.RawDirection.Down,
+                by: EditorScroll_.RawUnit.Page,
                 value: 1,
                 revealCursor: false,
-                select: false
+                select: false,
+                source: args.source
             });
         }
     });
@@ -1171,12 +1235,57 @@ export var CoreNavigationCommands;
             });
         }
         runCoreEditorCommand(viewModel, args) {
-            CoreNavigationCommands.EditorScroll._runEditorScroll(viewModel, args.source, {
-                direction: 2 /* EditorScroll_.Direction.Down */,
-                unit: 5 /* EditorScroll_.Unit.Editor */,
+            CoreNavigationCommands.EditorScroll.runCoreEditorCommand(viewModel, {
+                to: EditorScroll_.RawDirection.Down,
+                by: EditorScroll_.RawUnit.Editor,
                 value: 1,
                 revealCursor: false,
-                select: false
+                select: false,
+                source: args.source
+            });
+        }
+    });
+    CoreNavigationCommands.ScrollLeft = registerEditorCommand(new class extends CoreEditorCommand {
+        constructor() {
+            super({
+                id: 'scrollLeft',
+                precondition: undefined,
+                kbOpts: {
+                    weight: CORE_WEIGHT,
+                    kbExpr: EditorContextKeys.textInputFocus,
+                }
+            });
+        }
+        runCoreEditorCommand(viewModel, args) {
+            CoreNavigationCommands.EditorScroll.runCoreEditorCommand(viewModel, {
+                to: EditorScroll_.RawDirection.Left,
+                by: EditorScroll_.RawUnit.Column,
+                value: 2,
+                revealCursor: false,
+                select: false,
+                source: args.source
+            });
+        }
+    });
+    CoreNavigationCommands.ScrollRight = registerEditorCommand(new class extends CoreEditorCommand {
+        constructor() {
+            super({
+                id: 'scrollRight',
+                precondition: undefined,
+                kbOpts: {
+                    weight: CORE_WEIGHT,
+                    kbExpr: EditorContextKeys.textInputFocus,
+                }
+            });
+        }
+        runCoreEditorCommand(viewModel, args) {
+            CoreNavigationCommands.EditorScroll.runCoreEditorCommand(viewModel, {
+                to: EditorScroll_.RawDirection.Right,
+                by: EditorScroll_.RawUnit.Column,
+                value: 2,
+                revealCursor: false,
+                select: false,
+                source: args.source
             });
         }
     });
@@ -1186,11 +1295,16 @@ export var CoreNavigationCommands;
             this._inSelectionMode = opts.inSelectionMode;
         }
         runCoreEditorCommand(viewModel, args) {
+            if (!args.position) {
+                return;
+            }
             viewModel.model.pushStackElement();
             viewModel.setCursorStates(args.source, 3 /* CursorChangeReason.Explicit */, [
                 CursorMoveCommands.word(viewModel, viewModel.getPrimaryCursorState(), this._inSelectionMode, args.position)
             ]);
-            viewModel.revealPrimaryCursor(args.source, true);
+            if (args.revealType !== 2 /* NavigationCommandRevealType.None */) {
+                viewModel.revealPrimaryCursor(args.source, true, true);
+            }
         }
     }
     CoreNavigationCommands.WordSelect = registerEditorCommand(new WordCommand({
@@ -1211,6 +1325,9 @@ export var CoreNavigationCommands;
             });
         }
         runCoreEditorCommand(viewModel, args) {
+            if (!args.position) {
+                return;
+            }
             const lastAddedCursorIndex = viewModel.getLastAddedCursorIndex();
             const states = viewModel.getCursorStates();
             const newStates = states.slice(0);
@@ -1226,11 +1343,16 @@ export var CoreNavigationCommands;
             this._inSelectionMode = opts.inSelectionMode;
         }
         runCoreEditorCommand(viewModel, args) {
+            if (!args.position) {
+                return;
+            }
             viewModel.model.pushStackElement();
             viewModel.setCursorStates(args.source, 3 /* CursorChangeReason.Explicit */, [
                 CursorMoveCommands.line(viewModel, viewModel.getPrimaryCursorState(), this._inSelectionMode, args.position, args.viewPosition)
             ]);
-            viewModel.revealPrimaryCursor(args.source, false);
+            if (args.revealType !== 2 /* NavigationCommandRevealType.None */) {
+                viewModel.revealPrimaryCursor(args.source, false, true);
+            }
         }
     }
     CoreNavigationCommands.LineSelect = registerEditorCommand(new LineCommand({
@@ -1249,6 +1371,9 @@ export var CoreNavigationCommands;
             this._inSelectionMode = opts.inSelectionMode;
         }
         runCoreEditorCommand(viewModel, args) {
+            if (!args.position) {
+                return;
+            }
             const lastAddedCursorIndex = viewModel.getLastAddedCursorIndex();
             const states = viewModel.getCursorStates();
             const newStates = states.slice(0);
@@ -1384,6 +1509,9 @@ export var CoreNavigationCommands;
             });
         }
         runCoreEditorCommand(viewModel, args) {
+            if (!args.selection) {
+                return;
+            }
             viewModel.model.pushStackElement();
             viewModel.setCursorStates(args.source, 3 /* CursorChangeReason.Explicit */, [
                 CursorState.fromModelSelection(args.selection)
@@ -1530,7 +1658,7 @@ export var CoreEditingCommands;
             document.execCommand('undo');
         }
         runEditorCommand(accessor, editor, args) {
-            if (!editor.hasModel() || editor.getOption(83 /* EditorOption.readOnly */) === true) {
+            if (!editor.hasModel() || editor.getOption(89 /* EditorOption.readOnly */) === true) {
                 return;
             }
             return editor.getModel().undo();
@@ -1544,7 +1672,7 @@ export var CoreEditingCommands;
             document.execCommand('redo');
         }
         runEditorCommand(accessor, editor, args) {
-            if (!editor.hasModel() || editor.getOption(83 /* EditorOption.readOnly */) === true) {
+            if (!editor.hasModel() || editor.getOption(89 /* EditorOption.readOnly */) === true) {
                 return;
             }
             return editor.getModel().redo();

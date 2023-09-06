@@ -20,10 +20,8 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-import * as dom from '../../../../base/browser/dom.js';
 import { createCancelablePromise, disposableTimeout, RunOnceScheduler } from '../../../../base/common/async.js';
 import { onUnexpectedError, onUnexpectedExternalError } from '../../../../base/common/errors.js';
-import { hash } from '../../../../base/common/hash.js';
 import { DisposableStore, toDisposable } from '../../../../base/common/lifecycle.js';
 import { StableEditorScrollState } from '../../../browser/stableEditorScroll.js';
 import { EditorAction, registerEditorAction, registerEditorContribution } from '../../../browser/editorExtensions.js';
@@ -55,19 +53,15 @@ let CodeLensContribution = class CodeLensContribution {
         this._disposables.add(this._editor.onDidChangeModel(() => this._onModelChange()));
         this._disposables.add(this._editor.onDidChangeModelLanguage(() => this._onModelChange()));
         this._disposables.add(this._editor.onDidChangeConfiguration((e) => {
-            if (e.hasChanged(46 /* EditorOption.fontInfo */) || e.hasChanged(16 /* EditorOption.codeLensFontSize */) || e.hasChanged(15 /* EditorOption.codeLensFontFamily */)) {
+            if (e.hasChanged(49 /* EditorOption.fontInfo */) || e.hasChanged(18 /* EditorOption.codeLensFontSize */) || e.hasChanged(17 /* EditorOption.codeLensFontFamily */)) {
                 this._updateLensStyle();
             }
-            if (e.hasChanged(14 /* EditorOption.codeLens */)) {
+            if (e.hasChanged(16 /* EditorOption.codeLens */)) {
                 this._onModelChange();
             }
         }));
         this._disposables.add(_languageFeaturesService.codeLensProvider.onDidChange(this._onModelChange, this));
         this._onModelChange();
-        this._styleClassName = '_' + hash(this._editor.getId()).toString(16);
-        this._styleElement = dom.createStyleSheet(dom.isInShadowDOM(this._editor.getContainerDomNode())
-            ? this._editor.getContainerDomNode()
-            : undefined);
         this._updateLensStyle();
     }
     dispose() {
@@ -76,13 +70,12 @@ let CodeLensContribution = class CodeLensContribution {
         this._disposables.dispose();
         this._oldCodeLensModels.dispose();
         (_a = this._currentCodeLensModel) === null || _a === void 0 ? void 0 : _a.dispose();
-        this._styleElement.remove();
     }
     _getLayoutInfo() {
-        const lineHeightFactor = Math.max(1.3, this._editor.getOption(61 /* EditorOption.lineHeight */) / this._editor.getOption(48 /* EditorOption.fontSize */));
-        let fontSize = this._editor.getOption(16 /* EditorOption.codeLensFontSize */);
+        const lineHeightFactor = Math.max(1.3, this._editor.getOption(65 /* EditorOption.lineHeight */) / this._editor.getOption(51 /* EditorOption.fontSize */));
+        let fontSize = this._editor.getOption(18 /* EditorOption.codeLensFontSize */);
         if (!fontSize || fontSize < 5) {
-            fontSize = (this._editor.getOption(48 /* EditorOption.fontSize */) * .9) | 0;
+            fontSize = (this._editor.getOption(51 /* EditorOption.fontSize */) * .9) | 0;
         }
         return {
             fontSize,
@@ -91,20 +84,16 @@ let CodeLensContribution = class CodeLensContribution {
     }
     _updateLensStyle() {
         const { codeLensHeight, fontSize } = this._getLayoutInfo();
-        const fontFamily = this._editor.getOption(15 /* EditorOption.codeLensFontFamily */);
-        const editorFontInfo = this._editor.getOption(46 /* EditorOption.fontInfo */);
-        const fontFamilyVar = `--codelens-font-family${this._styleClassName}`;
-        const fontFeaturesVar = `--codelens-font-features${this._styleClassName}`;
-        let newStyle = `
-		.monaco-editor .codelens-decoration.${this._styleClassName} { line-height: ${codeLensHeight}px; font-size: ${fontSize}px; padding-right: ${Math.round(fontSize * 0.5)}px; font-feature-settings: var(${fontFeaturesVar}) }
-		.monaco-editor .codelens-decoration.${this._styleClassName} span.codicon { line-height: ${codeLensHeight}px; font-size: ${fontSize}px; }
-		`;
+        const fontFamily = this._editor.getOption(17 /* EditorOption.codeLensFontFamily */);
+        const editorFontInfo = this._editor.getOption(49 /* EditorOption.fontInfo */);
+        const { style } = this._editor.getContainerDomNode();
+        style.setProperty('--vscode-editorCodeLens-lineHeight', `${codeLensHeight}px`);
+        style.setProperty('--vscode-editorCodeLens-fontSize', `${fontSize}px`);
+        style.setProperty('--vscode-editorCodeLens-fontFeatureSettings', editorFontInfo.fontFeatureSettings);
         if (fontFamily) {
-            newStyle += `.monaco-editor .codelens-decoration.${this._styleClassName} { font-family: var(${fontFamilyVar}), ${EDITOR_FONT_DEFAULTS.fontFamily}}`;
+            style.setProperty('--vscode-editorCodeLens-fontFamily', fontFamily);
+            style.setProperty('--vscode-editorCodeLens-fontFamilyDefault', EDITOR_FONT_DEFAULTS.fontFamily);
         }
-        this._styleElement.textContent = newStyle;
-        this._editor.getContainerDomNode().style.setProperty(fontFamilyVar, fontFamily !== null && fontFamily !== void 0 ? fontFamily : 'inherit');
-        this._editor.getContainerDomNode().style.setProperty(fontFeaturesVar, editorFontInfo.fontFeatureSettings);
         //
         this._editor.changeViewZones(accessor => {
             for (const lens of this._lenses) {
@@ -128,7 +117,7 @@ let CodeLensContribution = class CodeLensContribution {
         if (!model) {
             return;
         }
-        if (!this._editor.getOption(14 /* EditorOption.codeLens */)) {
+        if (!this._editor.getOption(16 /* EditorOption.codeLens */)) {
             return;
         }
         const cachedLenses = this._codeLensCache.get(model);
@@ -179,6 +168,7 @@ let CodeLensContribution = class CodeLensContribution {
         this._localToDispose.add(scheduler);
         this._localToDispose.add(toDisposable(() => this._resolveCodeLensesScheduler.cancel()));
         this._localToDispose.add(this._editor.onDidChangeModelContent(() => {
+            var _a;
             this._editor.changeDecorations(decorationsAccessor => {
                 this._editor.changeViewZones(viewZonesAccessor => {
                     const toDispose = [];
@@ -204,6 +194,10 @@ let CodeLensContribution = class CodeLensContribution {
             });
             // Ask for all references again
             scheduler.schedule();
+            // Cancel pending and active resolve requests
+            this._resolveCodeLensesScheduler.cancel();
+            (_a = this._resolveCodeLensesPromise) === null || _a === void 0 ? void 0 : _a.cancel();
+            this._resolveCodeLensesPromise = undefined;
         }));
         this._localToDispose.add(this._editor.onDidFocusEditorWidget(() => {
             scheduler.schedule();
@@ -284,6 +278,10 @@ let CodeLensContribution = class CodeLensContribution {
                 groups.push(lastGroup);
             }
         }
+        if (!groups.length && !this._lenses.length) {
+            // Nothing to change
+            return;
+        }
         const scrollState = StableEditorScrollState.capture(this._editor);
         const layoutInfo = this._getLayoutInfo();
         this._editor.changeDecorations(decorationsAccessor => {
@@ -304,7 +302,7 @@ let CodeLensContribution = class CodeLensContribution {
                         codeLensIndex++;
                     }
                     else {
-                        this._lenses.splice(codeLensIndex, 0, new CodeLensWidget(groups[groupsIndex], this._editor, this._styleClassName, helper, viewZoneAccessor, layoutInfo.codeLensHeight, () => this._resolveCodeLensesInViewportSoon()));
+                        this._lenses.splice(codeLensIndex, 0, new CodeLensWidget(groups[groupsIndex], this._editor, helper, viewZoneAccessor, layoutInfo.codeLensHeight, () => this._resolveCodeLensesInViewportSoon()));
                         codeLensIndex++;
                         groupsIndex++;
                     }
@@ -316,7 +314,7 @@ let CodeLensContribution = class CodeLensContribution {
                 }
                 // Create extra symbols
                 while (groupsIndex < groups.length) {
-                    this._lenses.push(new CodeLensWidget(groups[groupsIndex], this._editor, this._styleClassName, helper, viewZoneAccessor, layoutInfo.codeLensHeight, () => this._resolveCodeLensesInViewportSoon()));
+                    this._lenses.push(new CodeLensWidget(groups[groupsIndex], this._editor, helper, viewZoneAccessor, layoutInfo.codeLensHeight, () => this._resolveCodeLensesInViewportSoon()));
                     groupsIndex++;
                 }
                 helper.commit(decorationsAccessor);
@@ -405,7 +403,7 @@ CodeLensContribution = __decorate([
     __param(5, ICodeLensCache)
 ], CodeLensContribution);
 export { CodeLensContribution };
-registerEditorContribution(CodeLensContribution.ID, CodeLensContribution);
+registerEditorContribution(CodeLensContribution.ID, CodeLensContribution, 1 /* EditorContributionInstantiation.AfterFirstRender */);
 registerEditorAction(class ShowLensesInCurrentLine extends EditorAction {
     constructor() {
         super({

@@ -32,7 +32,7 @@ export class StandardMouseEvent {
             this.posy = e.clientY + document.body.scrollTop + document.documentElement.scrollTop;
         }
         // Find the position of the iframe this code is executing in relative to the iframe where the event was captured.
-        const iframeOffsets = IframeUtils.getPositionOfChildWindowRelativeToAncestorWindow(self, e.view);
+        const iframeOffsets = IframeUtils.getPositionOfChildWindowRelativeToAncestorWindow(window, e.view);
         this.posx -= iframeOffsets.left;
         this.posy -= iframeOffsets.top;
     }
@@ -113,13 +113,11 @@ export class StandardWheelEvent {
         }
     }
     preventDefault() {
-        if (this.browserEvent) {
-            this.browserEvent.preventDefault();
-        }
+        var _a;
+        (_a = this.browserEvent) === null || _a === void 0 ? void 0 : _a.preventDefault();
     }
     stopPropagation() {
-        if (this.browserEvent) {
-            this.browserEvent.stopPropagation();
-        }
+        var _a;
+        (_a = this.browserEvent) === null || _a === void 0 ? void 0 : _a.stopPropagation();
     }
 }

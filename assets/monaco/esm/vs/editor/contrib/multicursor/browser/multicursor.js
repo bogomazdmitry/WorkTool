@@ -20,15 +20,13 @@ import { CursorMoveCommands } from '../../../common/cursor/cursorMoveCommands.js
 import { Range } from '../../../common/core/range.js';
 import { Selection } from '../../../common/core/selection.js';
 import { EditorContextKeys } from '../../../common/editorContextKeys.js';
-import { OverviewRulerLane, MinimapPosition } from '../../../common/model.js';
-import { ModelDecorationOptions } from '../../../common/model/textModel.js';
 import { CommonFindController } from '../../find/browser/findController.js';
 import * as nls from '../../../../nls.js';
 import { MenuId } from '../../../../platform/actions/common/actions.js';
 import { ContextKeyExpr } from '../../../../platform/contextkey/common/contextkey.js';
-import { overviewRulerSelectionHighlightForeground, minimapSelectionOccurrenceHighlight } from '../../../../platform/theme/common/colorRegistry.js';
-import { themeColorFromId } from '../../../../platform/theme/common/themeService.js';
 import { ILanguageFeaturesService } from '../../../common/services/languageFeatures.js';
+import { getSelectionHighlightDecorationOptions } from '../../wordHighlighter/browser/highlightDecorations.js';
+import { IInstantiationService } from '../../../../platform/instantiation/common/instantiation.js';
 function announceCursorChange(previousCursorState, cursorState) {
     const cursorDiff = cursorState.filter(cs => !previousCursorState.find(pcs => pcs.equals(cs)));
     if (cursorDiff.length >= 1) {
@@ -232,15 +230,6 @@ export class MultiCursorSessionResult {
     }
 }
 export class MultiCursorSession {
-    constructor(_editor, findController, isDisconnectedFromFindController, searchText, wholeWord, matchCase, currentMatch) {
-        this._editor = _editor;
-        this.findController = findController;
-        this.isDisconnectedFromFindController = isDisconnectedFromFindController;
-        this.searchText = searchText;
-        this.wholeWord = wholeWord;
-        this.matchCase = matchCase;
-        this.currentMatch = currentMatch;
-    }
     static create(editor, findController) {
         if (!editor.hasModel()) {
             return null;
@@ -287,6 +276,15 @@ export class MultiCursorSession {
         }
         return new MultiCursorSession(editor, findController, isDisconnectedFromFindController, searchText, wholeWord, matchCase, currentMatch);
     }
+    constructor(_editor, findController, isDisconnectedFromFindController, searchText, wholeWord, matchCase, currentMatch) {
+        this._editor = _editor;
+        this.findController = findController;
+        this.isDisconnectedFromFindController = isDisconnectedFromFindController;
+        this.searchText = searchText;
+        this.wholeWord = wholeWord;
+        this.matchCase = matchCase;
+        this.currentMatch = currentMatch;
+    }
     addSelectionToNextFindMatch() {
         if (!this._editor.hasModel()) {
             return null;
@@ -321,7 +319,7 @@ export class MultiCursorSession {
         this.findController.highlightFindOptions();
         const allSelections = this._editor.getSelections();
         const lastAddedSelection = allSelections[allSelections.length - 1];
-        const nextMatch = this._editor.getModel().findNextMatch(this.searchText, lastAddedSelection.getEndPosition(), false, this.matchCase, this.wholeWord ? this._editor.getOption(119 /* EditorOption.wordSeparators */) : null, false);
+        const nextMatch = this._editor.getModel().findNextMatch(this.searchText, lastAddedSelection.getEndPosition(), false, this.matchCase, this.wholeWord ? this._editor.getOption(128 /* EditorOption.wordSeparators */) : null, false);
         if (!nextMatch) {
             return null;
         }
@@ -361,7 +359,7 @@ export class MultiCursorSession {
         this.findController.highlightFindOptions();
         const allSelections = this._editor.getSelections();
         const lastAddedSelection = allSelections[allSelections.length - 1];
-        const previousMatch = this._editor.getModel().findPreviousMatch(this.searchText, lastAddedSelection.getStartPosition(), false, this.matchCase, this.wholeWord ? this._editor.getOption(119 /* EditorOption.wordSeparators */) : null, false);
+        const previousMatch = this._editor.getModel().findPreviousMatch(this.searchText, lastAddedSelection.getStartPosition(), false, this.matchCase, this.wholeWord ? this._editor.getOption(128 /* EditorOption.wordSeparators */) : null, false);
         if (!previousMatch) {
             return null;
         }
@@ -374,21 +372,21 @@ export class MultiCursorSession {
         this.findController.highlightFindOptions();
         const editorModel = this._editor.getModel();
         if (searchScope) {
-            return editorModel.findMatches(this.searchText, searchScope, false, this.matchCase, this.wholeWord ? this._editor.getOption(119 /* EditorOption.wordSeparators */) : null, false, 1073741824 /* Constants.MAX_SAFE_SMALL_INTEGER */);
+            return editorModel.findMatches(this.searchText, searchScope, false, this.matchCase, this.wholeWord ? this._editor.getOption(128 /* EditorOption.wordSeparators */) : null, false, 1073741824 /* Constants.MAX_SAFE_SMALL_INTEGER */);
         }
-        return editorModel.findMatches(this.searchText, true, false, this.matchCase, this.wholeWord ? this._editor.getOption(119 /* EditorOption.wordSeparators */) : null, false, 1073741824 /* Constants.MAX_SAFE_SMALL_INTEGER */);
+        return editorModel.findMatches(this.searchText, true, false, this.matchCase, this.wholeWord ? this._editor.getOption(128 /* EditorOption.wordSeparators */) : null, false, 1073741824 /* Constants.MAX_SAFE_SMALL_INTEGER */);
     }
 }
 export class MultiCursorSelectionController extends Disposable {
+    static get(editor) {
+        return editor.getContribution(MultiCursorSelectionController.ID);
+    }
     constructor(editor) {
         super();
         this._sessionDispose = this._register(new DisposableStore());
         this._editor = editor;
         this._ignoreSelectionChange = false;
         this._session = null;
-    }
-    static get(editor) {
-        return editor.getContribution(MultiCursorSelectionController.ID);
     }
     dispose() {
         this._endSession();
@@ -523,10 +521,10 @@ export class MultiCursorSelectionController extends Disposable {
         if (findState.isRevealed && findState.searchString.length > 0 && findState.isRegex) {
             const editorModel = this._editor.getModel();
             if (findState.searchScope) {
-                matches = editorModel.findMatches(findState.searchString, findState.searchScope, findState.isRegex, findState.matchCase, findState.wholeWord ? this._editor.getOption(119 /* EditorOption.wordSeparators */) : null, false, 1073741824 /* Constants.MAX_SAFE_SMALL_INTEGER */);
+                matches = editorModel.findMatches(findState.searchString, findState.searchScope, findState.isRegex, findState.matchCase, findState.wholeWord ? this._editor.getOption(128 /* EditorOption.wordSeparators */) : null, false, 1073741824 /* Constants.MAX_SAFE_SMALL_INTEGER */);
             }
             else {
-                matches = editorModel.findMatches(findState.searchString, true, findState.isRegex, findState.matchCase, findState.wholeWord ? this._editor.getOption(119 /* EditorOption.wordSeparators */) : null, false, 1073741824 /* Constants.MAX_SAFE_SMALL_INTEGER */);
+                matches = editorModel.findMatches(findState.searchString, true, findState.isRegex, findState.matchCase, findState.wholeWord ? this._editor.getOption(128 /* EditorOption.wordSeparators */) : null, false, 1073741824 /* Constants.MAX_SAFE_SMALL_INTEGER */);
             }
         }
         else {
@@ -560,14 +558,18 @@ export class MultiCursorSelectionControllerAction extends EditorAction {
         if (!multiCursorController) {
             return;
         }
-        const findController = CommonFindController.get(editor);
-        if (!findController) {
-            return;
-        }
         const viewModel = editor._getViewModel();
         if (viewModel) {
             const previousCursorState = viewModel.getCursorStates();
-            this._run(multiCursorController, findController);
+            const findController = CommonFindController.get(editor);
+            if (findController) {
+                this._run(multiCursorController, findController);
+            }
+            else {
+                const newFindController = accessor.get(IInstantiationService).createInstance(CommonFindController, editor);
+                this._run(multiCursorController, newFindController);
+                newFindController.dispose();
+            }
             announceCursorChange(previousCursorState, viewModel.getCursorStates());
         }
     }
@@ -722,12 +724,12 @@ let SelectionHighlighter = class SelectionHighlighter extends Disposable {
         super();
         this._languageFeaturesService = _languageFeaturesService;
         this.editor = editor;
-        this._isEnabled = editor.getOption(99 /* EditorOption.selectionHighlight */);
+        this._isEnabled = editor.getOption(106 /* EditorOption.selectionHighlight */);
         this._decorations = editor.createDecorationsCollection();
         this.updateSoon = this._register(new RunOnceScheduler(() => this._update(), 300));
         this.state = null;
         this._register(editor.onDidChangeConfiguration((e) => {
-            this._isEnabled = editor.getOption(99 /* EditorOption.selectionHighlight */);
+            this._isEnabled = editor.getOption(106 /* EditorOption.selectionHighlight */);
         }));
         this._register(editor.onDidChangeCursorSelection((e) => {
             if (!this._isEnabled) {
@@ -765,6 +767,7 @@ let SelectionHighlighter = class SelectionHighlighter extends Disposable {
                 this._update();
             }));
         }
+        this.updateSoon.schedule();
     }
     _update() {
         this._setState(SelectionHighlighter._createState(this.state, this._isEnabled, this.editor));
@@ -835,7 +838,7 @@ let SelectionHighlighter = class SelectionHighlighter extends Disposable {
                 return null;
             }
         }
-        return new SelectionHighlighterState(editor.getModel(), r.searchText, r.matchCase, r.wholeWord ? editor.getOption(119 /* EditorOption.wordSeparators */) : null, oldState);
+        return new SelectionHighlighterState(editor.getModel(), r.searchText, r.matchCase, r.wholeWord ? editor.getOption(128 /* EditorOption.wordSeparators */) : null, oldState);
     }
     _setState(newState) {
         this.state = newState;
@@ -883,12 +886,11 @@ let SelectionHighlighter = class SelectionHighlighter extends Disposable {
                 }
             }
         }
-        const hasFindOccurrences = this._languageFeaturesService.documentHighlightProvider.has(model) && this.editor.getOption(74 /* EditorOption.occurrencesHighlight */);
+        const hasSemanticHighlights = this._languageFeaturesService.documentHighlightProvider.has(model) && this.editor.getOption(79 /* EditorOption.occurrencesHighlight */);
         const decorations = matches.map(r => {
             return {
                 range: r,
-                // Show in overviewRuler only if model has no semantic highlighting
-                options: (hasFindOccurrences ? SelectionHighlighter._SELECTION_HIGHLIGHT : SelectionHighlighter._SELECTION_HIGHLIGHT_OVERVIEW)
+                options: getSelectionHighlightDecorationOptions(hasSemanticHighlights)
             };
         });
         this._decorations.set(decorations);
@@ -899,24 +901,6 @@ let SelectionHighlighter = class SelectionHighlighter extends Disposable {
     }
 };
 SelectionHighlighter.ID = 'editor.contrib.selectionHighlighter';
-SelectionHighlighter._SELECTION_HIGHLIGHT_OVERVIEW = ModelDecorationOptions.register({
-    description: 'selection-highlight-overview',
-    stickiness: 1 /* TrackedRangeStickiness.NeverGrowsWhenTypingAtEdges */,
-    className: 'selectionHighlight',
-    minimap: {
-        color: themeColorFromId(minimapSelectionOccurrenceHighlight),
-        position: MinimapPosition.Inline
-    },
-    overviewRuler: {
-        color: themeColorFromId(overviewRulerSelectionHighlightForeground),
-        position: OverviewRulerLane.Center
-    }
-});
-SelectionHighlighter._SELECTION_HIGHLIGHT = ModelDecorationOptions.register({
-    description: 'selection-highlight',
-    stickiness: 1 /* TrackedRangeStickiness.NeverGrowsWhenTypingAtEdges */,
-    className: 'selectionHighlight',
-});
 SelectionHighlighter = __decorate([
     __param(1, ILanguageFeaturesService)
 ], SelectionHighlighter);
@@ -1005,8 +989,8 @@ export class FocusPreviousCursor extends EditorAction {
         announceCursorChange(previousCursorState, viewModel.getCursorStates());
     }
 }
-registerEditorContribution(MultiCursorSelectionController.ID, MultiCursorSelectionController);
-registerEditorContribution(SelectionHighlighter.ID, SelectionHighlighter);
+registerEditorContribution(MultiCursorSelectionController.ID, MultiCursorSelectionController, 4 /* EditorContributionInstantiation.Lazy */);
+registerEditorContribution(SelectionHighlighter.ID, SelectionHighlighter, 1 /* EditorContributionInstantiation.AfterFirstRender */);
 registerEditorAction(InsertCursorAbove);
 registerEditorAction(InsertCursorBelow);
 registerEditorAction(InsertCursorAtEndOfEachLineSelected);

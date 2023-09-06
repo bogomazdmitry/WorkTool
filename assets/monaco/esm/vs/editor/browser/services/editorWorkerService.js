@@ -35,6 +35,8 @@ import { ILogService } from '../../../platform/log/common/log.js';
 import { StopWatch } from '../../../base/common/stopwatch.js';
 import { canceled } from '../../../base/common/errors.js';
 import { ILanguageFeaturesService } from '../../common/services/languageFeatures.js';
+import { LineRangeMapping, MovedText, RangeMapping, SimpleLineRangeMapping } from '../../common/diff/linesDiffComputer.js';
+import { LineRange } from '../../common/core/lineRange.js';
 /**
  * Stop syncing a model to the worker if it was not needed for 1 min.
  */
@@ -81,16 +83,35 @@ let EditorWorkerService = class EditorWorkerService extends Disposable {
     computedUnicodeHighlights(uri, options, range) {
         return this._workerManager.withWorker().then(client => client.computedUnicodeHighlights(uri, options, range));
     }
-    computeDiff(original, modified, ignoreTrimWhitespace, maxComputationTime) {
-        return this._workerManager.withWorker().then(client => client.computeDiff(original, modified, ignoreTrimWhitespace, maxComputationTime));
+    computeDiff(original, modified, options, algorithm) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const result = yield this._workerManager.withWorker().then(client => client.computeDiff(original, modified, options, algorithm));
+            if (!result) {
+                return null;
+            }
+            // Convert from space efficient JSON data to rich objects.
+            const diff = {
+                identical: result.identical,
+                quitEarly: result.quitEarly,
+                changes: toLineRangeMappings(result.changes),
+                moves: result.moves.map(m => new MovedText(new SimpleLineRangeMapping(new LineRange(m[0], m[1]), new LineRange(m[2], m[3])), toLineRangeMappings(m[4])))
+            };
+            return diff;
+            function toLineRangeMappings(changes) {
+                return changes.map((c) => {
+                    var _a;
+                    return new LineRangeMapping(new LineRange(c[0], c[1]), new LineRange(c[2], c[3]), (_a = c[4]) === null || _a === void 0 ? void 0 : _a.map((c) => new RangeMapping(new Range(c[0], c[1], c[2], c[3]), new Range(c[4], c[5], c[6], c[7]))));
+                });
+            }
+        });
     }
-    computeMoreMinimalEdits(resource, edits) {
+    computeMoreMinimalEdits(resource, edits, pretty = false) {
         if (isNonEmptyArray(edits)) {
             if (!canSyncModel(this._modelService, resource)) {
                 return Promise.resolve(edits); // File too large
             }
-            const sw = StopWatch.create(true);
-            const result = this._workerManager.withWorker().then(client => client.computeMoreMinimalEdits(resource, edits));
+            const sw = StopWatch.create();
+            const result = this._workerManager.withWorker().then(client => client.computeMoreMinimalEdits(resource, edits, pretty));
             result.finally(() => this._logService.trace('FORMAT#computeMoreMinimalEdits', resource.toString(true), sw.elapsed()));
             return Promise.race([result, timeout(1000).then(() => edits)]);
         }
@@ -389,19 +410,24 @@ export class EditorWorkerClient extends Disposable {
             return proxy.computeUnicodeHighlights(uri.toString(), options, range);
         });
     }
-    computeDiff(original, modified, ignoreTrimWhitespace, maxComputationTime) {
+    computeDiff(original, modified, options, algorithm) {
         return this._withSyncedResources([original, modified], /* forceLargeModels */ true).then(proxy => {
-            return proxy.computeDiff(original.toString(), modified.toString(), ignoreTrimWhitespace, maxComputationTime);
+            return proxy.computeDiff(original.toString(), modified.toString(), options, algorithm);
         });
     }
-    computeMoreMinimalEdits(resource, edits) {
+    computeMoreMinimalEdits(resource, edits, pretty) {
         return this._withSyncedResources([resource]).then(proxy => {
-            return proxy.computeMoreMinimalEdits(resource.toString(), edits);
+            return proxy.computeMoreMinimalEdits(resource.toString(), edits, pretty);
         });
     }
     computeLinks(resource) {
         return this._withSyncedResources([resource]).then(proxy => {
             return proxy.computeLinks(resource.toString());
+        });
+    }
+    computeDefaultDocumentColors(resource) {
+        return this._withSyncedResources([resource]).then(proxy => {
+            return proxy.computeDefaultDocumentColors(resource.toString());
         });
     }
     textualSuggest(resources, leadingWord, wordDefRegExp) {

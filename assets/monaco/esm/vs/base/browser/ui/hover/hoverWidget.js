@@ -27,6 +27,9 @@ export class HoverWidget extends Disposable {
     }
 }
 export class HoverAction extends Disposable {
+    static render(parent, actionOptions, keybindingLabel) {
+        return new HoverAction(parent, actionOptions, keybindingLabel);
+    }
     constructor(parent, actionOptions, keybindingLabel) {
         super();
         this.actionContainer = dom.append(parent, $('div.action-container'));
@@ -43,18 +46,15 @@ export class HoverAction extends Disposable {
             e.preventDefault();
             actionOptions.run(this.actionContainer);
         }));
-        this._register(dom.addDisposableListener(this.actionContainer, dom.EventType.KEY_UP, e => {
+        this._register(dom.addDisposableListener(this.actionContainer, dom.EventType.KEY_DOWN, e => {
             const event = new StandardKeyboardEvent(e);
-            if (event.equals(3 /* KeyCode.Enter */)) {
+            if (event.equals(3 /* KeyCode.Enter */) || event.equals(10 /* KeyCode.Space */)) {
                 e.stopPropagation();
                 e.preventDefault();
                 actionOptions.run(this.actionContainer);
             }
         }));
         this.setEnabled(true);
-    }
-    static render(parent, actionOptions, keybindingLabel) {
-        return new HoverAction(parent, actionOptions, keybindingLabel);
     }
     setEnabled(enabled) {
         if (enabled) {

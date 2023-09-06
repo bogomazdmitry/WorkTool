@@ -20,12 +20,12 @@ const CACHE_STACK_DEPTH = 5;
  * Reuse the same stack elements up to a certain depth.
  */
 class MonarchStackElementFactory {
+    static create(parent, state) {
+        return this._INSTANCE.create(parent, state);
+    }
     constructor(maxCacheDepth) {
         this._maxCacheDepth = maxCacheDepth;
         this._entries = Object.create(null);
-    }
-    static create(parent, state) {
-        return this._INSTANCE.create(parent, state);
     }
     create(parent, state) {
         if (parent !== null && parent.depth >= this._maxCacheDepth) {
@@ -122,12 +122,12 @@ class EmbeddedLanguageData {
  * Reuse the same line states up to a certain depth.
  */
 class MonarchLineStateFactory {
+    static create(stack, embeddedLanguageData) {
+        return this._INSTANCE.create(stack, embeddedLanguageData);
+    }
     constructor(maxCacheDepth) {
         this._maxCacheDepth = maxCacheDepth;
         this._entries = Object.create(null);
-    }
-    static create(stack, embeddedLanguageData) {
-        return this._INSTANCE.create(stack, embeddedLanguageData);
     }
     create(stack, embeddedLanguageData) {
         if (embeddedLanguageData !== null) {
@@ -236,7 +236,7 @@ class MonarchModernTokensCollector {
         this._currentLanguageId = this._languageService.languageIdCodec.encodeLanguageId(languageId);
     }
     emit(startOffset, type) {
-        const metadata = this._theme.match(this._currentLanguageId, type);
+        const metadata = this._theme.match(this._currentLanguageId, type) | 1024 /* MetadataConsts.BALANCED_BRACKETS_MASK */;
         if (this._lastTokenMetadata === metadata) {
             return;
         }
@@ -319,7 +319,7 @@ let MonarchTokenizer = class MonarchTokenizer {
             }
             if (isOneOfMyEmbeddedModes) {
                 emitting = true;
-                languages.TokenizationRegistry.fire([this._languageId]);
+                languages.TokenizationRegistry.handleChange([this._languageId]);
                 emitting = false;
             }
         });
@@ -726,6 +726,7 @@ let MonarchTokenizer = class MonarchTokenizer {
         }
         if (languageId !== this._languageId) {
             // Fire language loading event
+            this._languageService.requestBasicLanguageFeatures(languageId);
             languages.TokenizationRegistry.getOrCreate(languageId);
             this._embeddedLanguages[languageId] = true;
         }

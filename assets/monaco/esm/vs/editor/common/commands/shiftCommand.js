@@ -18,7 +18,7 @@ import { Selection } from '../core/selection.js';
 import { getEnterAction } from '../languages/enterAction.js';
 import { ILanguageConfigurationService } from '../languages/languageConfigurationRegistry.js';
 const repeatCache = Object.create(null);
-export function cachedStringRepeat(str, count) {
+function cachedStringRepeat(str, count) {
     if (count <= 0) {
         return '';
     }
@@ -32,14 +32,6 @@ export function cachedStringRepeat(str, count) {
     return cache[count];
 }
 let ShiftCommand = class ShiftCommand {
-    constructor(range, opts, _languageConfigurationService) {
-        this._languageConfigurationService = _languageConfigurationService;
-        this._opts = opts;
-        this._selection = range;
-        this._selectionId = null;
-        this._useLastEditRangeForCursorEndPosition = false;
-        this._selectionStartColumnStaysPut = false;
-    }
     static unshiftIndent(line, column, tabSize, indentSize, insertSpaces) {
         // Determine the visible column where the content starts
         const contentStartVisibleColumn = CursorColumns.visibleColumnFromColumn(line, column, tabSize);
@@ -71,6 +63,14 @@ let ShiftCommand = class ShiftCommand {
             const indentCount = desiredTabStop / tabSize; // will be an integer
             return cachedStringRepeat(indent, indentCount);
         }
+    }
+    constructor(range, opts, _languageConfigurationService) {
+        this._languageConfigurationService = _languageConfigurationService;
+        this._opts = opts;
+        this._selection = range;
+        this._selectionId = null;
+        this._useLastEditRangeForCursorEndPosition = false;
+        this._selectionStartColumnStaysPut = false;
     }
     _addEditOperation(builder, range, text) {
         if (this._useLastEditRangeForCursorEndPosition) {

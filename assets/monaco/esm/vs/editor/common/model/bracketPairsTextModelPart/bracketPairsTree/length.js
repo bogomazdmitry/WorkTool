@@ -3,6 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 import { splitLines } from '../../../../../base/common/strings.js';
+import { Position } from '../../../core/position.js';
 import { Range } from '../../../core/range.js';
 /**
  * Represents a non-negative length in terms of line and column count.
@@ -12,6 +13,9 @@ export class LengthObj {
     constructor(lineCount, columnCount) {
         this.lineCount = lineCount;
         this.columnCount = columnCount;
+    }
+    toLength() {
+        return toLength(this.lineCount, this.columnCount);
     }
     toString() {
         return `${this.lineCount},${this.columnCount}`;
@@ -33,10 +37,12 @@ export function lengthIsZero(length) {
 /*
  * We have 52 bits available in a JS number.
  * We use the upper 26 bits to store the line and the lower 26 bits to store the column.
- *
- * Set boolean to `true` when debugging, so that debugging is easier.
  */
-const factor = /* is debug: */ false ? 100000 : Math.pow(2, 26);
+///*
+const factor = Math.pow(2, 26);
+/*/
+const factor = 1000000;
+// */
 export function toLength(lineCount, columnCount) {
     // llllllllllllllllllllllllllcccccccccccccccccccccccccc (52 bits)
     //       line count (26 bits)    column count (26 bits)
@@ -60,9 +66,17 @@ export function lengthGetColumnCountIfZeroLineCount(length) {
     return length;
 }
 export function lengthAdd(l1, l2) {
-    return ((l2 < factor)
-        ? (l1 + l2) // l2 is the amount of columns (zero line count). Keep the column count from l1.
-        : (l1 - (l1 % factor) + l2)); // l1 - (l1 % factor) equals toLength(l1.lineCount, 0)
+    let r = l1 + l2;
+    if (l2 >= factor) {
+        r = r - (l1 % factor);
+    }
+    return r;
+}
+export function sumLengths(items, lengthFn) {
+    return items.reduce((a, b) => lengthAdd(a, lengthFn(b)), lengthZero);
+}
+export function lengthEquals(length1, length2) {
+    return length1 === length2;
 }
 /**
  * Returns a non negative length `result` such that `lengthAdd(length1, result) = length2`, or zero if such length does not exist.
@@ -97,6 +111,12 @@ export function lengthLessThanEqual(length1, length2) {
 export function lengthGreaterThanEqual(length1, length2) {
     return length1 >= length2;
 }
+export function lengthToPosition(length) {
+    const l = length;
+    const lineCount = Math.floor(l / factor);
+    const colCount = l - lineCount * factor;
+    return new Position(lineCount + 1, colCount + 1);
+}
 export function positionToLength(position) {
     return toLength(position.lineNumber - 1, position.column - 1);
 }
@@ -108,6 +128,14 @@ export function lengthsToRange(lengthStart, lengthEnd) {
     const lineCount2 = Math.floor(l2 / factor);
     const colCount2 = l2 - lineCount2 * factor;
     return new Range(lineCount + 1, colCount + 1, lineCount2 + 1, colCount2 + 1);
+}
+export function lengthOfRange(range) {
+    if (range.startLineNumber === range.endLineNumber) {
+        return new LengthObj(0, range.endColumn - range.startColumn);
+    }
+    else {
+        return new LengthObj(range.endLineNumber - range.startLineNumber, range.endColumn - 1);
+    }
 }
 export function lengthOfString(str) {
     const lines = splitLines(str);

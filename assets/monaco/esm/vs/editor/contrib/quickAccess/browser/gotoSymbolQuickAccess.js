@@ -23,11 +23,12 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 import { DeferredPromise } from '../../../../base/common/async.js';
 import { CancellationTokenSource } from '../../../../base/common/cancellation.js';
 import { Codicon } from '../../../../base/common/codicons.js';
+import { ThemeIcon } from '../../../../base/common/themables.js';
 import { pieceToQuery, prepareQuery, scoreFuzzy2 } from '../../../../base/common/fuzzyScorer.js';
 import { Disposable, DisposableStore, toDisposable } from '../../../../base/common/lifecycle.js';
 import { format, trim } from '../../../../base/common/strings.js';
 import { Range } from '../../../common/core/range.js';
-import { SymbolKinds } from '../../../common/languages.js';
+import { SymbolKinds, getAriaLabelForSymbol } from '../../../common/languages.js';
 import { IOutlineModelService } from '../../documentSymbols/browser/outlineModel.js';
 import { AbstractEditorNavigationQuickAccessProvider } from './editorNavigationQuickAccess.js';
 import { localize } from '../../../../nls.js';
@@ -167,16 +168,9 @@ let AbstractGotoSymbolQuickAccessProvider = class AbstractGotoSymbolQuickAccessP
         disposables.add(picker.onDidChangeValue(() => updatePickerItems(undefined)));
         updatePickerItems((_a = editor.getSelection()) === null || _a === void 0 ? void 0 : _a.getPosition());
         // Reveal and decorate when active item changes
-        // However, ignore the very first two events so that
-        // opening the picker is not immediately revealing
-        // and decorating the first entry.
-        let ignoreFirstActiveEvent = 2;
         disposables.add(picker.onDidChangeActive(() => {
             const [item] = picker.activeItems;
             if (item && item.range) {
-                if (ignoreFirstActiveEvent-- > 0) {
-                    return;
-                }
                 // Reveal
                 editor.revealRangeInCenter(item.range.selection, 0 /* ScrollType.Smooth */);
                 // Decorate
@@ -186,6 +180,7 @@ let AbstractGotoSymbolQuickAccessProvider = class AbstractGotoSymbolQuickAccessP
         return disposables;
     }
     doGetSymbolPicks(symbolsPromise, query, options, token) {
+        var _a, _b;
         return __awaiter(this, void 0, void 0, function* () {
             const symbols = yield symbolsPromise;
             if (token.isCancellationRequested) {
@@ -204,6 +199,14 @@ let AbstractGotoSymbolQuickAccessProvider = class AbstractGotoSymbolQuickAccessP
                 symbolQuery = query;
             }
             // Convert to symbol picks and apply filtering
+            let buttons;
+            const openSideBySideDirection = (_b = (_a = this.options) === null || _a === void 0 ? void 0 : _a.openSideBySideDirection) === null || _b === void 0 ? void 0 : _b.call(_a);
+            if (openSideBySideDirection) {
+                buttons = [{
+                        iconClass: openSideBySideDirection === 'right' ? ThemeIcon.asClassName(Codicon.splitHorizontal) : ThemeIcon.asClassName(Codicon.splitVertical),
+                        tooltip: openSideBySideDirection === 'right' ? localize('openToSide', "Open to the Side") : localize('openToBottom', "Open to the Bottom")
+                    }];
+            }
             const filteredSymbolPicks = [];
             for (let index = 0; index < symbols.length; index++) {
                 const symbol = symbols[index];
@@ -261,7 +264,7 @@ let AbstractGotoSymbolQuickAccessProvider = class AbstractGotoSymbolQuickAccessP
                     kind: symbol.kind,
                     score: symbolScore,
                     label: symbolLabelWithIcon,
-                    ariaLabel: symbolLabel,
+                    ariaLabel: getAriaLabelForSymbol(symbol.name, symbol.kind),
                     description: containerLabel,
                     highlights: deprecated ? undefined : {
                         label: symbolMatches,
@@ -272,19 +275,7 @@ let AbstractGotoSymbolQuickAccessProvider = class AbstractGotoSymbolQuickAccessP
                         decoration: symbol.range
                     },
                     strikethrough: deprecated,
-                    buttons: (() => {
-                        var _a, _b;
-                        const openSideBySideDirection = ((_a = this.options) === null || _a === void 0 ? void 0 : _a.openSideBySideDirection) ? (_b = this.options) === null || _b === void 0 ? void 0 : _b.openSideBySideDirection() : undefined;
-                        if (!openSideBySideDirection) {
-                            return undefined;
-                        }
-                        return [
-                            {
-                                iconClass: openSideBySideDirection === 'right' ? Codicon.splitHorizontal.classNames : Codicon.splitVertical.classNames,
-                                tooltip: openSideBySideDirection === 'right' ? localize('openToSide', "Open to the Side") : localize('openToBottom', "Open to the Bottom")
-                            }
-                        ];
-                    })()
+                    buttons
                 });
             }
             // Sort by score

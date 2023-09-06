@@ -23,13 +23,12 @@ const HistoryNavigationForwardsEnablementContext = 'historyNavigationForwardsEna
 const HistoryNavigationBackwardsEnablementContext = 'historyNavigationBackwardsEnabled';
 let lastFocusedWidget = undefined;
 const widgets = [];
-export function registerAndCreateHistoryNavigationContext(contextKeyService, widget) {
+export function registerAndCreateHistoryNavigationContext(scopedContextKeyService, widget) {
     if (widgets.includes(widget)) {
         throw new Error('Cannot register the same widget multiple times');
     }
     widgets.push(widget);
     const disposableStore = new DisposableStore();
-    const scopedContextKeyService = disposableStore.add(contextKeyService.createScoped(widget.element));
     const historyNavigationWidgetFocus = new RawContextKey(HistoryNavigationWidgetFocusContext, false).bindTo(scopedContextKeyService);
     const historyNavigationForwardsEnablement = new RawContextKey(HistoryNavigationForwardsEnablementContext, true).bindTo(scopedContextKeyService);
     const historyNavigationBackwardsEnablement = new RawContextKey(HistoryNavigationBackwardsEnablementContext, true).bindTo(scopedContextKeyService);
@@ -54,7 +53,6 @@ export function registerAndCreateHistoryNavigationContext(contextKeyService, wid
         onDidBlur();
     }));
     return {
-        scopedContextKeyService,
         historyNavigationForwardsEnablement,
         historyNavigationBackwardsEnablement,
         dispose() {
@@ -63,9 +61,10 @@ export function registerAndCreateHistoryNavigationContext(contextKeyService, wid
     };
 }
 let ContextScopedFindInput = class ContextScopedFindInput extends FindInput {
-    constructor(container, contextViewProvider, options, contextKeyService, showFindOptions = false) {
-        super(container, contextViewProvider, showFindOptions, options);
-        this._register(registerAndCreateHistoryNavigationContext(contextKeyService, this.inputBox));
+    constructor(container, contextViewProvider, options, contextKeyService) {
+        super(container, contextViewProvider, options);
+        const scopedContextKeyService = this._register(contextKeyService.createScoped(this.inputBox.element));
+        this._register(registerAndCreateHistoryNavigationContext(scopedContextKeyService, this.inputBox));
     }
 };
 ContextScopedFindInput = __decorate([
@@ -75,7 +74,8 @@ export { ContextScopedFindInput };
 let ContextScopedReplaceInput = class ContextScopedReplaceInput extends ReplaceInput {
     constructor(container, contextViewProvider, options, contextKeyService, showReplaceOptions = false) {
         super(container, contextViewProvider, showReplaceOptions, options);
-        this._register(registerAndCreateHistoryNavigationContext(contextKeyService, this.inputBox));
+        const scopedContextKeyService = this._register(contextKeyService.createScoped(this.inputBox.element));
+        this._register(registerAndCreateHistoryNavigationContext(scopedContextKeyService, this.inputBox));
     }
 };
 ContextScopedReplaceInput = __decorate([
@@ -89,9 +89,7 @@ KeybindingsRegistry.registerCommandAndKeybindingRule({
     primary: 16 /* KeyCode.UpArrow */,
     secondary: [512 /* KeyMod.Alt */ | 16 /* KeyCode.UpArrow */],
     handler: (accessor) => {
-        if (lastFocusedWidget) {
-            lastFocusedWidget.showPreviousValue();
-        }
+        lastFocusedWidget === null || lastFocusedWidget === void 0 ? void 0 : lastFocusedWidget.showPreviousValue();
     }
 });
 KeybindingsRegistry.registerCommandAndKeybindingRule({
@@ -101,8 +99,6 @@ KeybindingsRegistry.registerCommandAndKeybindingRule({
     primary: 18 /* KeyCode.DownArrow */,
     secondary: [512 /* KeyMod.Alt */ | 18 /* KeyCode.DownArrow */],
     handler: (accessor) => {
-        if (lastFocusedWidget) {
-            lastFocusedWidget.showNextValue();
-        }
+        lastFocusedWidget === null || lastFocusedWidget === void 0 ? void 0 : lastFocusedWidget.showNextValue();
     }
 });

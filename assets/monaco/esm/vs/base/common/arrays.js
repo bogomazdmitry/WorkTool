@@ -159,6 +159,19 @@ export function coalesce(array) {
     return array.filter(e => !!e);
 }
 /**
+ * Remove all falsy values from `array`. The original array IS modified.
+ */
+export function coalesceInPlace(array) {
+    let to = 0;
+    for (let i = 0; i < array.length; i++) {
+        if (!!array[i]) {
+            array[to] = array[i];
+            to += 1;
+        }
+    }
+    array.length = to;
+}
+/**
  * @returns false if the provided object is an array and not empty.
  */
 export function isFalsyOrEmpty(obj) {
@@ -259,6 +272,18 @@ export function pushMany(arr, items) {
 }
 export function asArray(x) {
     return Array.isArray(x) ? x : [x];
+}
+/**
+ * Returns the first mapped value of the array which is not undefined.
+ */
+export function mapFind(array, mapFn) {
+    for (const value of array) {
+        const mapped = mapFn(value);
+        if (mapped !== undefined) {
+            return mapped;
+        }
+    }
+    return undefined;
 }
 /**
  * Insert the new items in the array.
@@ -426,3 +451,50 @@ export class ArrayQueue {
         return result;
     }
 }
+/**
+ * This class is faster than an iterator and array for lazy computed data.
+*/
+export class CallbackIterable {
+    constructor(
+    /**
+     * Calls the callback for every item.
+     * Stops when the callback returns false.
+    */
+    iterate) {
+        this.iterate = iterate;
+    }
+    toArray() {
+        const result = [];
+        this.iterate(item => { result.push(item); return true; });
+        return result;
+    }
+    filter(predicate) {
+        return new CallbackIterable(cb => this.iterate(item => predicate(item) ? cb(item) : true));
+    }
+    map(mapFn) {
+        return new CallbackIterable(cb => this.iterate(item => cb(mapFn(item))));
+    }
+    findLast(predicate) {
+        let result;
+        this.iterate(item => {
+            if (predicate(item)) {
+                result = item;
+            }
+            return true;
+        });
+        return result;
+    }
+    findLastMaxBy(comparator) {
+        let result;
+        let first = true;
+        this.iterate(item => {
+            if (first || CompareResult.isGreaterThan(comparator(item, result))) {
+                first = false;
+                result = item;
+            }
+            return true;
+        });
+        return result;
+    }
+}
+CallbackIterable.empty = new CallbackIterable(_callback => { });

@@ -100,4 +100,4 @@ StandaloneCodeEditorService = __decorate([
     __param(1, IThemeService)
 ], StandaloneCodeEditorService);
 export { StandaloneCodeEditorService };
-registerSingleton(ICodeEditorService, StandaloneCodeEditorService);
+registerSingleton(ICodeEditorService, StandaloneCodeEditorService, 0 /* InstantiationType.Eager */);

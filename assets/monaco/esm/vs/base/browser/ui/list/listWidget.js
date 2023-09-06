@@ -17,8 +17,8 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-import { createStyleSheet } from '../../dom.js';
-import { DomEmitter, stopEvent } from '../../event.js';
+import { asCssValueWithDefault, createStyleSheet, EventHelper } from '../../dom.js';
+import { DomEmitter } from '../../event.js';
 import { StandardKeyboardEvent } from '../../keyboardEvent.js';
 import { Gesture } from '../../touch.js';
 import { alert } from '../aria/aria.js';
@@ -31,12 +31,12 @@ import { Emitter, Event, EventBufferer } from '../../../common/event.js';
 import { matchesPrefix } from '../../../common/filters.js';
 import { DisposableStore, dispose } from '../../../common/lifecycle.js';
 import { clamp } from '../../../common/numbers.js';
-import { mixin } from '../../../common/objects.js';
 import * as platform from '../../../common/platform.js';
 import { isNumber } from '../../../common/types.js';
 import './list.css';
 import { ListError } from './list.js';
 import { ListView } from './listView.js';
+import { StandardMouseEvent } from '../../mouseEvent.js';
 class TraitRenderer {
     constructor(trait) {
         this.trait = trait;
@@ -92,6 +92,10 @@ class TraitRenderer {
     }
 }
 class Trait {
+    get name() { return this._trait; }
+    get renderer() {
+        return new TraitRenderer(this);
+    }
     constructor(_trait) {
         this._trait = _trait;
         this.length = 0;
@@ -100,20 +104,24 @@ class Trait {
         this._onChange = new Emitter();
         this.onChange = this._onChange.event;
     }
-    get name() { return this._trait; }
-    get renderer() {
-        return new TraitRenderer(this);
-    }
     splice(start, deleteCount, elements) {
         var _a;
         deleteCount = Math.max(0, Math.min(deleteCount, this.length - start));
         const diff = elements.length - deleteCount;
         const end = start + deleteCount;
-        const sortedIndexes = [
-            ...this.sortedIndexes.filter(i => i < start),
-            ...elements.map((hasTrait, i) => hasTrait ? i + start : -1).filter(i => i !== -1),
-            ...this.sortedIndexes.filter(i => i >= end).map(i => i + diff)
-        ];
+        const sortedIndexes = [];
+        let i = 0;
+        while (i < this.sortedIndexes.length && this.sortedIndexes[i] < start) {
+            sortedIndexes.push(this.sortedIndexes[i++]);
+        }
+        for (let j = 0; j < elements.length; j++) {
+            if (elements[j]) {
+                sortedIndexes.push(j + start);
+            }
+        }
+        while (i < this.sortedIndexes.length && this.sortedIndexes[i] >= end) {
+            sortedIndexes.push(this.sortedIndexes[i++] + diff);
+        }
         const length = this.length + diff;
         if (this.sortedIndexes.length > 0 && sortedIndexes.length === 0 && length > 0) {
             const first = (_a = this.sortedIndexes.find(index => index >= start)) !== null && _a !== void 0 ? _a : length - 1;
@@ -191,10 +199,14 @@ class TraitSpliceable {
     }
     splice(start, deleteCount, elements) {
         if (!this.identityProvider) {
-            return this.trait.splice(start, deleteCount, elements.map(() => false));
+            return this.trait.splice(start, deleteCount, new Array(elements.length).fill(false));
         }
         const pastElementsWithTrait = this.trait.get().map(i => this.identityProvider.getId(this.view.element(i)).toString());
-        const elementsWithTrait = elements.map(e => pastElementsWithTrait.indexOf(this.identityProvider.getId(e).toString()) > -1);
+        if (pastElementsWithTrait.length === 0) {
+            return this.trait.splice(start, deleteCount, new Array(elements.length).fill(false));
+        }
+        const pastElementsWithTraitSet = new Set(pastElementsWithTrait);
+        const elementsWithTrait = elements.map(e => pastElementsWithTraitSet.has(this.identityProvider.getId(e).toString()));
         this.trait.splice(start, deleteCount, elementsWithTrait);
     }
 }
@@ -227,6 +239,11 @@ export function isButton(e) {
     return isButton(e.parentElement);
 }
 class KeyboardController {
+    get onKeyDown() {
+        return this.disposables.add(Event.chain(this.disposables.add(new DomEmitter(this.view.domNode, 'keydown')).event)
+            .filter(e => !isInputElement(e.target))
+            .map(e => new StandardKeyboardEvent(e)));
+    }
     constructor(list, view, options) {
         this.list = list;
         this.view = view;
@@ -241,11 +258,6 @@ class KeyboardController {
         if (options.multipleSelectionSupport !== false) {
             this.onKeyDown.filter(e => (platform.isMacintosh ? e.metaKey : e.ctrlKey) && e.keyCode === 31 /* KeyCode.KeyA */).on(this.onCtrlA, this, this.multipleSelectionDisposables);
         }
-    }
-    get onKeyDown() {
-        return this.disposables.add(Event.chain(this.disposables.add(new DomEmitter(this.view.domNode, 'keydown')).event)
-            .filter(e => !isInputElement(e.target))
-            .map(e => new StandardKeyboardEvent(e)));
     }
     updateOptions(optionsUpdate) {
         if (optionsUpdate.multipleSelectionSupport !== undefined) {
@@ -337,8 +349,8 @@ export const DefaultKeyboardNavigationDelegate = new class {
         }
         return (event.keyCode >= 31 /* KeyCode.KeyA */ && event.keyCode <= 56 /* KeyCode.KeyZ */)
             || (event.keyCode >= 21 /* KeyCode.Digit0 */ && event.keyCode <= 30 /* KeyCode.Digit9 */)
-            || (event.keyCode >= 93 /* KeyCode.Numpad0 */ && event.keyCode <= 102 /* KeyCode.Numpad9 */)
-            || (event.keyCode >= 80 /* KeyCode.Semicolon */ && event.keyCode <= 90 /* KeyCode.Quote */);
+            || (event.keyCode >= 98 /* KeyCode.Numpad0 */ && event.keyCode <= 107 /* KeyCode.Numpad9 */)
+            || (event.keyCode >= 85 /* KeyCode.Semicolon */ && event.keyCode <= 95 /* KeyCode.Quote */);
     }
 };
 class TypeNavigationController {
@@ -378,10 +390,10 @@ class TypeNavigationController {
             .map(event => new StandardKeyboardEvent(event))
             .filter(e => typing || this.keyboardNavigationEventFilter(e))
             .filter(e => this.delegate.mightProducePrintableCharacter(e))
-            .forEach(stopEvent)
+            .forEach(e => EventHelper.stop(e, true))
             .map(event => event.browserEvent.key)
             .event;
-        const onClear = Event.debounce(onChar, () => null, 800, undefined, undefined, this.enabledDisposables);
+        const onClear = Event.debounce(onChar, () => null, 800, undefined, undefined, undefined, this.enabledDisposables);
         const onInput = Event.reduce(Event.any(onChar, onClear), (r, i) => i === null ? null : ((r || '') + i), undefined, this.enabledDisposables);
         onInput(this.onInput, this, this.enabledDisposables);
         onClear(this.onClear, this, this.enabledDisposables);
@@ -542,7 +554,7 @@ export class MouseController {
         }
     }
     onContextMenu(e) {
-        if (isMonacoEditor(e.browserEvent.target)) {
+        if (isInputElement(e.browserEvent.target) || isMonacoEditor(e.browserEvent.target)) {
             return;
         }
         const focus = typeof e.index === 'undefined' ? [] : [e.index];
@@ -555,6 +567,10 @@ export class MouseController {
         if (isInputElement(e.browserEvent.target) || isMonacoEditor(e.browserEvent.target)) {
             return;
         }
+        if (e.browserEvent.isHandledByList) {
+            return;
+        }
+        e.browserEvent.isHandledByList = true;
         const focus = e.index;
         if (typeof focus === 'undefined') {
             this.list.setFocus([], e.browserEvent);
@@ -582,6 +598,10 @@ export class MouseController {
         if (this.isSelectionChangeEvent(e)) {
             return;
         }
+        if (e.browserEvent.isHandledByList) {
+            return;
+        }
+        e.browserEvent.isHandledByList = true;
         const focus = this.list.getFocus();
         this.list.setSelection(focus, e.browserEvent);
     }
@@ -629,15 +649,11 @@ export class DefaultStyleController {
         this.selectorSuffix = selectorSuffix;
     }
     style(styles) {
+        var _a, _b;
         const suffix = this.selectorSuffix && `.${this.selectorSuffix}`;
         const content = [];
         if (styles.listBackground) {
-            if (styles.listBackground.isOpaque()) {
-                content.push(`.monaco-list${suffix} .monaco-list-rows { background: ${styles.listBackground}; }`);
-            }
-            else if (!platform.isMacintosh) { // subpixel AA doesn't exist in macOS
-                console.warn(`List with id '${this.selectorSuffix}' was styled with a non-opaque background color. This will break sub-pixel antialiasing.`);
-            }
+            content.push(`.monaco-list${suffix} .monaco-list-rows { background: ${styles.listBackground}; }`);
         }
         if (styles.listFocusBackground) {
             content.push(`.monaco-list${suffix}:focus .monaco-list-row.focused { background-color: ${styles.listFocusBackground}; }`);
@@ -655,9 +671,6 @@ export class DefaultStyleController {
         }
         if (styles.listActiveSelectionIconForeground) {
             content.push(`.monaco-list${suffix}:focus .monaco-list-row.selected .codicon { color: ${styles.listActiveSelectionIconForeground}; }`);
-        }
-        if (styles.listFocusAndSelectionOutline) {
-            content.push(`.monaco-list${suffix}:focus .monaco-list-row.selected { outline-color: ${styles.listFocusAndSelectionOutline} !important; }`);
         }
         if (styles.listFocusAndSelectionBackground) {
             content.push(`
@@ -690,25 +703,36 @@ export class DefaultStyleController {
             content.push(`.monaco-list${suffix} .monaco-list-row.selected { color: ${styles.listInactiveSelectionForeground}; }`);
         }
         if (styles.listHoverBackground) {
-            content.push(`.monaco-list${suffix}:not(.drop-target) .monaco-list-row:hover:not(.selected):not(.focused) { background-color: ${styles.listHoverBackground}; }`);
+            content.push(`.monaco-list${suffix}:not(.drop-target):not(.dragging) .monaco-list-row:hover:not(.selected):not(.focused) { background-color: ${styles.listHoverBackground}; }`);
         }
         if (styles.listHoverForeground) {
-            content.push(`.monaco-list${suffix} .monaco-list-row:hover:not(.selected):not(.focused) { color:  ${styles.listHoverForeground}; }`);
+            content.push(`.monaco-list${suffix}:not(.drop-target):not(.dragging) .monaco-list-row:hover:not(.selected):not(.focused) { color:  ${styles.listHoverForeground}; }`);
         }
-        if (styles.listSelectionOutline) {
-            content.push(`.monaco-list${suffix} .monaco-list-row.selected { outline: 1px dotted ${styles.listSelectionOutline}; outline-offset: -1px; }`);
+        /**
+         * Outlines
+         */
+        const focusAndSelectionOutline = asCssValueWithDefault(styles.listFocusAndSelectionOutline, asCssValueWithDefault(styles.listSelectionOutline, (_a = styles.listFocusOutline) !== null && _a !== void 0 ? _a : ''));
+        if (focusAndSelectionOutline) { // default: listFocusOutline
+            content.push(`.monaco-list${suffix}:focus .monaco-list-row.focused.selected { outline: 1px solid ${focusAndSelectionOutline}; outline-offset: -1px;}`);
         }
-        if (styles.listFocusOutline) {
+        if (styles.listFocusOutline) { // default: set
             content.push(`
 				.monaco-drag-image,
 				.monaco-list${suffix}:focus .monaco-list-row.focused { outline: 1px solid ${styles.listFocusOutline}; outline-offset: -1px; }
 				.monaco-workbench.context-menu-visible .monaco-list${suffix}.last-focused .monaco-list-row.focused { outline: 1px solid ${styles.listFocusOutline}; outline-offset: -1px; }
 			`);
         }
-        if (styles.listInactiveFocusOutline) {
+        const inactiveFocusAndSelectionOutline = asCssValueWithDefault(styles.listSelectionOutline, (_b = styles.listInactiveFocusOutline) !== null && _b !== void 0 ? _b : '');
+        if (inactiveFocusAndSelectionOutline) {
+            content.push(`.monaco-list${suffix} .monaco-list-row.focused.selected { outline: 1px dotted ${inactiveFocusAndSelectionOutline}; outline-offset: -1px; }`);
+        }
+        if (styles.listSelectionOutline) { // default: activeContrastBorder
+            content.push(`.monaco-list${suffix} .monaco-list-row.selected { outline: 1px dotted ${styles.listSelectionOutline}; outline-offset: -1px; }`);
+        }
+        if (styles.listInactiveFocusOutline) { // default: null
             content.push(`.monaco-list${suffix} .monaco-list-row.focused { outline: 1px dotted ${styles.listInactiveFocusOutline}; outline-offset: -1px; }`);
         }
-        if (styles.listHoverOutline) {
+        if (styles.listHoverOutline) { // default: activeContrastBorder
             content.push(`.monaco-list${suffix} .monaco-list-row:hover { outline: 1px dashed ${styles.listHoverOutline}; outline-offset: -1px; }`);
         }
         if (styles.listDropBackground) {
@@ -720,10 +744,18 @@ export class DefaultStyleController {
         }
         if (styles.tableColumnsBorder) {
             content.push(`
-				.monaco-table:hover > .monaco-split-view2,
-				.monaco-table:hover > .monaco-split-view2 .monaco-sash.vertical::before {
+				.monaco-table > .monaco-split-view2,
+				.monaco-table > .monaco-split-view2 .monaco-sash.vertical::before,
+				.monaco-workbench:not(.reduce-motion) .monaco-table:hover > .monaco-split-view2,
+				.monaco-workbench:not(.reduce-motion) .monaco-table:hover > .monaco-split-view2 .monaco-sash.vertical::before {
 					border-color: ${styles.tableColumnsBorder};
-			}`);
+				}
+
+				.monaco-workbench:not(.reduce-motion) .monaco-table > .monaco-split-view2,
+				.monaco-workbench:not(.reduce-motion) .monaco-table > .monaco-split-view2 .monaco-sash.vertical::before {
+					border-color: transparent;
+				}
+			`);
         }
         if (styles.tableOddRowsBackgroundColor) {
             content.push(`
@@ -737,21 +769,32 @@ export class DefaultStyleController {
         this.styleElement.textContent = content.join('\n');
     }
 }
-const defaultStyles = {
-    listFocusBackground: Color.fromHex('#7FB0D0'),
-    listActiveSelectionBackground: Color.fromHex('#0E639C'),
-    listActiveSelectionForeground: Color.fromHex('#FFFFFF'),
-    listActiveSelectionIconForeground: Color.fromHex('#FFFFFF'),
-    listFocusAndSelectionOutline: Color.fromHex('#90C2F9'),
-    listFocusAndSelectionBackground: Color.fromHex('#094771'),
-    listFocusAndSelectionForeground: Color.fromHex('#FFFFFF'),
-    listInactiveSelectionBackground: Color.fromHex('#3F3F46'),
-    listInactiveSelectionIconForeground: Color.fromHex('#FFFFFF'),
-    listHoverBackground: Color.fromHex('#2A2D2E'),
-    listDropBackground: Color.fromHex('#383B3D'),
-    treeIndentGuidesStroke: Color.fromHex('#a9a9a9'),
-    tableColumnsBorder: Color.fromHex('#cccccc').transparent(0.2),
-    tableOddRowsBackgroundColor: Color.fromHex('#cccccc').transparent(0.04)
+export const unthemedListStyles = {
+    listFocusBackground: '#7FB0D0',
+    listActiveSelectionBackground: '#0E639C',
+    listActiveSelectionForeground: '#FFFFFF',
+    listActiveSelectionIconForeground: '#FFFFFF',
+    listFocusAndSelectionOutline: '#90C2F9',
+    listFocusAndSelectionBackground: '#094771',
+    listFocusAndSelectionForeground: '#FFFFFF',
+    listInactiveSelectionBackground: '#3F3F46',
+    listInactiveSelectionIconForeground: '#FFFFFF',
+    listHoverBackground: '#2A2D2E',
+    listDropBackground: '#383B3D',
+    treeIndentGuidesStroke: '#a9a9a9',
+    treeInactiveIndentGuidesStroke: Color.fromHex('#a9a9a9').transparent(0.4).toString(),
+    tableColumnsBorder: Color.fromHex('#cccccc').transparent(0.2).toString(),
+    tableOddRowsBackgroundColor: Color.fromHex('#cccccc').transparent(0.04).toString(),
+    listBackground: undefined,
+    listFocusForeground: undefined,
+    listInactiveSelectionForeground: undefined,
+    listInactiveFocusForeground: undefined,
+    listInactiveFocusBackground: undefined,
+    listHoverForeground: undefined,
+    listFocusOutline: undefined,
+    listInactiveFocusOutline: undefined,
+    listSelectionOutline: undefined,
+    listHoverOutline: undefined
 };
 const DefaultOptions = {
     keyboardSupport: true,
@@ -954,6 +997,59 @@ class ListViewDragAndDrop {
  * - Drag-and-drop support
  */
 export class List {
+    get onDidChangeFocus() {
+        return Event.map(this.eventBufferer.wrapEvent(this.focus.onChange), e => this.toListEvent(e), this.disposables);
+    }
+    get onDidChangeSelection() {
+        return Event.map(this.eventBufferer.wrapEvent(this.selection.onChange), e => this.toListEvent(e), this.disposables);
+    }
+    get domId() { return this.view.domId; }
+    get onDidScroll() { return this.view.onDidScroll; }
+    get onMouseClick() { return this.view.onMouseClick; }
+    get onMouseDblClick() { return this.view.onMouseDblClick; }
+    get onMouseMiddleClick() { return this.view.onMouseMiddleClick; }
+    get onPointer() { return this.mouseController.onPointer; }
+    get onMouseDown() { return this.view.onMouseDown; }
+    get onMouseOver() { return this.view.onMouseOver; }
+    get onMouseOut() { return this.view.onMouseOut; }
+    get onTouchStart() { return this.view.onTouchStart; }
+    get onTap() { return this.view.onTap; }
+    /**
+     * Possible context menu trigger events:
+     * - ContextMenu key
+     * - Shift F10
+     * - Ctrl Option Shift M (macOS with VoiceOver)
+     * - Mouse right click
+     */
+    get onContextMenu() {
+        let didJustPressContextMenuKey = false;
+        const fromKeyDown = this.disposables.add(Event.chain(this.disposables.add(new DomEmitter(this.view.domNode, 'keydown')).event))
+            .map(e => new StandardKeyboardEvent(e))
+            .filter(e => didJustPressContextMenuKey = e.keyCode === 58 /* KeyCode.ContextMenu */ || (e.shiftKey && e.keyCode === 68 /* KeyCode.F10 */))
+            .map(e => EventHelper.stop(e, true))
+            .filter(() => false)
+            .event;
+        const fromKeyUp = this.disposables.add(Event.chain(this.disposables.add(new DomEmitter(this.view.domNode, 'keyup')).event))
+            .forEach(() => didJustPressContextMenuKey = false)
+            .map(e => new StandardKeyboardEvent(e))
+            .filter(e => e.keyCode === 58 /* KeyCode.ContextMenu */ || (e.shiftKey && e.keyCode === 68 /* KeyCode.F10 */))
+            .map(e => EventHelper.stop(e, true))
+            .map(({ browserEvent }) => {
+            const focus = this.getFocus();
+            const index = focus.length ? focus[0] : undefined;
+            const element = typeof index !== 'undefined' ? this.view.element(index) : undefined;
+            const anchor = typeof index !== 'undefined' ? this.view.domElement(index) : this.view.domNode;
+            return { index, element, anchor, browserEvent };
+        })
+            .event;
+        const fromMouse = this.disposables.add(Event.chain(this.view.onContextMenu))
+            .filter(_ => !didJustPressContextMenuKey)
+            .map(({ element, index, browserEvent }) => ({ element, index, anchor: new StandardMouseEvent(browserEvent), browserEvent }))
+            .event;
+        return Event.any(fromKeyDown, fromKeyUp, fromMouse);
+    }
+    get onKeyDown() { return this.disposables.add(new DomEmitter(this.view.domNode, 'keydown')).event; }
+    get onDidFocus() { return Event.signal(this.disposables.add(new DomEmitter(this.view.domNode, 'focus', true)).event); }
     constructor(user, container, virtualDelegate, renderers, _options = DefaultOptions) {
         var _a, _b, _c, _d;
         this.user = user;
@@ -967,7 +1063,6 @@ export class List {
         this.onDidDispose = this._onDidDispose.event;
         const role = this._options.accessibilityProvider && this._options.accessibilityProvider.getWidgetRole ? (_a = this._options.accessibilityProvider) === null || _a === void 0 ? void 0 : _a.getWidgetRole() : 'list';
         this.selection = new SelectionTrait(role !== 'listbox');
-        mixin(_options, defaultStyles, false);
         const baseRenderers = [this.focus.renderer, this.selection.renderer];
         this.accessibilityProvider = _options.accessibilityProvider;
         if (this.accessibilityProvider) {
@@ -976,7 +1071,7 @@ export class List {
         }
         renderers = renderers.map(r => new PipelineRenderer(r.templateId, [...baseRenderers, r]));
         const viewOptions = Object.assign(Object.assign({}, _options), { dnd: _options.dnd && new ListViewDragAndDrop(this, _options.dnd) });
-        this.view = new ListView(container, virtualDelegate, renderers, viewOptions);
+        this.view = this.createListView(container, virtualDelegate, renderers, viewOptions);
         this.view.domNode.setAttribute('role', role);
         if (_options.styleController) {
             this.styleController = _options.styleController(this.view.domId);
@@ -1017,57 +1112,9 @@ export class List {
             this.view.domNode.setAttribute('aria-multiselectable', 'true');
         }
     }
-    get onDidChangeFocus() {
-        return Event.map(this.eventBufferer.wrapEvent(this.focus.onChange), e => this.toListEvent(e), this.disposables);
+    createListView(container, virtualDelegate, renderers, viewOptions) {
+        return new ListView(container, virtualDelegate, renderers, viewOptions);
     }
-    get onDidChangeSelection() {
-        return Event.map(this.eventBufferer.wrapEvent(this.selection.onChange), e => this.toListEvent(e), this.disposables);
-    }
-    get domId() { return this.view.domId; }
-    get onMouseClick() { return this.view.onMouseClick; }
-    get onMouseDblClick() { return this.view.onMouseDblClick; }
-    get onMouseMiddleClick() { return this.view.onMouseMiddleClick; }
-    get onPointer() { return this.mouseController.onPointer; }
-    get onMouseDown() { return this.view.onMouseDown; }
-    get onMouseOver() { return this.view.onMouseOver; }
-    get onTouchStart() { return this.view.onTouchStart; }
-    get onTap() { return this.view.onTap; }
-    /**
-     * Possible context menu trigger events:
-     * - ContextMenu key
-     * - Shift F10
-     * - Ctrl Option Shift M (macOS with VoiceOver)
-     * - Mouse right click
-     */
-    get onContextMenu() {
-        let didJustPressContextMenuKey = false;
-        const fromKeyDown = this.disposables.add(Event.chain(this.disposables.add(new DomEmitter(this.view.domNode, 'keydown')).event))
-            .map(e => new StandardKeyboardEvent(e))
-            .filter(e => didJustPressContextMenuKey = e.keyCode === 58 /* KeyCode.ContextMenu */ || (e.shiftKey && e.keyCode === 68 /* KeyCode.F10 */))
-            .map(stopEvent)
-            .filter(() => false)
-            .event;
-        const fromKeyUp = this.disposables.add(Event.chain(this.disposables.add(new DomEmitter(this.view.domNode, 'keyup')).event))
-            .forEach(() => didJustPressContextMenuKey = false)
-            .map(e => new StandardKeyboardEvent(e))
-            .filter(e => e.keyCode === 58 /* KeyCode.ContextMenu */ || (e.shiftKey && e.keyCode === 68 /* KeyCode.F10 */))
-            .map(stopEvent)
-            .map(({ browserEvent }) => {
-            const focus = this.getFocus();
-            const index = focus.length ? focus[0] : undefined;
-            const element = typeof index !== 'undefined' ? this.view.element(index) : undefined;
-            const anchor = typeof index !== 'undefined' ? this.view.domElement(index) : this.view.domNode;
-            return { index, element, anchor, browserEvent };
-        })
-            .event;
-        const fromMouse = this.disposables.add(Event.chain(this.view.onContextMenu))
-            .filter(_ => !didJustPressContextMenuKey)
-            .map(({ element, index, browserEvent }) => ({ element, index, anchor: { x: browserEvent.pageX + 1, y: browserEvent.pageY }, browserEvent }))
-            .event;
-        return Event.any(fromKeyDown, fromKeyUp, fromMouse);
-    }
-    get onKeyDown() { return this.disposables.add(new DomEmitter(this.view.domNode, 'keydown')).event; }
-    get onDidFocus() { return Event.signal(this.disposables.add(new DomEmitter(this.view.domNode, 'focus', true)).event); }
     createMouseController(options) {
         return new MouseController(this);
     }
@@ -1119,6 +1166,15 @@ export class List {
     }
     set scrollTop(scrollTop) {
         this.view.setScrollTop(scrollTop);
+    }
+    get scrollHeight() {
+        return this.view.scrollHeight;
+    }
+    get renderHeight() {
+        return this.view.renderHeight;
+    }
+    get firstVisibleIndex() {
+        return this.view.firstVisibleIndex;
     }
     get ariaLabel() {
         return this._ariaLabel;

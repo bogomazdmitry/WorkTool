@@ -41,28 +41,28 @@ let HelpQuickAccessProvider = class HelpQuickAccessProvider {
             }
         }));
         // Fill in all providers
-        picker.items = this.getQuickAccessProviders();
+        picker.items = this.getQuickAccessProviders().filter(p => p.prefix !== HelpQuickAccessProvider.PREFIX);
         return disposables;
     }
     getQuickAccessProviders() {
-        const providers = [];
-        for (const provider of this.registry.getQuickAccessProviders().sort((providerA, providerB) => providerA.prefix.localeCompare(providerB.prefix))) {
-            if (provider.prefix === HelpQuickAccessProvider.PREFIX) {
-                continue; // exclude help which is already active
-            }
-            for (const helpEntry of provider.helpEntries) {
-                const prefix = helpEntry.prefix || provider.prefix;
-                const label = prefix || '\u2026' /* ... */;
-                providers.push({
-                    prefix,
-                    label,
-                    keybinding: helpEntry.commandId ? this.keybindingService.lookupKeybinding(helpEntry.commandId) : undefined,
-                    ariaLabel: localize('helpPickAriaLabel', "{0}, {1}", label, helpEntry.description),
-                    description: helpEntry.description
-                });
-            }
-        }
+        const providers = this.registry
+            .getQuickAccessProviders()
+            .sort((providerA, providerB) => providerA.prefix.localeCompare(providerB.prefix))
+            .flatMap(provider => this.createPicks(provider));
         return providers;
+    }
+    createPicks(provider) {
+        return provider.helpEntries.map(helpEntry => {
+            const prefix = helpEntry.prefix || provider.prefix;
+            const label = prefix || '\u2026' /* ... */;
+            return {
+                prefix,
+                label,
+                keybinding: helpEntry.commandId ? this.keybindingService.lookupKeybinding(helpEntry.commandId) : undefined,
+                ariaLabel: localize('helpPickAriaLabel', "{0}, {1}", label, helpEntry.description),
+                description: helpEntry.description
+            };
+        });
     }
 };
 HelpQuickAccessProvider.PREFIX = '?';

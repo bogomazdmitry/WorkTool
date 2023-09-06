@@ -8,7 +8,7 @@ import { ICodeEditorService } from './services/codeEditorService.js';
 import { Position } from '../common/core/position.js';
 import { IModelService } from '../common/services/model.js';
 import { ITextModelService } from '../common/services/resolverService.js';
-import { MenuId, MenuRegistry } from '../../platform/actions/common/actions.js';
+import { MenuId, MenuRegistry, Action2 } from '../../platform/actions/common/actions.js';
 import { CommandsRegistry } from '../../platform/commands/common/commands.js';
 import { ContextKeyExpr, IContextKeyService } from '../../platform/contextkey/common/contextkey.js';
 import { IInstantiationService } from '../../platform/instantiation/common/instantiation.js';
@@ -86,8 +86,8 @@ export class MultiCommand extends Command {
     /**
      * A higher priority gets to be looked at first
      */
-    addImplementation(priority, name, implementation) {
-        this._implementations.push({ priority, name, implementation });
+    addImplementation(priority, name, implementation, when) {
+        this._implementations.push({ priority, name, implementation, when });
         this._implementations.sort((a, b) => b.priority - a.priority);
         return {
             dispose: () => {
@@ -102,8 +102,16 @@ export class MultiCommand extends Command {
     }
     runCommand(accessor, args) {
         const logService = accessor.get(ILogService);
+        const contextKeyService = accessor.get(IContextKeyService);
         logService.trace(`Executing Command '${this.id}' which has ${this._implementations.length} bound.`);
         for (const impl of this._implementations) {
+            if (impl.when) {
+                const context = contextKeyService.getContext(document.activeElement);
+                const value = impl.when.evaluate(context);
+                if (!value) {
+                    continue;
+                }
+            }
             const result = impl.implementation(accessor, args);
             if (result) {
                 logService.trace(`Command '${this.id}' was handled by '${impl.name}'.`);
@@ -171,11 +179,6 @@ export class EditorCommand extends Command {
     }
 }
 export class EditorAction extends EditorCommand {
-    constructor(opts) {
-        super(EditorAction.convertOptions(opts));
-        this.label = opts.label;
-        this.alias = opts.alias;
-    }
     static convertOptions(opts) {
         let menuOpts;
         if (Array.isArray(opts.menuOpts)) {
@@ -205,6 +208,11 @@ export class EditorAction extends EditorCommand {
         }
         opts.menuOpts = menuOpts;
         return opts;
+    }
+    constructor(opts) {
+        super(EditorAction.convertOptions(opts));
+        this.label = opts.label;
+        this.alias = opts.alias;
     }
     runEditorCommand(accessor, editor, args) {
         this.reportTelemetry(accessor, editor);
@@ -246,6 +254,31 @@ export class MultiEditorAction extends EditorAction {
                 return result;
             }
         }
+    }
+}
+//#endregion EditorAction
+//#region EditorAction2
+export class EditorAction2 extends Action2 {
+    run(accessor, ...args) {
+        // Find the editor with text focus or active
+        const codeEditorService = accessor.get(ICodeEditorService);
+        const editor = codeEditorService.getFocusedCodeEditor() || codeEditorService.getActiveCodeEditor();
+        if (!editor) {
+            // well, at least we tried...
+            return;
+        }
+        // precondition does hold
+        return editor.invokeWithinContext((editorAccessor) => {
+            var _a;
+            const kbService = editorAccessor.get(IContextKeyService);
+            const logService = editorAccessor.get(ILogService);
+            const enabled = kbService.contextMatchesRules(withNullAsUndefined(this.desc.precondition));
+            if (!enabled) {
+                logService.debug(`[EditorAction2] NOT running command because its precondition is FALSE`, this.desc.id, (_a = this.desc.precondition) === null || _a === void 0 ? void 0 : _a.serialize());
+                return;
+            }
+            return this.runEditorCommand(editorAccessor, editor, ...args);
+        });
     }
 }
 //#endregion
@@ -292,8 +325,12 @@ export function registerMultiEditorAction(action) {
 export function registerInstantiatedEditorAction(editorAction) {
     EditorContributionRegistry.INSTANCE.registerEditorAction(editorAction);
 }
-export function registerEditorContribution(id, ctor) {
-    EditorContributionRegistry.INSTANCE.registerEditorContribution(id, ctor);
+/**
+ * Registers an editor contribution. Editor contributions have a lifecycle which is bound
+ * to a specific code editor instance.
+ */
+export function registerEditorContribution(id, ctor, instantiation) {
+    EditorContributionRegistry.INSTANCE.registerEditorContribution(id, ctor, instantiation);
 }
 export var EditorExtensionsRegistry;
 (function (EditorExtensionsRegistry) {
@@ -329,8 +366,8 @@ class EditorContributionRegistry {
         this.editorActions = [];
         this.editorCommands = Object.create(null);
     }
-    registerEditorContribution(id, ctor) {
-        this.editorContributions.push({ id, ctor: ctor });
+    registerEditorContribution(id, ctor, instantiation) {
+        this.editorContributions.push({ id, ctor: ctor, instantiation });
     }
     getEditorContributions() {
         return this.editorContributions.slice(0);
@@ -343,7 +380,7 @@ class EditorContributionRegistry {
         this.editorActions.push(action);
     }
     getEditorActions() {
-        return this.editorActions.slice(0);
+        return this.editorActions;
     }
     registerEditorCommand(editorCommand) {
         editorCommand.register();

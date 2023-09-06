@@ -1,6 +1,6 @@
 /*!-----------------------------------------------------------------------------
  * Copyright (c) Microsoft Corporation. All rights reserved.
- * Version: 0.34.1(547870b6881302c5b4ff32173c16d06009e3588f)
+ * Version: 0.41.0(38e1e3d097f84e336c311d071a9ffb5191d4ffd1)
  * Released under the MIT license
  * https://github.com/microsoft/monaco-editor/blob/main/LICENSE.txt
  *-----------------------------------------------------------------------------*/
@@ -142,6 +142,7 @@ var language = {
     "require",
     "global",
     "return",
+    "satisfies",
     "set",
     "static",
     "string",
@@ -223,7 +224,7 @@ var language = {
     root: [[/[{}]/, "delimiter.bracket"], { include: "common" }],
     common: [
       [
-        /[a-z_$][\w$]*/,
+        /#?[a-z_$][\w$]*/,
         {
           cases: {
             "@keywords": "keyword",

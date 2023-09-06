@@ -13,7 +13,8 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 };
 import { RunOnceScheduler } from '../../../../base/common/async.js';
 import { DisposableStore } from '../../../../base/common/lifecycle.js';
-import { LRUCache, TernarySearchTree } from '../../../../base/common/map.js';
+import { LRUCache } from '../../../../base/common/map.js';
+import { TernarySearchTree } from '../../../../base/common/ternarySearchTree.js';
 import { CompletionItemKinds } from '../../../common/languages.js';
 import { IConfigurationService } from '../../../../platform/configuration/common/configuration.js';
 import { registerSingleton } from '../../../../platform/instantiation/common/extensions.js';
@@ -247,4 +248,4 @@ SuggestMemoryService = __decorate([
 ], SuggestMemoryService);
 export { SuggestMemoryService };
 export const ISuggestMemoryService = createDecorator('ISuggestMemories');
-registerSingleton(ISuggestMemoryService, SuggestMemoryService, true);
+registerSingleton(ISuggestMemoryService, SuggestMemoryService, 1 /* InstantiationType.Delayed */);

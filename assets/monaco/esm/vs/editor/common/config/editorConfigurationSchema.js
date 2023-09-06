@@ -19,31 +19,31 @@ const editorConfiguration = Object.assign(Object.assign({}, editorConfigurationB
             type: 'number',
             default: EDITOR_MODEL_DEFAULTS.tabSize,
             minimum: 1,
-            markdownDescription: nls.localize('tabSize', "The number of spaces a tab is equal to. This setting is overridden based on the file contents when `#editor.detectIndentation#` is on.")
+            markdownDescription: nls.localize('tabSize', "The number of spaces a tab is equal to. This setting is overridden based on the file contents when {0} is on.", '`#editor.detectIndentation#`')
         },
-        // 'editor.indentSize': {
-        // 	'anyOf': [
-        // 		{
-        // 			type: 'string',
-        // 			enum: ['tabSize']
-        // 		},
-        // 		{
-        // 			type: 'number',
-        // 			minimum: 1
-        // 		}
-        // 	],
-        // 	default: 'tabSize',
-        // 	markdownDescription: nls.localize('indentSize', "The number of spaces used for indentation or 'tabSize' to use the value from `#editor.tabSize#`. This setting is overridden based on the file contents when `#editor.detectIndentation#` is on.")
-        // },
+        'editor.indentSize': {
+            'anyOf': [
+                {
+                    type: 'string',
+                    enum: ['tabSize']
+                },
+                {
+                    type: 'number',
+                    minimum: 1
+                }
+            ],
+            default: 'tabSize',
+            markdownDescription: nls.localize('indentSize', "The number of spaces used for indentation or `\"tabSize\"` to use the value from `#editor.tabSize#`. This setting is overridden based on the file contents when `#editor.detectIndentation#` is on.")
+        },
         'editor.insertSpaces': {
             type: 'boolean',
             default: EDITOR_MODEL_DEFAULTS.insertSpaces,
-            markdownDescription: nls.localize('insertSpaces', "Insert spaces when pressing `Tab`. This setting is overridden based on the file contents when `#editor.detectIndentation#` is on.")
+            markdownDescription: nls.localize('insertSpaces', "Insert spaces when pressing `Tab`. This setting is overridden based on the file contents when {0} is on.", '`#editor.detectIndentation#`')
         },
         'editor.detectIndentation': {
             type: 'boolean',
             default: EDITOR_MODEL_DEFAULTS.detectIndentation,
-            markdownDescription: nls.localize('detectIndentation', "Controls whether `#editor.tabSize#` and `#editor.insertSpaces#` will be automatically detected when a file is opened based on the file contents.")
+            markdownDescription: nls.localize('detectIndentation', "Controls whether {0} and {1} will be automatically detected when a file is opened based on the file contents.", '`#editor.tabSize#`', '`#editor.insertSpaces#`')
         },
         'editor.trimAutoWhitespace': {
             type: 'boolean',
@@ -83,12 +83,28 @@ const editorConfiguration = Object.assign(Object.assign({}, editorConfigurationB
         'editor.stablePeek': {
             type: 'boolean',
             default: false,
-            markdownDescription: nls.localize('stablePeek', "Keep peek editors open even when double clicking their content or when hitting `Escape`.")
+            markdownDescription: nls.localize('stablePeek', "Keep peek editors open even when double-clicking their content or when hitting `Escape`.")
         },
         'editor.maxTokenizationLineLength': {
             type: 'integer',
             default: 20000,
             description: nls.localize('maxTokenizationLineLength', "Lines above this length will not be tokenized for performance reasons")
+        },
+        'editor.experimental.asyncTokenization': {
+            type: 'boolean',
+            default: false,
+            description: nls.localize('editor.experimental.asyncTokenization', "Controls whether the tokenization should happen asynchronously on a web worker."),
+            tags: ['experimental'],
+        },
+        'editor.experimental.asyncTokenizationLogging': {
+            type: 'boolean',
+            default: false,
+            description: nls.localize('editor.experimental.asyncTokenizationLogging', "Controls whether async tokenization should be logged. For debugging only."),
+        },
+        'editor.experimental.asyncTokenizationVerification': {
+            type: 'boolean',
+            default: false,
+            description: nls.localize('editor.experimental.asyncTokenizationVerification', "Controls whether async tokenization should be verified against legacy background tokenization. Might slow down tokenization. For debugging only."),
         },
         'editor.language.brackets': {
             type: ['array', 'null'],
@@ -168,8 +184,39 @@ const editorConfiguration = Object.assign(Object.assign({}, editorConfigurationB
             markdownEnumDescriptions: [
                 nls.localize('wordWrap.off', "Lines will never wrap."),
                 nls.localize('wordWrap.on', "Lines will wrap at the viewport width."),
-                nls.localize('wordWrap.inherit', "Lines will wrap according to the `#editor.wordWrap#` setting."),
+                nls.localize('wordWrap.inherit', "Lines will wrap according to the {0} setting.", '`#editor.wordWrap#`'),
             ]
+        },
+        'diffEditor.diffAlgorithm': {
+            type: 'string',
+            enum: ['legacy', 'advanced'],
+            default: 'advanced',
+            markdownEnumDescriptions: [
+                nls.localize('diffAlgorithm.legacy', "Uses the legacy diffing algorithm."),
+                nls.localize('diffAlgorithm.advanced', "Uses the advanced diffing algorithm."),
+            ],
+            tags: ['experimental'],
+        },
+        'diffEditor.experimental.collapseUnchangedRegions': {
+            type: 'boolean',
+            default: false,
+            markdownDescription: nls.localize('collapseUnchangedRegions', "Controls whether the diff editor shows unchanged regions. Only works when {0} is set.", '`#diffEditor.experimental.useVersion2#`'),
+        },
+        'diffEditor.experimental.showMoves': {
+            type: 'boolean',
+            default: false,
+            markdownDescription: nls.localize('showMoves', "Controls whether the diff editor should show detected code moves. Only works when {0} is set.", '`#diffEditor.experimental.useVersion2#`')
+        },
+        'diffEditor.experimental.useVersion2': {
+            type: 'boolean',
+            default: false,
+            description: nls.localize('useVersion2', "Controls whether the diff editor uses the new or the old implementation."),
+            tags: ['experimental'],
+        },
+        'diffEditor.experimental.showEmptyDecorations': {
+            type: 'boolean',
+            default: true,
+            description: nls.localize('showEmptyDecorations', "Controls whether the diff editor shows empty decorations to see where characters got inserted or deleted."),
         }
     } });
 function isConfigurationPropertySchema(x) {

@@ -15,7 +15,6 @@ import { DisposableStore } from '../../../../base/common/lifecycle.js';
 import { assertType } from '../../../../base/common/types.js';
 import { EditorCommand, registerEditorCommand, registerEditorContribution } from '../../../browser/editorExtensions.js';
 import { Position } from '../../../common/core/position.js';
-import { Selection } from '../../../common/core/selection.js';
 import { EditorContextKeys } from '../../../common/editorContextKeys.js';
 import { ILanguageConfigurationService } from '../../../common/languages/languageConfigurationRegistry.js';
 import { ILanguageFeaturesService } from '../../../common/services/languageFeatures.js';
@@ -34,6 +33,9 @@ const _defaultOptions = {
     overtypingCapturer: undefined
 };
 let SnippetController2 = class SnippetController2 {
+    static get(editor) {
+        return editor.getContribution(SnippetController2.ID);
+    }
     constructor(_editor, _logService, _languageFeaturesService, contextKeyService, _languageConfigurationService) {
         this._editor = _editor;
         this._logService = _logService;
@@ -45,9 +47,6 @@ let SnippetController2 = class SnippetController2 {
         this._hasNextTabstop = SnippetController2.HasNextTabstop.bindTo(contextKeyService);
         this._hasPrevTabstop = SnippetController2.HasPrevTabstop.bindTo(contextKeyService);
     }
-    static get(editor) {
-        return editor.getContribution(SnippetController2.ID);
-    }
     dispose() {
         var _a;
         this._inSnippet.reset();
@@ -55,18 +54,6 @@ let SnippetController2 = class SnippetController2 {
         this._hasNextTabstop.reset();
         (_a = this._session) === null || _a === void 0 ? void 0 : _a.dispose();
         this._snippetListener.dispose();
-    }
-    apply(edits, opts) {
-        try {
-            this._doInsert(edits, typeof opts === 'undefined' ? _defaultOptions : Object.assign(Object.assign({}, _defaultOptions), opts));
-        }
-        catch (e) {
-            this.cancel();
-            this._logService.error(e);
-            this._logService.error('snippet_error');
-            this._logService.error('insert_edits=', edits);
-            this._logService.error('existing_template=', this._session ? this._session._logInfo() : '<no_session>');
-        }
     }
     insert(template, opts) {
         // this is here to find out more about the yet-not-understood
@@ -112,7 +99,8 @@ let SnippetController2 = class SnippetController2 {
         }
         // regster completion item provider when there is any choice element
         if ((_a = this._session) === null || _a === void 0 ? void 0 : _a.hasChoice) {
-            this._choiceCompletionItemProvider = {
+            const provider = {
+                _debugDisplayName: 'snippetChoiceCompletions',
                 provideCompletionItems: (model, position) => {
                     if (!this._session || model !== this._editor.getModel() || !Position.equals(this._editor.getPosition(), position)) {
                         return undefined;
@@ -139,12 +127,26 @@ let SnippetController2 = class SnippetController2 {
                     return { suggestions };
                 }
             };
-            const registration = this._languageFeaturesService.completionProvider.register({
-                language: this._editor.getModel().getLanguageId(),
-                pattern: this._editor.getModel().uri.fsPath,
-                scheme: this._editor.getModel().uri.scheme
-            }, this._choiceCompletionItemProvider);
-            this._snippetListener.add(registration);
+            const model = this._editor.getModel();
+            let registration;
+            let isRegistered = false;
+            const disable = () => {
+                registration === null || registration === void 0 ? void 0 : registration.dispose();
+                isRegistered = false;
+            };
+            const enable = () => {
+                if (!isRegistered) {
+                    registration = this._languageFeaturesService.completionProvider.register({
+                        language: model.getLanguageId(),
+                        pattern: model.uri.fsPath,
+                        scheme: model.uri.scheme,
+                        exclusive: true
+                    }, provider);
+                    this._snippetListener.add(registration);
+                    isRegistered = true;
+                }
+            };
+            this._choiceCompletions = { provider, enable, disable };
         }
         this._updateState();
         this._snippetListener.add(this._editor.onDidChangeModelContent(e => e.isFlush && this.cancel()));
@@ -176,20 +178,23 @@ let SnippetController2 = class SnippetController2 {
         this._handleChoice();
     }
     _handleChoice() {
+        var _a;
         if (!this._session || !this._editor.hasModel()) {
             this._currentChoice = undefined;
             return;
         }
         const { activeChoice } = this._session;
-        if (!activeChoice || !this._choiceCompletionItemProvider) {
+        if (!activeChoice || !this._choiceCompletions) {
+            (_a = this._choiceCompletions) === null || _a === void 0 ? void 0 : _a.disable();
             this._currentChoice = undefined;
             return;
         }
         if (this._currentChoice !== activeChoice.choice) {
             this._currentChoice = activeChoice.choice;
+            this._choiceCompletions.enable();
             // trigger suggest with the special choice completion provider
             queueMicrotask(() => {
-                showSimpleSuggestions(this._editor, this._choiceCompletionItemProvider);
+                showSimpleSuggestions(this._editor, this._choiceCompletions.provider);
             });
         }
     }
@@ -216,15 +221,13 @@ let SnippetController2 = class SnippetController2 {
         }
     }
     prev() {
-        if (this._session) {
-            this._session.prev();
-        }
+        var _a;
+        (_a = this._session) === null || _a === void 0 ? void 0 : _a.prev();
         this._updateState();
     }
     next() {
-        if (this._session) {
-            this._session.next();
-        }
+        var _a;
+        (_a = this._session) === null || _a === void 0 ? void 0 : _a.next();
         this._updateState();
     }
     isInSnippet() {
@@ -242,7 +245,7 @@ SnippetController2 = __decorate([
     __param(4, ILanguageConfigurationService)
 ], SnippetController2);
 export { SnippetController2 };
-registerEditorContribution(SnippetController2.ID, SnippetController2);
+registerEditorContribution(SnippetController2.ID, SnippetController2, 4 /* EditorContributionInstantiation.Lazy */);
 const CommandCtor = EditorCommand.bindToContribution(SnippetController2.get);
 registerEditorCommand(new CommandCtor({
     id: 'jumpToNextSnippetPlaceholder',
@@ -285,18 +288,3 @@ registerEditorCommand(new CommandCtor({
     // 	primary: KeyCode.Enter,
     // }
 }));
-// ---
-export function performSnippetEdit(editor, snippet, selections) {
-    const controller = SnippetController2.get(editor);
-    if (!controller) {
-        return false;
-    }
-    editor.focus();
-    controller.apply(selections.map(selection => {
-        return {
-            range: Selection.liftSelection(selection),
-            template: snippet
-        };
-    }));
-    return controller.isInSnippet();
-}

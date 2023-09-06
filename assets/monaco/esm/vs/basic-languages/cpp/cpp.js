@@ -1,6 +1,6 @@
 /*!-----------------------------------------------------------------------------
  * Copyright (c) Microsoft Corporation. All rights reserved.
- * Version: 0.34.1(547870b6881302c5b4ff32173c16d06009e3588f)
+ * Version: 0.41.0(38e1e3d097f84e336c311d071a9ffb5191d4ffd1)
  * Released under the MIT license
  * https://github.com/microsoft/monaco-editor/blob/main/LICENSE.txt
  *-----------------------------------------------------------------------------*/
@@ -193,6 +193,9 @@ var language = {
     "__m256",
     "__m256d",
     "__m256i",
+    "__m512",
+    "__m512d",
+    "__m512i",
     "__m64",
     "__multiple_inheritance",
     "__newslot",
@@ -265,7 +268,7 @@ var language = {
     ">>>="
   ],
   symbols: /[=><!~?:&|+\-*\/\^%]+/,
-  escapes: /\\(?:[abfnrtv\\"']|x[0-9A-Fa-f]{1,4}|u[0-9A-Fa-f]{4}|U[0-9A-Fa-f]{8})/,
+  escapes: /\\(?:[0abfnrtv\\"']|x[0-9A-Fa-f]{1,4}|u[0-9A-Fa-f]{4}|U[0-9A-Fa-f]{8})/,
   integersuffix: /([uU](ll|LL|l|L)|(ll|LL|l|L)?[uU]?)/,
   floatsuffix: /[fFlL]?/,
   encoding: /u|u8|U|L/,

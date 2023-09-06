@@ -14,13 +14,13 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 import { PauseableEmitter } from '../../../base/common/event.js';
 import { Iterable } from '../../../base/common/iterator.js';
 import { DisposableStore, MutableDisposable } from '../../../base/common/lifecycle.js';
-import { TernarySearchTree } from '../../../base/common/map.js';
 import { cloneAndChange } from '../../../base/common/objects.js';
+import { TernarySearchTree } from '../../../base/common/ternarySearchTree.js';
 import { URI } from '../../../base/common/uri.js';
 import { localize } from '../../../nls.js';
 import { CommandsRegistry } from '../../commands/common/commands.js';
 import { IConfigurationService } from '../../configuration/common/configuration.js';
-import { IContextKeyService, RawContextKey, SET_CONTEXT_COMMAND_ID } from '../common/contextkey.js';
+import { IContextKeyService, RawContextKey } from '../common/contextkey.js';
 const KEYBINDING_CONTEXT_ATTR = 'data-keybinding-context';
 export class Context {
     constructor(id, parent) {
@@ -79,7 +79,7 @@ class ConfigAwareContextValuesContainer extends Context {
         this._listener = this._configurationService.onDidChangeConfiguration(event => {
             if (event.source === 7 /* ConfigurationTarget.DEFAULT */) {
                 // new setting, reset everything
-                const allKeys = Array.from(Iterable.map(this._values, ([k]) => k));
+                const allKeys = Array.from(this._values, ([k]) => k);
                 this._values.clear();
                 emitter.fire(new ArrayContextKeyChangeEvent(allKeys));
             }
@@ -397,7 +397,8 @@ function findContextAttr(domNode) {
     return 0;
 }
 export function setContext(accessor, contextKey, contextValue) {
-    accessor.get(IContextKeyService).createKey(String(contextKey), stringifyURIs(contextValue));
+    const contextKeyService = accessor.get(IContextKeyService);
+    contextKeyService.createKey(String(contextKey), stringifyURIs(contextValue));
 }
 function stringifyURIs(contextValue) {
     return cloneAndChange(contextValue, (obj) => {
@@ -410,7 +411,7 @@ function stringifyURIs(contextValue) {
         return undefined;
     });
 }
-CommandsRegistry.registerCommand(SET_CONTEXT_COMMAND_ID, setContext);
+CommandsRegistry.registerCommand('_setContext', setContext);
 CommandsRegistry.registerCommand({
     id: 'getContextKeyInfo',
     handler() {

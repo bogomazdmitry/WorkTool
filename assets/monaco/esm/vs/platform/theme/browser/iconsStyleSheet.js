@@ -4,8 +4,8 @@
  *--------------------------------------------------------------------------------------------*/
 import { asCSSPropertyValue, asCSSUrl } from '../../../base/browser/dom.js';
 import { Emitter } from '../../../base/common/event.js';
+import { ThemeIcon } from '../../../base/common/themables.js';
 import { getIconRegistry } from '../common/iconRegistry.js';
-import { ThemeIcon } from '../common/themeService.js';
 export function getIconsStyleSheet(themeService) {
     const onDidChangeEmmiter = new Emitter();
     const iconRegistry = getIconRegistry();

@@ -31,13 +31,13 @@ import { localize } from '../../../../nls.js';
 import { IContextKeyService, RawContextKey } from '../../../../platform/contextkey/common/contextkey.js';
 export const SelectionAnchorSet = new RawContextKey('selectionAnchorSet', false);
 let SelectionAnchorController = class SelectionAnchorController {
+    static get(editor) {
+        return editor.getContribution(SelectionAnchorController.ID);
+    }
     constructor(editor, contextKeyService) {
         this.editor = editor;
         this.selectionAnchorSetContextKey = SelectionAnchorSet.bindTo(contextKeyService);
         this.modelChangeListener = editor.onDidChangeModel(() => this.selectionAnchorSetContextKey.reset());
-    }
-    static get(editor) {
-        return editor.getContribution(SelectionAnchorController.ID);
     }
     setSelectionAnchor() {
         if (this.editor.hasModel()) {
@@ -173,7 +173,7 @@ class CancelSelectionAnchor extends EditorAction {
         });
     }
 }
-registerEditorContribution(SelectionAnchorController.ID, SelectionAnchorController);
+registerEditorContribution(SelectionAnchorController.ID, SelectionAnchorController, 4 /* EditorContributionInstantiation.Lazy */);
 registerEditorAction(SetSelectionAnchor);
 registerEditorAction(GoToSelectionAnchor);
 registerEditorAction(SelectFromAnchorToCursor);

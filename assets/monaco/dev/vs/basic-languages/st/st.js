@@ -1,7 +1,7 @@
 "use strict";
 /*!-----------------------------------------------------------------------------
  * Copyright (c) Microsoft Corporation. All rights reserved.
- * Version: 0.34.1(547870b6881302c5b4ff32173c16d06009e3588f)
+ * Version: 0.41.0(38e1e3d097f84e336c311d071a9ffb5191d4ffd1)
  * Released under the MIT license
  * https://github.com/microsoft/monaco-editor/blob/main/LICENSE.txt
  *-----------------------------------------------------------------------------*/
@@ -195,7 +195,8 @@ var moduleExports = (() => {
       "vendor",
       "common_source",
       "from",
-      "extends"
+      "extends",
+      "implements"
     ],
     constant: ["false", "true", "null"],
     defineKeywords: [

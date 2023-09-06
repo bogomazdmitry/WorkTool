@@ -23,8 +23,7 @@ import { localize } from '../../../../../nls.js';
 import { IInstantiationService } from '../../../../../platform/instantiation/common/instantiation.js';
 import { IKeybindingService } from '../../../../../platform/keybinding/common/keybinding.js';
 import { ILabelService } from '../../../../../platform/label/common/label.js';
-import { attachBadgeStyler } from '../../../../../platform/theme/common/styler.js';
-import { IThemeService } from '../../../../../platform/theme/common/themeService.js';
+import { defaultCountBadgeStyles } from '../../../../../platform/theme/browser/defaultStyles.js';
 import { FileReferences, OneReference, ReferencesModel } from '../referencesModel.js';
 let DataSource = class DataSource {
     constructor(_resolverService) {
@@ -101,14 +100,13 @@ export class IdentityProvider {
 }
 //#region render: File
 let FileReferencesTemplate = class FileReferencesTemplate extends Disposable {
-    constructor(container, _labelService, themeService) {
+    constructor(container, _labelService) {
         super();
         this._labelService = _labelService;
         const parent = document.createElement('div');
         parent.classList.add('reference-file');
         this.file = this._register(new IconLabel(parent, { supportHighlights: true }));
-        this.badge = new CountBadge(dom.append(parent, dom.$('.count')));
-        this._register(attachBadgeStyler(this.badge, themeService));
+        this.badge = new CountBadge(dom.append(parent, dom.$('.count')), {}, defaultCountBadgeStyles);
         container.appendChild(parent);
     }
     set(element, matches) {
@@ -125,8 +123,7 @@ let FileReferencesTemplate = class FileReferencesTemplate extends Disposable {
     }
 };
 FileReferencesTemplate = __decorate([
-    __param(1, ILabelService),
-    __param(2, IThemeService)
+    __param(1, ILabelService)
 ], FileReferencesTemplate);
 let FileReferencesRenderer = class FileReferencesRenderer {
     constructor(_instantiationService) {

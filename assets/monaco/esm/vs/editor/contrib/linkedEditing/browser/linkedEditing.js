@@ -38,14 +38,17 @@ import { ModelDecorationOptions } from '../../../common/model/textModel.js';
 import { ILanguageConfigurationService } from '../../../common/languages/languageConfigurationRegistry.js';
 import * as nls from '../../../../nls.js';
 import { ContextKeyExpr, IContextKeyService, RawContextKey } from '../../../../platform/contextkey/common/contextkey.js';
-import { registerColor } from '../../../../platform/theme/common/colorRegistry.js';
-import { registerThemingParticipant } from '../../../../platform/theme/common/themeService.js';
 import { ILanguageFeaturesService } from '../../../common/services/languageFeatures.js';
+import { registerColor } from '../../../../platform/theme/common/colorRegistry.js';
 import { ILanguageFeatureDebounceService } from '../../../common/services/languageFeatureDebounce.js';
 import { StopWatch } from '../../../../base/common/stopwatch.js';
+import './linkedEditing.css';
 export const CONTEXT_ONTYPE_RENAME_INPUT_VISIBLE = new RawContextKey('LinkedEditingInputVisible', false);
 const DECORATION_CLASS_NAME = 'linked-editing-decoration';
 let LinkedEditingContribution = class LinkedEditingContribution extends Disposable {
+    static get(editor) {
+        return editor.getContribution(LinkedEditingContribution.ID);
+    }
     constructor(editor, contextKeyService, languageFeaturesService, languageConfigurationService, languageFeatureDebounceService) {
         super();
         this.languageConfigurationService = languageConfigurationService;
@@ -55,7 +58,7 @@ let LinkedEditingContribution = class LinkedEditingContribution extends Disposab
         this._providers = languageFeaturesService.linkedEditingRangeProvider;
         this._enabled = false;
         this._visibleContextKey = CONTEXT_ONTYPE_RENAME_INPUT_VISIBLE.bindTo(contextKeyService);
-        this._debounceInformation = languageFeatureDebounceService.for(this._providers, 'Linked Editing', { min: 200 });
+        this._debounceInformation = languageFeatureDebounceService.for(this._providers, 'Linked Editing', { max: 200 });
         this._currentDecorations = this._editor.createDecorationsCollection();
         this._languageWordPattern = null;
         this._currentWordPattern = null;
@@ -68,7 +71,7 @@ let LinkedEditingContribution = class LinkedEditingContribution extends Disposab
         this._currentRequestModelVersion = null;
         this._register(this._editor.onDidChangeModel(() => this.reinitialize(true)));
         this._register(this._editor.onDidChangeConfiguration(e => {
-            if (e.hasChanged(64 /* EditorOption.linkedEditing */) || e.hasChanged(84 /* EditorOption.renameOnType */)) {
+            if (e.hasChanged(68 /* EditorOption.linkedEditing */) || e.hasChanged(91 /* EditorOption.renameOnType */)) {
                 this.reinitialize(false);
             }
         }));
@@ -76,12 +79,9 @@ let LinkedEditingContribution = class LinkedEditingContribution extends Disposab
         this._register(this._editor.onDidChangeModelLanguage(() => this.reinitialize(true)));
         this.reinitialize(true);
     }
-    static get(editor) {
-        return editor.getContribution(LinkedEditingContribution.ID);
-    }
     reinitialize(forceRefresh) {
         const model = this._editor.getModel();
-        const isEnabled = model !== null && (this._editor.getOption(64 /* EditorOption.linkedEditing */) || this._editor.getOption(84 /* EditorOption.renameOnType */)) && this._providers.has(model);
+        const isEnabled = model !== null && (this._editor.getOption(68 /* EditorOption.linkedEditing */) || this._editor.getOption(91 /* EditorOption.renameOnType */)) && this._providers.has(model);
         if (isEnabled === this._enabled && !forceRefresh) {
             return;
         }
@@ -127,7 +127,7 @@ let LinkedEditingContribution = class LinkedEditingContribution extends Disposab
         this.updateRanges();
     }
     _syncRanges(token) {
-        // dalayed invocation, make sure we're still on
+        // delayed invocation, make sure we're still on
         if (!this._editor.hasModel() || token !== this._syncRangesToken || this._currentDecorations.length === 0) {
             // nothing to do
             return;
@@ -230,6 +230,8 @@ let LinkedEditingContribution = class LinkedEditingContribution extends Disposab
                     }
                 }
             }
+            // Clear existing decorations while we compute new ones
+            this.clearRanges();
             this._currentRequestPosition = position;
             this._currentRequestModelVersion = modelVersionId;
             const request = createCancelablePromise((token) => __awaiter(this, void 0, void 0, function* () {
@@ -366,15 +368,9 @@ function getLinkedEditingRanges(providers, model, position, token) {
     })), result => !!result && arrays.isNonEmptyArray(result === null || result === void 0 ? void 0 : result.ranges));
 }
 export const editorLinkedEditingBackground = registerColor('editor.linkedEditingBackground', { dark: Color.fromHex('#f00').transparent(0.3), light: Color.fromHex('#f00').transparent(0.3), hcDark: Color.fromHex('#f00').transparent(0.3), hcLight: Color.white }, nls.localize('editorLinkedEditingBackground', 'Background color when the editor auto renames on type.'));
-registerThemingParticipant((theme, collector) => {
-    const editorLinkedEditingBackgroundColor = theme.getColor(editorLinkedEditingBackground);
-    if (editorLinkedEditingBackgroundColor) {
-        collector.addRule(`.monaco-editor .${DECORATION_CLASS_NAME} { background: ${editorLinkedEditingBackgroundColor}; border-left-color: ${editorLinkedEditingBackgroundColor}; }`);
-    }
-});
 registerModelAndPositionCommand('_executeLinkedEditingProvider', (_accessor, model, position) => {
     const { linkedEditingRangeProvider } = _accessor.get(ILanguageFeaturesService);
     return getLinkedEditingRanges(linkedEditingRangeProvider, model, position, CancellationToken.None);
 });
-registerEditorContribution(LinkedEditingContribution.ID, LinkedEditingContribution);
+registerEditorContribution(LinkedEditingContribution.ID, LinkedEditingContribution, 1 /* EditorContributionInstantiation.AfterFirstRender */);
 registerEditorAction(LinkedEditingAction);

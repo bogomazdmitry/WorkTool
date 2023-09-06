@@ -55,6 +55,17 @@ export class MouseWheelClassifier {
         } while (true);
         return (score <= 0.5);
     }
+    acceptStandardWheelEvent(e) {
+        const osZoomFactor = window.devicePixelRatio / getZoomFactor();
+        if (platform.isWindows || platform.isLinux) {
+            // On Windows and Linux, the incoming delta events are multiplied with the OS zoom factor.
+            // The OS zoom factor can be reverse engineered by using the device pixel ratio and the configured zoom factor into account.
+            this.accept(Date.now(), e.deltaX / osZoomFactor, e.deltaY / osZoomFactor);
+        }
+        else {
+            this.accept(Date.now(), e.deltaX, e.deltaY);
+        }
+    }
     accept(timestamp, deltaX, deltaY) {
         const item = new MouseWheelClassifierItem(timestamp, deltaX, deltaY);
         item.score = this._computeScore(item);
@@ -108,6 +119,9 @@ export class MouseWheelClassifier {
 }
 MouseWheelClassifier.INSTANCE = new MouseWheelClassifier();
 export class AbstractScrollableElement extends Widget {
+    get options() {
+        return this._options;
+    }
     constructor(element, options, scrollable) {
         super();
         this._onScroll = this._register(new Emitter());
@@ -162,9 +176,6 @@ export class AbstractScrollableElement extends Widget {
         this._mouseIsOver = false;
         this._shouldRender = true;
         this._revealOnScroll = true;
-    }
-    get options() {
-        return this._options;
     }
     dispose() {
         this._mouseWheelToDispose = dispose(this._mouseWheelToDispose);
@@ -244,6 +255,9 @@ export class AbstractScrollableElement extends Widget {
             this._render();
         }
     }
+    delegateScrollFromMouseWheelEvent(browserEvent) {
+        this._onMouseWheel(new StandardWheelEvent(browserEvent));
+    }
     // -------------------- mouse wheel scrolling --------------------
     _setListeningToMouseWheel(shouldListen) {
         const isListening = (this._mouseWheelToDispose.length > 0);
@@ -262,17 +276,13 @@ export class AbstractScrollableElement extends Widget {
         }
     }
     _onMouseWheel(e) {
+        var _a;
+        if ((_a = e.browserEvent) === null || _a === void 0 ? void 0 : _a.defaultPrevented) {
+            return;
+        }
         const classifier = MouseWheelClassifier.INSTANCE;
         if (SCROLL_WHEEL_SMOOTH_SCROLL_ENABLED) {
-            const osZoomFactor = window.devicePixelRatio / getZoomFactor();
-            if (platform.isWindows || platform.isLinux) {
-                // On Windows and Linux, the incoming delta events are multiplied with the OS zoom factor.
-                // The OS zoom factor can be reverse engineered by using the device pixel ratio and the configured zoom factor into account.
-                classifier.accept(Date.now(), e.deltaX / osZoomFactor, e.deltaY / osZoomFactor);
-            }
-            else {
-                classifier.accept(Date.now(), e.deltaX, e.deltaY);
-            }
+            classifier.acceptStandardWheelEvent(e);
         }
         // console.log(`${Date.now()}, ${e.deltaY}, ${e.deltaX}`);
         let didScroll = false;

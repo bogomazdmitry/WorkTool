@@ -31,4 +31,11 @@ export class SetMap {
         }
         values.forEach(fn);
     }
+    get(key) {
+        const values = this.map.get(key);
+        if (!values) {
+            return new Set();
+        }
+        return new Set(values);
+    }
 }

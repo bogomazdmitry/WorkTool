@@ -769,7 +769,7 @@ export class TypeOperations {
             }
             const commands = [];
             for (let i = 0, len = positions.length; i < len; i++) {
-                commands.push(new CompositionSurroundSelectionCommand(positions[i], compositions[i].deletedText, ch));
+                commands.push(new CompositionSurroundSelectionCommand(positions[i], compositions[i].deletedText, config.surroundingPairs[ch]));
             }
             return new EditOperationResult(4 /* EditOperationType.TypingOther */, commands, {
                 shouldPushStackElementBefore: true,

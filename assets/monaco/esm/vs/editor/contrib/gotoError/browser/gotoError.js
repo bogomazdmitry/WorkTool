@@ -35,6 +35,9 @@ import { IInstantiationService } from '../../../../platform/instantiation/common
 import { registerIcon } from '../../../../platform/theme/common/iconRegistry.js';
 import { MarkerNavigationWidget } from './gotoErrorWidget.js';
 let MarkerController = class MarkerController {
+    static get(editor) {
+        return editor.getContribution(MarkerController.ID);
+    }
     constructor(editor, _markerNavigationService, _contextKeyService, _editorService, _instantiationService) {
         this._markerNavigationService = _markerNavigationService;
         this._contextKeyService = _contextKeyService;
@@ -43,9 +46,6 @@ let MarkerController = class MarkerController {
         this._sessionDispoables = new DisposableStore();
         this._editor = editor;
         this._widgetVisible = CONTEXT_MARKERS_NAVIGATION_VISIBLE.bindTo(this._contextKeyService);
-    }
-    static get(editor) {
-        return editor.getContribution(MarkerController.ID);
     }
     dispose() {
         this._cleanUp();
@@ -264,7 +264,7 @@ class PrevMarkerInFilesAction extends MarkerNavigationAction {
         });
     }
 }
-registerEditorContribution(MarkerController.ID, MarkerController);
+registerEditorContribution(MarkerController.ID, MarkerController, 4 /* EditorContributionInstantiation.Lazy */);
 registerEditorAction(NextMarkerAction);
 registerEditorAction(PrevMarkerAction);
 registerEditorAction(NextMarkerInFilesAction);

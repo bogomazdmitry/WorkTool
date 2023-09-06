@@ -108,4 +108,4 @@ CodeLensCache = __decorate([
     __param(0, IStorageService)
 ], CodeLensCache);
 export { CodeLensCache };
-registerSingleton(ICodeLensCache, CodeLensCache);
+registerSingleton(ICodeLensCache, CodeLensCache, 1 /* InstantiationType.Delayed */);

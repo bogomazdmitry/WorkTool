@@ -7,6 +7,8 @@ import { Emitter } from '../../../../base/common/event.js';
 import { Range } from '../../../common/core/range.js';
 import { countEOL } from '../../../common/core/eolCounter.js';
 export class HiddenRangeModel {
+    get onDidChange() { return this._updateEventEmitter.event; }
+    get hiddenRanges() { return this._hiddenRanges; }
     constructor(model) {
         this._updateEventEmitter = new Emitter();
         this._hasLineChanges = false;
@@ -17,8 +19,6 @@ export class HiddenRangeModel {
             this.updateHiddenRanges();
         }
     }
-    get onDidChange() { return this._updateEventEmitter.event; }
-    get hiddenRanges() { return this._hiddenRanges; }
     notifyChangeModelContent(e) {
         if (this._hiddenRanges.length && !this._hasLineChanges) {
             this._hasLineChanges = e.changes.some(change => {
