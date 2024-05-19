@@ -2,14 +2,14 @@ import { NgModule, isDevMode } from '@angular/core';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { SharedModule } from './shared/shared.module';
-import { initializeApp, provideFirebaseApp } from '@angular/fire/app';
 import { environment } from '../environments/environment';
-import { provideFirestore, getFirestore } from '@angular/fire/firestore';
 import { ChatGptModule } from './chat-gpt/chat-gpt.module';
 import { TextModule } from './text/text.module';
 import { JsonPipe } from '@angular/common';
 import { RedirectComponent } from './redirect.component';
 import { ServiceWorkerModule } from '@angular/service-worker';
+import { AngularFireModule } from '@angular/fire/compat';
+import { AngularFirestoreModule } from '@angular/fire/compat/firestore';
 
 @NgModule({
   declarations: [AppComponent, RedirectComponent],
@@ -18,8 +18,8 @@ import { ServiceWorkerModule } from '@angular/service-worker';
     ChatGptModule,
     AppRoutingModule,
     SharedModule,
-    provideFirebaseApp(() => initializeApp(environment.firebase)),
-    provideFirestore(() => getFirestore()),
+    AngularFireModule.initializeApp(environment.firebase),
+    AngularFirestoreModule,
     ServiceWorkerModule.register('ngsw-worker.js', {
       enabled: !isDevMode(),
       // Register the ServiceWorker as soon as the application is stable

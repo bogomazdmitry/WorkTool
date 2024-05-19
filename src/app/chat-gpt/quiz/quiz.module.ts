@@ -9,7 +9,7 @@ import { QuizRoutingModule } from './quiz-routing.module';
 import { QuizRequestComponent } from './quiz-request/quiz-request.component';
 import { MatInputModule } from '@angular/material/input';
 import { QuizByIdComponent } from './quiz-by-id/quiz-by-id.component';
-import { SharedModule } from 'src/app/shared/shared.module';
+import { SharedModule } from 'app/shared/shared.module';
 import { ChatGptCommonModule } from '../chat-gpt-common/chat-gpt-common.module';
 
 @NgModule({

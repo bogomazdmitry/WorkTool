@@ -1,25 +1,22 @@
-@import "node_modules/bootstrap/scss/functions";
-@import "node_modules/bootstrap/scss/variables";
-@import "node_modules/bootstrap/scss/mixins";
+@import "~bootstrap/scss/functions";
+@import "~bootstrap/scss/variables";
+@import "~bootstrap/scss/mixins";
 
 .navbar {
   background:
-        /* top, transparent black, faked with gradient */ linear-gradient(
-    rgba(0, 0, 0, 0.2),
-    rgba(0, 0, 0, 0.2)
-  );
+    /* top, transparent black, faked with gradient */
+    linear-gradient(rgba(0, 0, 0, 0.2),
+      rgba(0, 0, 0, 0.2));
 
-    .dropdown-button-item {
-      width: 100%;
+  .dropdown-button-item {
+    width: 100%;
+  }
+
+  .navbar-collapse {
+    .dropdown-menu {
+      border-radius: var(--mdc-protected-button-container-shape,
+          var(--mdc-shape-small, 4px));
     }
-  
-    .navbar-collapse {
-      .dropdown-menu {
-        border-radius: var(
-          --mdc-protected-button-container-shape,
-          var(--mdc-shape-small, 4px)
-        );
-      }
 
     ul {
       @extend .mat-app-background !optional;
@@ -27,9 +24,9 @@
   }
 }
 
-@include media-breakpoint-down(md) { 
+@include media-breakpoint-down(md) {
   .force-width {
-    width: 100%!important;
+    width: 100% !important;
   }
 
   .wide-changer {

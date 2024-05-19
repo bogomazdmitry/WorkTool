@@ -7,8 +7,8 @@ import {
 } from '@angular/core';
 import { EditorComponent } from 'ngx-monaco-editor-v2';
 import * as pako from 'pako';
-import { ThemeService } from 'src/app/shared/services/theme.service';
-import { STORAGE_KEYS } from 'src/app/shared/static/local-storage-keys';
+import { ThemeService } from 'app/shared/services/theme.service';
+import { STORAGE_KEYS } from 'app/shared/static/local-storage-keys';
 
 @Component({
   selector: 'app-encoding',

@@ -1,8 +1,8 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { AfterViewInit, Component, OnDestroy, OnInit } from '@angular/core';
 import { catchError, throwError } from 'rxjs';
-import { ChatGptService } from 'src/app/shared/services/chat-gpt.service';
-import { STORAGE_KEYS } from 'src/app/shared/static/local-storage-keys';
+import { ChatGptService } from 'app/shared/services/chat-gpt.service';
+import { STORAGE_KEYS } from 'app/shared/static/local-storage-keys';
 import { Quiz } from '../quiz.models';
 import { QUIZ_TEST } from './quiz-test';
 import { ShortcutInput, AllowIn } from 'ng-keyboard-shortcuts';

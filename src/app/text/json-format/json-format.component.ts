@@ -7,7 +7,7 @@ import {
   ViewChild,
 } from '@angular/core';
 import { EditorComponent } from 'ngx-monaco-editor-v2';
-import { STORAGE_KEYS } from 'src/app/shared/static/local-storage-keys';
+import { STORAGE_KEYS } from 'app/shared/static/local-storage-keys';
 import { ThemeService } from '../../shared/services/theme.service';
 import { ShortcutInput, AllowIn } from 'ng-keyboard-shortcuts';
 

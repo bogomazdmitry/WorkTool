@@ -8,7 +8,7 @@ import {
   setDoc,
 } from '@angular/fire/firestore';
 import { catchError, map, Observable, throwError } from 'rxjs';
-import { ErrorService } from 'src/app/shared/services/global-error.service';
+import { ErrorService } from 'app/shared/services/global-error.service';
 import { Quiz } from './quiz.models';
 
 @Injectable({
