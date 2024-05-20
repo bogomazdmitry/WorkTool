@@ -147,7 +147,7 @@ class AbstractMoveLinesAction extends EditorAction {
         const languageConfigurationService = accessor.get(ILanguageConfigurationService);
         const commands = [];
         const selections = editor.getSelections() || [];
-        const autoIndent = editor.getOption(11 /* EditorOption.autoIndent */);
+        const autoIndent = editor.getOption(12 /* EditorOption.autoIndent */);
         for (const selection of selections) {
             commands.push(new MoveLinesCommand(selection, this.down, autoIndent, languageConfigurationService));
         }
@@ -579,7 +579,7 @@ export class DeleteAllLeftAction extends AbstractDeleteAllToBoundaryAction {
             if (selection.isEmpty()) {
                 if (selection.startColumn === 1) {
                     const deleteFromLine = Math.max(1, selection.startLineNumber - 1);
-                    const deleteFromColumn = selection.startLineNumber === 1 ? 1 : model.getLineContent(deleteFromLine).length + 1;
+                    const deleteFromColumn = selection.startLineNumber === 1 ? 1 : model.getLineLength(deleteFromLine) + 1;
                     return new Range(deleteFromLine, deleteFromColumn, selection.startLineNumber, 1);
                 }
                 else {
@@ -718,7 +718,7 @@ export class JoinLinesAction extends EditorAction {
             const startColumn = 1;
             let columnDeltaOffset = 0;
             let endLineNumber, endColumn;
-            const selectionEndPositionOffset = model.getLineContent(selection.endLineNumber).length - selection.endColumn;
+            const selectionEndPositionOffset = model.getLineLength(selection.endLineNumber) - selection.endColumn;
             if (selection.isEmpty() || selection.startLineNumber === selection.endLineNumber) {
                 const position = selection.getStartPosition();
                 if (position.lineNumber < model.getLineCount()) {
@@ -797,8 +797,8 @@ export class TransposeAction extends EditorAction {
     constructor() {
         super({
             id: 'editor.action.transpose',
-            label: nls.localize('editor.transpose', "Transpose characters around the cursor"),
-            alias: 'Transpose characters around the cursor',
+            label: nls.localize('editor.transpose', "Transpose Characters around the Cursor"),
+            alias: 'Transpose Characters around the Cursor',
             precondition: EditorContextKeys.writable
         });
     }
@@ -850,7 +850,7 @@ export class AbstractCaseAction extends EditorAction {
         if (model === null) {
             return;
         }
-        const wordSeparators = editor.getOption(128 /* EditorOption.wordSeparators */);
+        const wordSeparators = editor.getOption(129 /* EditorOption.wordSeparators */);
         const textEdits = [];
         for (const selection of selections) {
             if (selection.isEmpty()) {

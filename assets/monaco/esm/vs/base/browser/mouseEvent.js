@@ -28,8 +28,8 @@ export class StandardMouseEvent {
         }
         else {
             // Probably hit by MSGestureEvent
-            this.posx = e.clientX + document.body.scrollLeft + document.documentElement.scrollLeft;
-            this.posy = e.clientY + document.body.scrollTop + document.documentElement.scrollTop;
+            this.posx = e.clientX + this.target.ownerDocument.body.scrollLeft + this.target.ownerDocument.documentElement.scrollLeft;
+            this.posy = e.clientY + this.target.ownerDocument.body.scrollTop + this.target.ownerDocument.documentElement.scrollTop;
         }
         // Find the position of the iframe this code is executing in relative to the iframe where the event was captured.
         const iframeOffsets = IframeUtils.getPositionOfChildWindowRelativeToAncestorWindow(window, e.view);

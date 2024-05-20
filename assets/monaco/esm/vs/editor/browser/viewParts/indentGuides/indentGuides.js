@@ -17,12 +17,12 @@ export class IndentGuidesOverlay extends DynamicViewOverlay {
         this._context = context;
         this._primaryPosition = null;
         const options = this._context.configuration.options;
-        const wrappingInfo = options.get(143 /* EditorOption.wrappingInfo */);
-        const fontInfo = options.get(49 /* EditorOption.fontInfo */);
-        this._lineHeight = options.get(65 /* EditorOption.lineHeight */);
+        const wrappingInfo = options.get(144 /* EditorOption.wrappingInfo */);
+        const fontInfo = options.get(50 /* EditorOption.fontInfo */);
+        this._lineHeight = options.get(66 /* EditorOption.lineHeight */);
         this._spaceWidth = fontInfo.spaceWidth;
         this._maxIndentLeft = wrappingInfo.wrappingColumn === -1 ? -1 : (wrappingInfo.wrappingColumn * fontInfo.typicalHalfwidthCharacterWidth);
-        this._bracketPairGuideOptions = options.get(15 /* EditorOption.guides */);
+        this._bracketPairGuideOptions = options.get(16 /* EditorOption.guides */);
         this._renderResult = null;
         this._context.addEventHandler(this);
     }
@@ -34,12 +34,12 @@ export class IndentGuidesOverlay extends DynamicViewOverlay {
     // --- begin event handlers
     onConfigurationChanged(e) {
         const options = this._context.configuration.options;
-        const wrappingInfo = options.get(143 /* EditorOption.wrappingInfo */);
-        const fontInfo = options.get(49 /* EditorOption.fontInfo */);
-        this._lineHeight = options.get(65 /* EditorOption.lineHeight */);
+        const wrappingInfo = options.get(144 /* EditorOption.wrappingInfo */);
+        const fontInfo = options.get(50 /* EditorOption.fontInfo */);
+        this._lineHeight = options.get(66 /* EditorOption.lineHeight */);
         this._spaceWidth = fontInfo.spaceWidth;
         this._maxIndentLeft = wrappingInfo.wrappingColumn === -1 ? -1 : (wrappingInfo.wrappingColumn * fontInfo.typicalHalfwidthCharacterWidth);
-        this._bracketPairGuideOptions = options.get(15 /* EditorOption.guides */);
+        this._bracketPairGuideOptions = options.get(16 /* EditorOption.guides */);
         return true;
     }
     onCursorStateChanged(e) {

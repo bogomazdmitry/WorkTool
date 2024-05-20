@@ -16,6 +16,8 @@ import { StandardMouseEvent } from '../../../base/browser/mouseEvent.js';
 import { ToolBar } from '../../../base/browser/ui/toolbar/toolbar.js';
 import { Separator, toAction } from '../../../base/common/actions.js';
 import { coalesceInPlace } from '../../../base/common/arrays.js';
+import { intersection } from '../../../base/common/collections.js';
+import { Iterable } from '../../../base/common/iterator.js';
 import { DisposableStore } from '../../../base/common/lifecycle.js';
 import { localize } from '../../../nls.js';
 import { IMenuService, MenuItemAction, SubmenuItemAction } from '../common/actions.js';
@@ -52,7 +54,7 @@ let WorkbenchToolBar = class WorkbenchToolBar extends ToolBar {
     setActions(_primary, _secondary = [], menuIds) {
         var _a, _b, _c;
         this._sessionDisposables.clear();
-        const primary = _primary.slice();
+        const primary = _primary.slice(); // for hiding and overflow we set some items to undefined
         const secondary = _secondary.slice();
         const toggleActions = [];
         let toggleActionsCheckedCount = 0;
@@ -85,19 +87,26 @@ let WorkbenchToolBar = class WorkbenchToolBar extends ToolBar {
             }
         }
         // count for max
-        if (((_c = this._options) === null || _c === void 0 ? void 0 : _c.maxNumberOfItems) !== undefined) {
+        if (((_c = this._options) === null || _c === void 0 ? void 0 : _c.overflowBehavior) !== undefined) {
+            const exemptedIds = intersection(new Set(this._options.overflowBehavior.exempted), Iterable.map(primary, a => a === null || a === void 0 ? void 0 : a.id));
+            const maxItems = this._options.overflowBehavior.maxItems - exemptedIds.size;
             let count = 0;
             for (let i = 0; i < primary.length; i++) {
                 const action = primary[i];
                 if (!action) {
                     continue;
                 }
-                if (++count >= this._options.maxNumberOfItems) {
+                count++;
+                if (exemptedIds.has(action.id)) {
+                    continue;
+                }
+                if (count >= maxItems) {
                     primary[i] = undefined;
                     extraSecondary[i] = action;
                 }
             }
         }
+        // coalesce turns Array<IAction|undefined> into IAction[]
         coalesceInPlace(primary);
         coalesceInPlace(extraSecondary);
         super.setActions(primary, Separator.join(extraSecondary, secondary));

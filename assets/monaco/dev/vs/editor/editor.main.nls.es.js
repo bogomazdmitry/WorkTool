@@ -1,6 +1,6 @@
 /*!-----------------------------------------------------------
  * Copyright (c) Microsoft Corporation. All rights reserved.
- * Version: 0.41.0(38e1e3d097f84e336c311d071a9ffb5191d4ffd1)
+ * Version: 0.44.0(3e047efd345ff102c8c61b5398fb30845aaac166)
  * Released under the MIT license
  * https://github.com/microsoft/vscode/blob/main/LICENSE.txt
  *-----------------------------------------------------------*/
@@ -20,6 +20,10 @@ define("vs/editor/editor.main.nls.es", {
 	"vs/base/browser/ui/findinput/replaceInput": [
 		"entrada",
 		"Conservar may/min",
+	],
+	"vs/base/browser/ui/hover/hoverWidget": [
+		"Inspeccione esto en la vista accesible con {0}.",
+		"Inspeccione esto en la vista accesible mediante el comando Abrir vista accesible, que actualmente no se puede desencadenar mediante el enlace de teclado.",
 	],
 	"vs/base/browser/ui/iconLabel/iconLabelHover": [
 		"Cargando...",
@@ -109,63 +113,12 @@ define("vs/editor/editor.main.nls.es", {
 		"El número de cursores se ha limitado a {0}. Considere la posibilidad de usar [buscar y reemplazar](https://code.visualstudio.com/docs/editor/codebasics#_find-and-replace) para realizar cambios mayores o aumentar la configuración del límite de varios cursores del editor.",
 		"Aumentar el límite de varios cursores",
 	],
-	"vs/editor/browser/widget/diffEditor.contribution": [
-		"Visor de diferencias accesibles",
-		"Ir a la siguiente diferencia",
-		"Abrir visor de diferencias accesibles",
-		"Ir a la diferencia anterior",
-	],
-	"vs/editor/browser/widget/diffEditorWidget": [
-		"Decoración de línea para las inserciones en el editor de diferencias.",
-		"Decoración de línea para las eliminaciones en el editor de diferencias.",
-		" usar Mayús + F7 para navegar por los cambios",
-		"Los archivos no se pueden comparar porque uno de ellos es demasiado grande.",
-		"Haga clic para revertir el cambio",
-	],
-	"vs/editor/browser/widget/diffEditorWidget2/accessibleDiffViewer": [
+	"vs/editor/browser/widget/diffEditor/accessibleDiffViewer": [
 		"Icono de \"Insertar\" en el visor de diferencias accesible.",
 		"Icono de \"Quitar\" en el visor de diferencias accesible.",
 		"Icono de \"Cerrar\" en el visor de diferencias accesible.",
 		"Cerrar",
 		"Visor de diferencias accesible. Utilice la flecha hacia arriba y hacia abajo para navegar.",
-		"no se han cambiado líneas",
-		"1 línea cambiada",
-		"{0} líneas cambiadas",
-		"Diferencia {0} de {1}: línea original {2}, {3}, línea modificada {4}, {5}",
-		"Blanco",
-		"{0} línea sin cambios {1}",
-		"{0} línea original {1} línea modificada {2}",
-		"+ {0} línea modificada {1}",
-		"- {0} línea original {1}",
-	],
-	"vs/editor/browser/widget/diffEditorWidget2/colors": [
-		"Color del borde del texto que se movió en el editor de diferencias.",
-	],
-	"vs/editor/browser/widget/diffEditorWidget2/decorations": [
-		"Decoración de línea para las inserciones en el editor de diferencias.",
-		"Decoración de línea para las eliminaciones en el editor de diferencias.",
-		"Haga clic para revertir el cambio",
-	],
-	"vs/editor/browser/widget/diffEditorWidget2/diffEditorEditors": [
-		" use {0} para abrir la ayuda de accesibilidad.",
-	],
-	"vs/editor/browser/widget/diffEditorWidget2/inlineDiffDeletedCodeMargin": [
-		"Copiar líneas eliminadas",
-		"Copiar línea eliminada",
-		"Copiar líneas cambiadas",
-		"Copiar línea cambiada",
-		"Copiar la línea eliminada ({0})",
-		"Copiar línea cambiada ({0})",
-		"Revertir este cambio",
-	],
-	"vs/editor/browser/widget/diffEditorWidget2/unchangedRanges": [
-		"Plegar la región sin cambios",
-	],
-	"vs/editor/browser/widget/diffReview": [
-		"Icono para \"Insertar\" en la revisión de diferencias.",
-		"Icono para \"Quitar\" en la revisión de diferencias.",
-		"Icono para \"Cerrar\" en la revisión de diferencias.",
-		"Cerrar",
 		"no se han cambiado líneas",
 		"1 línea cambiada",
 		"{0} líneas cambiadas",
@@ -176,7 +129,43 @@ define("vs/editor/editor.main.nls.es", {
 		"+ {0} línea modificada {1}",
 		"- {0} línea original {1}",
 	],
-	"vs/editor/browser/widget/inlineDiffMargin": [
+	"vs/editor/browser/widget/diffEditor/colors": [
+		"Color del borde del texto que se movió en el editor de diferencias.",
+		"Color del borde de texto activo que se movió en el editor de diferencias.",
+	],
+	"vs/editor/browser/widget/diffEditor/decorations": [
+		"Decoración de línea para las inserciones en el editor de diferencias.",
+		"Decoración de línea para las eliminaciones en el editor de diferencias.",
+		"Haga clic para revertir el cambio",
+	],
+	"vs/editor/browser/widget/diffEditor/diffEditor.contribution": [
+		"Alternar contraer regiones sin cambios",
+		"Alternar Mostrar bloques de código movidos",
+		"Alternar el uso de la vista insertada cuando el espacio es limitado",
+		"Uso de la vista insertada cuando el espacio es limitado",
+		"Mostrar bloques de código movidos",
+		"Editor de diferencias",
+		"Lado del conmutador",
+		"Salir de la comparación de movimientos",
+		"Contraer todas las regiones sin cambios",
+		"Mostrar todas las regiones sin cambios",
+		"Visor de diferencias accesibles",
+		"Ir a la siguiente diferencia",
+		"Abrir visor de diferencias accesibles",
+		"Ir a la diferencia anterior",
+	],
+	"vs/editor/browser/widget/diffEditor/diffEditorEditors": [
+		" use {0} para abrir la ayuda de accesibilidad.",
+	],
+	"vs/editor/browser/widget/diffEditor/hideUnchangedRegionsFeature": [
+		"Plegar la región sin cambios",
+		"Haga clic o arrastre para mostrar más arriba",
+		"Mostrar todo",
+		"Hacer clic o arrastrar para mostrar más abajo",
+		"{0} líneas ocultas",
+		"Doble clic para desplegar",
+	],
+	"vs/editor/browser/widget/diffEditor/inlineDiffDeletedCodeMargin": [
 		"Copiar líneas eliminadas",
 		"Copiar línea eliminada",
 		"Copiar líneas cambiadas",
@@ -184,8 +173,12 @@ define("vs/editor/editor.main.nls.es", {
 		"Copiar la línea eliminada ({0})",
 		"Copiar línea cambiada ({0})",
 		"Revertir este cambio",
-		"Copiar la línea eliminada ({0})",
-		"Copiar línea cambiada ({0})",
+	],
+	"vs/editor/browser/widget/diffEditor/movedBlocksLines": [
+		"Código movido con cambios en la línea {0}-{1}",
+		"Código movido con cambios de la línea {0}-{1}",
+		"Código movido a la línea {0}-{1}",
+		"Código movido de la línea {0}-{1}",
 	],
 	"vs/editor/common/config/editorConfigurationSchema": [
 		"Editor",
@@ -218,6 +211,8 @@ define("vs/editor/editor.main.nls.es", {
 		"Tiempo de espera en milisegundos después del cual se cancela el cálculo de diferencias. Utilice 0 para no usar tiempo de espera.",
 		"Tamaño máximo de archivo en MB para el que calcular diferencias. Use 0 para no limitar.",
 		"Controla si el editor de diferencias muestra las diferencias en paralelo o alineadas.",
+		"Si el ancho del editor de diferencias es menor que este valor, se usa la vista insertada.",
+		"Si está habilitada y el ancho del editor es demasiado pequeño, se usa la vista en línea.",
 		"Cuando está habilitado, el editor de diferencias muestra flechas en su margen de glifo para revertir los cambios.",
 		"Cuando está habilitado, el editor de diferencias omite los cambios en los espacios en blanco iniciales o finales.",
 		"Controla si el editor de diferencias muestra los indicadores +/- para los cambios agregados o quitados.",
@@ -227,9 +222,11 @@ define("vs/editor/editor.main.nls.es", {
 		"Las líneas se ajustarán en función de la configuración de {0}.",
 		"Usa el algoritmo de diferenciación heredado.",
 		"Usa el algoritmo de diferenciación avanzada.",
-		"Controlar si el editor de diferencias muestra las regiones sin cambios. Solo funciona si {0}se establece.",
-		"Controlar si el editor de diferencias debe mostrar los movimientos de código detectados. Solo funciona cuando {0} se establece.",
-		"Controla si el editor de diferencias usa la implementación nueva o la anterior.",
+		"Controla si el editor de diferencias muestra las regiones sin cambios.",
+		"Controla cuántas líneas se usan para las regiones sin cambios.",
+		"Controla cuántas líneas se usan como mínimo para las regiones sin cambios.",
+		"Controla cuántas líneas se usan como contexto al comparar regiones sin cambios.",
+		"Controlar si el editor de diferencias debe mostrar los movimientos de código detectados.",
 		"Controla si el editor de diferencias muestra decoraciones vacías para ver dónde se insertan o eliminan los caracteres.",
 	],
 	"vs/editor/common/config/editorOptions": [
@@ -278,6 +275,7 @@ define("vs/editor/editor.main.nls.es", {
 		"Controla si se muestra la información al mantener el puntero sobre un elemento.",
 		"Controla el retardo en milisegundos después del cual se muestra la información al mantener el puntero sobre un elemento.",
 		"Controla si la información que aparece al mantener el puntero sobre un elemento permanece visible al mover el mouse sobre este.",
+		"Controla el retardo en milisegundos después del cual se oculta la información al mantener el puntero sobre un elemento. Requiere que se habilite \"editor.hover.sticky\".",
 		"Preferir mostrar los desplazamientos por encima de la línea, si hay espacio.",
 		"Se supone que todos los caracteres son del mismo ancho. Este es un algoritmo rápido que funciona correctamente para fuentes monoespaciales y ciertos scripts (como caracteres latinos) donde los glifos tienen el mismo ancho.",
 		"Delega el cálculo de puntos de ajuste en el explorador. Es un algoritmo lento, que podría causar bloqueos para archivos grandes, pero funciona correctamente en todos los casos.",
@@ -286,6 +284,7 @@ define("vs/editor/editor.main.nls.es", {
 		"Muestra los ámbitos actuales anidados durante el desplazamiento en la parte superior del editor.",
 		"Define el número máximo de líneas rápidas que se mostrarán.",
 		"Define el modelo que se va a usar para determinar qué líneas se van a pegar. Si el modelo de esquema no existe, recurrirá al modelo del proveedor de plegado que recurre al modelo de sangría. Este orden se respeta en los tres casos.",
+		"Habilite el desplazamiento del widget de desplazamiento rápido con la barra de desplazamiento horizontal del editor.",
 		"Habilita las sugerencias de incrustación en el editor.",
 		"Las sugerencias de incrustación están habilitadas",
 		"Las sugerencias de incrustación se muestran de forma predeterminada y se ocultan cuando se mantiene presionado {0}",
@@ -436,6 +435,9 @@ define("vs/editor/editor.main.nls.es", {
 		"Utilizar las configuraciones del lenguaje para determinar cuándo cerrar los corchetes automáticamente.",
 		"Cerrar automáticamente los corchetes cuando el cursor esté a la izquierda de un espacio en blanco.",
 		"Controla si el editor debe cerrar automáticamente los corchetes después de que el usuario agregue un corchete de apertura.",
+		"Utilice las configuraciones de idioma para determinar cuándo cerrar los comentarios automáticamente.",
+		"Cerrar automáticamente los comentarios solo cuando el cursor esté a la izquierda de un espacio en blanco.",
+		"Controla si el editor debe cerrar automáticamente los comentarios después de que el usuario agregue un comentario de apertura.",
 		"Quite los corchetes o las comillas de cierre adyacentes solo si se insertaron automáticamente.",
 		"Controla si el editor debe quitar los corchetes o las comillas de cierre adyacentes al eliminar.",
 		"Escriba en las comillas o los corchetes solo si se insertaron automáticamente.",
@@ -474,7 +476,7 @@ define("vs/editor/editor.main.nls.es", {
 		"Controla el número mínimo de líneas iniciales visibles (mínimo 0) y líneas finales (mínimo 1) que rodean el cursor. Se conoce como \"scrollOff\" o \"scrollOffset\" en otros editores.",
 		"Solo se aplica \"cursorSurroundingLines\" cuando se desencadena mediante el teclado o la API.",
 		"\"cursorSurroundingLines\" se aplica siempre.",
-		"Controla cuando se debe aplicar \"cursorSurroundingLines\".",
+		"Controla cuando se debe aplicar \"#cursorSurroundingLines#\".",
 		"Controla el ancho del cursor cuando \"#editor.cursorStyle#\" se establece en \"line\".",
 		"Controla si el editor debe permitir mover las selecciones mediante arrastrar y colocar.",
 		"Use un nuevo método de representación con svgs.",
@@ -545,6 +547,7 @@ define("vs/editor/editor.main.nls.es", {
 		"No mostrar sugerencias de fragmentos de código.",
 		"Controla si se muestran los fragmentos de código con otras sugerencias y cómo se ordenan.",
 		"Controla si el editor se desplazará con una animación.",
+		"Controla si se debe proporcionar la sugerencia de accesibilidad a los usuarios del lector de pantalla cuando se muestra una finalización insertada.",
 		"Tamaño de fuente del widget de sugerencias. Cuando se establece en {0}, se usa el valor de {1}.",
 		"Alto de línea para el widget de sugerencias. Cuando se establece en {0}, se usa el valor de {1}. El valor mínimo es 8.",
 		"Controla si deben aparecer sugerencias de forma automática al escribir caracteres desencadenadores.",
@@ -650,7 +653,9 @@ define("vs/editor/editor.main.nls.es", {
 		"Si el editor es de solo lectura",
 		"Si el contexto es un editor de diferencias",
 		"Si el contexto es un editor de diferencias incrustado",
+		"Indica si se selecciona un bloque de código movido para la comparación",
 		"Si el visor de diferencias accesible está visible",
+		"Indica si se alcanza el punto de interrupción insertado en paralelo del editor de diferencias",
 		"Si \"editor.columnSelection\" se ha habilitado",
 		"Si el editor tiene texto seleccionado",
 		"Si el editor tiene varias selecciones",
@@ -811,20 +816,22 @@ define("vs/editor/editor.main.nls.es", {
 	],
 	"vs/editor/contrib/codeAction/browser/codeActionContributions": [
 		"Activar/desactivar la visualización de los encabezados de los grupos en el menú de Acción de código.",
+		"Habilita o deshabilita la visualización de la corrección rápida más cercana dentro de una línea cuando no está actualmente en un diagnóstico.",
 	],
 	"vs/editor/contrib/codeAction/browser/codeActionController": [
+		"Contexto: {0} en la línea {1} y columna {2}.",
 		"Ocultar deshabilitado",
 		"Mostrar elementos deshabilitados",
 	],
 	"vs/editor/contrib/codeAction/browser/codeActionMenu": [
 		"Más Acciones...",
-		"Corrección rápida...",
-		"Extraer...",
-		"Alineado...",
-		"Reescribir...",
-		"Mover...",
-		"Rodear con...",
-		"Acción de origen...",
+		"Corrección rápida",
+		"Extraer",
+		"Insertado",
+		"Reescribir",
+		"Mover",
+		"Delimitar con",
+		"Acción de origen",
 	],
 	"vs/editor/contrib/codeAction/browser/lightBulbWidget": [
 		"Mostrar acciones de código. Corrección rápida preferida disponible ({0})",
@@ -833,6 +840,7 @@ define("vs/editor/editor.main.nls.es", {
 	],
 	"vs/editor/contrib/codelens/browser/codelensController": [
 		"Mostrar comandos de lente de código para la línea actual",
+		"Seleccionar un comando",
 	],
 	"vs/editor/contrib/colorPicker/browser/colorPickerWidget": [
 		"Haga clic para alternar las opciones de color (rgb/hsl/hex)",
@@ -889,6 +897,9 @@ define("vs/editor/editor.main.nls.es", {
 		"Insertar rutas de acceso relativas",
 		"Insertar ruta de acceso relativa",
 	],
+	"vs/editor/contrib/dropOrPasteInto/browser/dropIntoEditorContribution": [
+		"Configura el proveedor de colocación predeterminado que se usará para el contenido de un tipo MIME determinado.",
+	],
 	"vs/editor/contrib/dropOrPasteInto/browser/dropIntoEditorController": [
 		"Si se muestra el widget de colocación",
 		"Mostrar opciones de colocación...",
@@ -898,6 +909,7 @@ define("vs/editor/editor.main.nls.es", {
 		"Indica si el editor ejecuta una operación que se puede cancelar como, por ejemplo, \"Inspeccionar referencias\"",
 	],
 	"vs/editor/contrib/find/browser/findController": [
+		"El archivo es demasiado grande para realizar una operación de reemplazar todo.",
 		"Buscar",
 		"&&Buscar",
 		"Invalida la marca \"Usar expresión regular\".\r\nLa marca no se guardará para el futuro.\r\n0: No hacer nada\r\n1: True\r\n2: False",
@@ -956,8 +968,8 @@ define("vs/editor/editor.main.nls.es", {
 		"Cerrar todos los comentarios de bloque",
 		"Plegar todas las regiones",
 		"Desplegar Todas las Regiones",
-		"Plegar todas las regiones excepto las seleccionadas",
-		"Desplegar todas las regiones excepto las seleccionadas",
+		"Plegar todas excepto las seleccionadas",
+		"Desplegar todas excepto las seleccionadas",
 		"Plegar todo",
 		"Desplegar todo",
 		"Ir al plegado primario",
@@ -1092,8 +1104,6 @@ define("vs/editor/editor.main.nls.es", {
 	],
 	"vs/editor/contrib/hover/browser/hover": [
 		"Mostrar o centrarse al mantener el puntero",
-		"Inspeccione esto en la vista accesible con {0}",
-		"Inspeccione esto en la vista accesible mediante el comando Abrir vista accesible, que actualmente no se puede desencadenar mediante el enlace de teclado.",
 		"Mostrar vista previa de la definición que aparece al mover el puntero",
 		"Desplazar hacia arriba al mantener el puntero",
 		"Desplazar hacia abajo al mantener el puntero",
@@ -1165,6 +1175,9 @@ define("vs/editor/editor.main.nls.es", {
 		"Si la sugerencia alineada comienza con un espacio en blanco",
 		"Si la sugerencia insertada comienza con un espacio en blanco menor que lo que se insertaría mediante tabulación",
 		"Si las sugerencias deben suprimirse para la sugerencia actual",
+	],
+	"vs/editor/contrib/inlineCompletions/browser/inlineCompletionsController": [
+		"Inspeccionar esto en la vista accesible ({0})",
 	],
 	"vs/editor/contrib/inlineCompletions/browser/inlineCompletionsHintsWidget": [
 		"Icono para mostrar la sugerencia de parámetro siguiente.",
@@ -1566,6 +1579,7 @@ define("vs/editor/editor.main.nls.es", {
 		"Widget de acción",
 	],
 	"vs/platform/actionWidget/browser/actionWidget": [
+		"Color de fondo de los elementos de acción alternados en la barra de acciones.",
 		"Si la lista de widgets de acción es visible",
 		"Ocultar el widget de acción",
 		"Seleccione la acción anterior",
@@ -1694,8 +1708,10 @@ define("vs/editor/editor.main.nls.es", {
 	],
 	"vs/platform/quickinput/browser/commandsQuickAccess": [
 		"usado recientemente",
+		"comandos similares",
 		"usados habitualmente",
 		"otros comandos",
+		"comandos similares",
 		"{0}, {1}",
 		"El comando \"{0}\" ha dado lugar a un error",
 	],
@@ -1707,6 +1723,8 @@ define("vs/editor/editor.main.nls.es", {
 		"Presione \"Entrar\" para confirmar su entrada o \"Esc\" para cancelar",
 		"{0}/{1}",
 		"Escriba para restringir los resultados.",
+	],
+	"vs/platform/quickinput/browser/quickInputController": [
 		"Activar o desactivar todas las casillas",
 		"{0} resultados",
 		"{0} seleccionados",
@@ -1922,8 +1940,9 @@ define("vs/editor/editor.main.nls.es", {
 		"Color de marcador de minimapa para coincidencias de búsqueda.",
 		"Color de marcador de minimapa para las selecciones del editor que se repiten.",
 		"Color del marcador de minimapa para la selección del editor.",
-		"Color del marcador de minimapa para errores.",
+		"Color del marcador de minimapa para información.",
 		"Color del marcador de minimapa para advertencias.",
+		"Color del marcador de minimapa para errores.",
 		"Color de fondo del minimapa.",
 		"Opacidad de los elementos de primer plano representados en el minimapa. Por ejemplo, \"#000000c0\" representará los elementos con 75% de opacidad.",
 		"Color de fondo del deslizador del minimapa.",

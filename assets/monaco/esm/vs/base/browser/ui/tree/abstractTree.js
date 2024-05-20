@@ -24,10 +24,10 @@ import { getVisibleState, isFilterResult } from './indexTreeModel.js';
 import { TreeMouseEventTarget } from './tree.js';
 import { Action } from '../../../common/actions.js';
 import { distinct, equals, range } from '../../../common/arrays.js';
-import { disposableTimeout, timeout } from '../../../common/async.js';
+import { Delayer, disposableTimeout, timeout } from '../../../common/async.js';
 import { Codicon } from '../../../common/codicons.js';
 import { ThemeIcon } from '../../../common/themables.js';
-import { SetMap } from '../../../common/collections.js';
+import { SetMap } from '../../../common/map.js';
 import { Emitter, Event, EventBufferer, Relay } from '../../../common/event.js';
 import { fuzzyScore, FuzzyScore } from '../../../common/filters.js';
 import { Disposable, DisposableStore, dispose, toDisposable } from '../../../common/lifecycle.js';
@@ -52,6 +52,7 @@ class TreeNodeListDragAndDrop {
         this.modelProvider = modelProvider;
         this.dnd = dnd;
         this.autoExpandDisposable = Disposable.None;
+        this.disposables = new DisposableStore();
     }
     getDragURI(node) {
         return this.dnd.getDragURI(node.element);
@@ -84,7 +85,7 @@ class TreeNodeListDragAndDrop {
                     model.setCollapsed(ref, false);
                 }
                 this.autoExpandNode = undefined;
-            }, 500);
+            }, 500, this.disposables);
         }
         if (typeof result === 'boolean' || !result.accept || typeof result.bubble === 'undefined' || result.feedback) {
             if (!raw) {
@@ -116,6 +117,10 @@ class TreeNodeListDragAndDrop {
     onDragEnd(originalEvent) {
         var _a, _b;
         (_b = (_a = this.dnd).onDragEnd) === null || _b === void 0 ? void 0 : _b.call(_a, originalEvent);
+    }
+    dispose() {
+        this.disposables.dispose();
+        this.dnd.dispose();
     }
 }
 function asListOptions(modelProvider, options) {
@@ -558,9 +563,7 @@ class FindWidget extends Disposable {
         this.actionbar = this._register(new ActionBar(this.elements.actionbar));
         this.mode = mode;
         const emitter = this._register(new DomEmitter(this.findInput.inputBox.inputElement, 'keydown'));
-        const onKeyDown = this._register(Event.chain(emitter.event))
-            .map(e => new StandardKeyboardEvent(e))
-            .event;
+        const onKeyDown = Event.chain(emitter.event, $ => $.map(e => new StandardKeyboardEvent(e)));
         this._register(onKeyDown((e) => {
             // Using equals() so we reserve modified keys for future use
             if (e.equals(3 /* KeyCode.Enter */)) {
@@ -622,9 +625,7 @@ class FindWidget extends Disposable {
                 disposables.dispose();
             }));
         }));
-        const onGrabKeyDown = this._register(Event.chain(this._register(new DomEmitter(this.elements.grab, 'keydown')).event))
-            .map(e => new StandardKeyboardEvent(e))
-            .event;
+        const onGrabKeyDown = Event.chain(this._register(new DomEmitter(this.elements.grab, 'keydown')).event, $ => $.map(e => new StandardKeyboardEvent(e)));
         this._register(onGrabKeyDown((e) => {
             let right;
             let top;
@@ -1090,25 +1091,27 @@ export class AbstractTree {
         // We debounce it with 0 delay since these events may fire in the same stack and we only
         // want to run this once. It also doesn't matter if it runs on the next tick since it's only
         // a nice to have UI feature.
-        onDidChangeActiveNodes.input = Event.chain(Event.any(onDidModelSplice, this.focus.onDidChange, this.selection.onDidChange))
-            .debounce(() => null, 0)
-            .map(() => {
-            const set = new Set();
-            for (const node of this.focus.getNodes()) {
-                set.add(node);
-            }
-            for (const node of this.selection.getNodes()) {
-                set.add(node);
-            }
-            return [...set.values()];
-        }).event;
+        const activeNodesEmitter = this.disposables.add(new Emitter());
+        const activeNodesDebounce = this.disposables.add(new Delayer(0));
+        this.disposables.add(Event.any(onDidModelSplice, this.focus.onDidChange, this.selection.onDidChange)(() => {
+            activeNodesDebounce.trigger(() => {
+                const set = new Set();
+                for (const node of this.focus.getNodes()) {
+                    set.add(node);
+                }
+                for (const node of this.selection.getNodes()) {
+                    set.add(node);
+                }
+                activeNodesEmitter.fire([...set.values()]);
+            });
+        }));
+        onDidChangeActiveNodes.input = activeNodesEmitter.event;
         if (_options.keyboardSupport !== false) {
-            const onKeyDown = Event.chain(this.view.onKeyDown)
-                .filter(e => !isInputElement(e.target))
-                .map(e => new StandardKeyboardEvent(e));
-            onKeyDown.filter(e => e.keyCode === 15 /* KeyCode.LeftArrow */).on(this.onLeftArrow, this, this.disposables);
-            onKeyDown.filter(e => e.keyCode === 17 /* KeyCode.RightArrow */).on(this.onRightArrow, this, this.disposables);
-            onKeyDown.filter(e => e.keyCode === 10 /* KeyCode.Space */).on(this.onSpace, this, this.disposables);
+            const onKeyDown = Event.chain(this.view.onKeyDown, $ => $.filter(e => !isInputElement(e.target))
+                .map(e => new StandardKeyboardEvent(e)));
+            Event.chain(onKeyDown, $ => $.filter(e => e.keyCode === 15 /* KeyCode.LeftArrow */))(this.onLeftArrow, this, this.disposables);
+            Event.chain(onKeyDown, $ => $.filter(e => e.keyCode === 17 /* KeyCode.RightArrow */))(this.onRightArrow, this, this.disposables);
+            Event.chain(onKeyDown, $ => $.filter(e => e.keyCode === 10 /* KeyCode.Space */))(this.onSpace, this, this.disposables);
         }
         if (((_a = _options.findWidgetEnabled) !== null && _a !== void 0 ? _a : true) && _options.keyboardNavigationLabelProvider && _options.contextViewProvider) {
             const opts = this.options.findWidgetStyles ? { styles: this.options.findWidgetStyles } : undefined;

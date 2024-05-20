@@ -11,6 +11,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
+var ModelSemanticColoring_1;
 import { Disposable, dispose } from '../../../../base/common/lifecycle.js';
 import * as errors from '../../../../base/common/errors.js';
 import { IModelService } from '../../../common/services/model.js';
@@ -87,15 +88,15 @@ DocumentSemanticTokensFeature = __decorate([
     __param(5, ILanguageFeaturesService)
 ], DocumentSemanticTokensFeature);
 export { DocumentSemanticTokensFeature };
-let ModelSemanticColoring = class ModelSemanticColoring extends Disposable {
+let ModelSemanticColoring = ModelSemanticColoring_1 = class ModelSemanticColoring extends Disposable {
     constructor(model, _semanticTokensStylingService, themeService, languageFeatureDebounceService, languageFeaturesService) {
         super();
         this._semanticTokensStylingService = _semanticTokensStylingService;
         this._isDisposed = false;
         this._model = model;
         this._provider = languageFeaturesService.documentSemanticTokensProvider;
-        this._debounceInformation = languageFeatureDebounceService.for(this._provider, 'DocumentSemanticTokens', { min: ModelSemanticColoring.REQUEST_MIN_DELAY, max: ModelSemanticColoring.REQUEST_MAX_DELAY });
-        this._fetchDocumentSemanticTokens = this._register(new RunOnceScheduler(() => this._fetchDocumentSemanticTokensNow(), ModelSemanticColoring.REQUEST_MIN_DELAY));
+        this._debounceInformation = languageFeatureDebounceService.for(this._provider, 'DocumentSemanticTokens', { min: ModelSemanticColoring_1.REQUEST_MIN_DELAY, max: ModelSemanticColoring_1.REQUEST_MAX_DELAY });
+        this._fetchDocumentSemanticTokens = this._register(new RunOnceScheduler(() => this._fetchDocumentSemanticTokensNow(), ModelSemanticColoring_1.REQUEST_MIN_DELAY));
         this._currentDocumentResponse = null;
         this._currentDocumentRequestCancellationTokenSource = null;
         this._documentProvidersChangeListeners = [];
@@ -289,17 +290,17 @@ let ModelSemanticColoring = class ModelSemanticColoring extends Disposable {
                     }
                     const copyCount = srcLastStart - (edit.start + edit.deleteCount);
                     if (copyCount > 0) {
-                        ModelSemanticColoring._copy(srcData, srcLastStart - copyCount, destData, destLastStart - copyCount, copyCount);
+                        ModelSemanticColoring_1._copy(srcData, srcLastStart - copyCount, destData, destLastStart - copyCount, copyCount);
                         destLastStart -= copyCount;
                     }
                     if (edit.data) {
-                        ModelSemanticColoring._copy(edit.data, 0, destData, destLastStart - edit.data.length, edit.data.length);
+                        ModelSemanticColoring_1._copy(edit.data, 0, destData, destLastStart - edit.data.length, edit.data.length);
                         destLastStart -= edit.data.length;
                     }
                     srcLastStart = edit.start;
                 }
                 if (srcLastStart > 0) {
-                    ModelSemanticColoring._copy(srcData, 0, destData, 0, srcLastStart);
+                    ModelSemanticColoring_1._copy(srcData, 0, destData, 0, srcLastStart);
                 }
                 tokens = {
                     resultId: tokens.resultId,
@@ -334,7 +335,7 @@ let ModelSemanticColoring = class ModelSemanticColoring extends Disposable {
 };
 ModelSemanticColoring.REQUEST_MIN_DELAY = 300;
 ModelSemanticColoring.REQUEST_MAX_DELAY = 2000;
-ModelSemanticColoring = __decorate([
+ModelSemanticColoring = ModelSemanticColoring_1 = __decorate([
     __param(1, ISemanticTokensStylingService),
     __param(2, IThemeService),
     __param(3, ILanguageFeatureDebounceService),

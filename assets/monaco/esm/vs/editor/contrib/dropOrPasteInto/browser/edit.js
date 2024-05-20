@@ -14,3 +14,58 @@ export function createCombinedWorkspaceEdit(uri, ranges, edit) {
         ]
     };
 }
+export function sortEditsByYieldTo(edits) {
+    var _a;
+    function yieldsTo(yTo, other) {
+        return ('providerId' in yTo && yTo.providerId === other.providerId)
+            || ('mimeType' in yTo && yTo.mimeType === other.handledMimeType);
+    }
+    // Build list of nodes each node yields to
+    const yieldsToMap = new Map();
+    for (const edit of edits) {
+        for (const yTo of (_a = edit.yieldTo) !== null && _a !== void 0 ? _a : []) {
+            for (const other of edits) {
+                if (other === edit) {
+                    continue;
+                }
+                if (yieldsTo(yTo, other)) {
+                    let arr = yieldsToMap.get(edit);
+                    if (!arr) {
+                        arr = [];
+                        yieldsToMap.set(edit, arr);
+                    }
+                    arr.push(other);
+                }
+            }
+        }
+    }
+    if (!yieldsToMap.size) {
+        return Array.from(edits);
+    }
+    // Topological sort
+    const visited = new Set();
+    const tempStack = [];
+    function visit(nodes) {
+        if (!nodes.length) {
+            return [];
+        }
+        const node = nodes[0];
+        if (tempStack.includes(node)) {
+            console.warn(`Yield to cycle detected for ${node.providerId}`);
+            return nodes;
+        }
+        if (visited.has(node)) {
+            return visit(nodes.slice(1));
+        }
+        let pre = [];
+        const yTo = yieldsToMap.get(node);
+        if (yTo) {
+            tempStack.push(node);
+            pre = visit(yTo);
+            tempStack.pop();
+        }
+        visited.add(node);
+        return [...pre, node, ...visit(nodes.slice(1))];
+    }
+    return visit(Array.from(edits));
+}

@@ -35,16 +35,16 @@ export function getAriaId(index) {
 const suggestMoreInfoIcon = registerIcon('suggest-more-info', Codicon.chevronRight, nls.localize('suggestMoreInfoIcon', 'Icon for more information in the suggest widget.'));
 const _completionItemColor = new (_a = class ColorExtractor {
         extract(item, out) {
-            if (item.textLabel.match(ColorExtractor._regexStrict)) {
+            if (item.textLabel.match(_a._regexStrict)) {
                 out[0] = item.textLabel;
                 return true;
             }
-            if (item.completion.detail && item.completion.detail.match(ColorExtractor._regexStrict)) {
+            if (item.completion.detail && item.completion.detail.match(_a._regexStrict)) {
                 out[0] = item.completion.detail;
                 return true;
             }
             if (typeof item.completion.documentation === 'string') {
-                const match = ColorExtractor._regexRelaxed.exec(item.completion.documentation);
+                const match = _a._regexRelaxed.exec(item.completion.documentation);
                 if (match && (match.index === 0 || match.index + match[0].length === item.completion.documentation.length)) {
                     out[0] = match[0];
                     return true;
@@ -89,11 +89,11 @@ let ItemRenderer = class ItemRenderer {
         readMore.title = nls.localize('readMore', "Read More");
         const configureFont = () => {
             const options = this._editor.getOptions();
-            const fontInfo = options.get(49 /* EditorOption.fontInfo */);
+            const fontInfo = options.get(50 /* EditorOption.fontInfo */);
             const fontFamily = fontInfo.getMassagedFontFamily();
             const fontFeatureSettings = fontInfo.fontFeatureSettings;
-            const fontSize = options.get(117 /* EditorOption.suggestFontSize */) || fontInfo.fontSize;
-            const lineHeight = options.get(118 /* EditorOption.suggestLineHeight */) || fontInfo.lineHeight;
+            const fontSize = options.get(118 /* EditorOption.suggestFontSize */) || fontInfo.fontSize;
+            const lineHeight = options.get(119 /* EditorOption.suggestLineHeight */) || fontInfo.lineHeight;
             const fontWeight = fontInfo.fontWeight;
             const letterSpacing = fontInfo.letterSpacing;
             const fontSizePx = `${fontSize}px`;
@@ -112,7 +112,7 @@ let ItemRenderer = class ItemRenderer {
         };
         configureFont();
         disposables.add(this._editor.onDidChangeConfiguration(e => {
-            if (e.hasChanged(49 /* EditorOption.fontInfo */) || e.hasChanged(117 /* EditorOption.suggestFontSize */) || e.hasChanged(118 /* EditorOption.suggestLineHeight */)) {
+            if (e.hasChanged(50 /* EditorOption.fontInfo */) || e.hasChanged(118 /* EditorOption.suggestFontSize */) || e.hasChanged(119 /* EditorOption.suggestLineHeight */)) {
                 configureFont();
             }
         }));
@@ -171,7 +171,7 @@ let ItemRenderer = class ItemRenderer {
             data.detailsLabel.textContent = stripNewLines(completion.label.description || '');
             data.root.classList.remove('string-label');
         }
-        if (this._editor.getOption(116 /* EditorOption.suggest */).showInlineDetails) {
+        if (this._editor.getOption(117 /* EditorOption.suggest */).showInlineDetails) {
             show(data.detailsLabel);
         }
         else {

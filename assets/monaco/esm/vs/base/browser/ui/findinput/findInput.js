@@ -9,14 +9,14 @@ import { Widget } from '../widget.js';
 import { Emitter } from '../../../common/event.js';
 import './findInput.css';
 import * as nls from '../../../../nls.js';
-import { DisposableStore } from '../../../common/lifecycle.js';
+import { DisposableStore, MutableDisposable } from '../../../common/lifecycle.js';
 const NLS_DEFAULT_LABEL = nls.localize('defaultLabel', "input");
 export class FindInput extends Widget {
     constructor(parent, contextViewProvider, options) {
         super();
         this.fixFocusOnOptionClickEnabled = true;
         this.imeSessionInProgress = false;
-        this.additionalTogglesDisposables = new DisposableStore();
+        this.additionalTogglesDisposables = this._register(new MutableDisposable());
         this.additionalToggles = [];
         this._onDidOptionChange = this._register(new Emitter());
         this.onDidOptionChange = this._onDidOptionChange.event;
@@ -192,12 +192,11 @@ export class FindInput extends Widget {
             currentToggle.domNode.remove();
         }
         this.additionalToggles = [];
-        this.additionalTogglesDisposables.dispose();
-        this.additionalTogglesDisposables = new DisposableStore();
+        this.additionalTogglesDisposables.value = new DisposableStore();
         for (const toggle of toggles !== null && toggles !== void 0 ? toggles : []) {
-            this.additionalTogglesDisposables.add(toggle);
+            this.additionalTogglesDisposables.value.add(toggle);
             this.controls.appendChild(toggle.domNode);
-            this.additionalTogglesDisposables.add(toggle.onChange(viaKeyboard => {
+            this.additionalTogglesDisposables.value.add(toggle.onChange(viaKeyboard => {
                 this._onDidOptionChange.fire(viaKeyboard);
                 if (!viaKeyboard && this.fixFocusOnOptionClickEnabled) {
                     this.inputBox.focus();

@@ -63,6 +63,7 @@ export class IconLabel extends Disposable {
     setLabel(label, description, options) {
         const labelClasses = ['monaco-icon-label'];
         const containerClasses = ['monaco-icon-label-container'];
+        let ariaLabel = '';
         if (options) {
             if (options.extraClasses) {
                 labelClasses.push(...options.extraClasses);
@@ -76,8 +77,12 @@ export class IconLabel extends Disposable {
             if (options.disabledCommand) {
                 containerClasses.push('disabled');
             }
+            if (options.title) {
+                ariaLabel += options.title;
+            }
         }
         this.domNode.className = labelClasses.join(' ');
+        this.domNode.element.setAttribute('aria-label', ariaLabel);
         this.labelContainer.className = containerClasses.join(' ');
         this.setupHover((options === null || options === void 0 ? void 0 : options.descriptionTitle) ? this.labelContainer : this.element, options === null || options === void 0 ? void 0 : options.title);
         this.nameNode.setLabel(label, options);

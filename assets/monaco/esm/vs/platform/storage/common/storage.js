@@ -1,4 +1,4 @@
-import { Emitter, PauseableEmitter } from '../../../base/common/event.js';
+import { Emitter, Event, PauseableEmitter } from '../../../base/common/event.js';
 import { Disposable } from '../../../base/common/lifecycle.js';
 import { isUndefinedOrNull } from '../../../base/common/types.js';
 import { InMemoryStorageDatabase, Storage, StorageHint } from '../../../base/parts/storage/common/storage.js';
@@ -33,13 +33,15 @@ export class AbstractStorageService extends Disposable {
         super();
         this.options = options;
         this._onDidChangeValue = this._register(new PauseableEmitter());
-        this.onDidChangeValue = this._onDidChangeValue.event;
         this._onDidChangeTarget = this._register(new PauseableEmitter());
         this._onWillSaveState = this._register(new Emitter());
         this.onWillSaveState = this._onWillSaveState.event;
         this._workspaceKeyTargets = undefined;
         this._profileKeyTargets = undefined;
         this._applicationKeyTargets = undefined;
+    }
+    onDidChangeValue(scope, key, disposable) {
+        return Event.filter(this._onDidChangeValue.event, e => e.scope === scope && (key === undefined || e.key === key), disposable);
     }
     emitDidChangeValue(scope, event) {
         const { key, external } = event;

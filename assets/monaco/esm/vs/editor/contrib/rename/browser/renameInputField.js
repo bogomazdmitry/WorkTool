@@ -31,7 +31,7 @@ let RenameInputField = class RenameInputField {
         this._visibleContextKey = CONTEXT_RENAME_INPUT_VISIBLE.bindTo(contextKeyService);
         this._editor.addContentWidget(this);
         this._disposables.add(this._editor.onDidChangeConfiguration(e => {
-            if (e.hasChanged(49 /* EditorOption.fontInfo */)) {
+            if (e.hasChanged(50 /* EditorOption.fontInfo */)) {
                 this._updateFont();
             }
         }));
@@ -83,7 +83,7 @@ let RenameInputField = class RenameInputField {
         if (!this._input || !this._label) {
             return;
         }
-        const fontInfo = this._editor.getOption(49 /* EditorOption.fontInfo */);
+        const fontInfo = this._editor.getOption(50 /* EditorOption.fontInfo */);
         this._input.style.fontFamily = fontInfo.fontFamily;
         this._input.style.fontWeight = fontInfo.fontWeight;
         this._input.style.fontSize = `${fontInfo.fontSize}px`;
@@ -147,7 +147,7 @@ let RenameInputField = class RenameInputField {
                 });
             };
             disposeOnDone.add(token.onCancellationRequested(() => this.cancelInput(true)));
-            disposeOnDone.add(this._editor.onDidBlurEditorWidget(() => this.cancelInput(!document.hasFocus())));
+            disposeOnDone.add(this._editor.onDidBlurEditorWidget(() => { var _a; return this.cancelInput(!((_a = this._domNode) === null || _a === void 0 ? void 0 : _a.ownerDocument.hasFocus())); }));
             this._show();
         }).finally(() => {
             disposeOnDone.dispose();

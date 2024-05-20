@@ -45,8 +45,8 @@ export const KnownSnippetVariableNames = Object.freeze({
     'TM_FILENAME_BASE': true,
     'TM_DIRECTORY': true,
     'TM_FILEPATH': true,
-    'CURSOR_INDEX': true,
-    'CURSOR_NUMBER': true,
+    'CURSOR_INDEX': true, // 0-offset
+    'CURSOR_NUMBER': true, // 1-offset
     'RELATIVE_FILEPATH': true,
     'BLOCK_COMMENT_START': true,
     'BLOCK_COMMENT_END': true,

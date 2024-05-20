@@ -1,6 +1,6 @@
 /*!-----------------------------------------------------------
  * Copyright (c) Microsoft Corporation. All rights reserved.
- * Version: 0.41.0(38e1e3d097f84e336c311d071a9ffb5191d4ffd1)
+ * Version: 0.44.0(3e047efd345ff102c8c61b5398fb30845aaac166)
  * Released under the MIT license
  * https://github.com/microsoft/vscode/blob/main/LICENSE.txt
  *-----------------------------------------------------------*/
@@ -712,7 +712,7 @@ var AMDLoader;
 					}).then((text) => {
 						text = `${text}\n//# sourceURL=${scriptSrc}`;
 						const func = (trustedTypesPolicy
-							? self.eval(trustedTypesPolicy.createScript('', text))
+							? self.eval(trustedTypesPolicy.createScript('', text)) // CodeQL [SM01632] the loader is responsible with loading code, fetch + eval is used on the web worker instead of importScripts if possible because importScripts is synchronous and we observed deadlocks on Safari
 							: new Function(text) // CodeQL [SM01632] the loader is responsible with loading code, fetch + eval is used on the web worker instead of importScripts if possible because importScripts is synchronous and we observed deadlocks on Safari
 						);
 						func.call(self);
@@ -1255,6 +1255,7 @@ var AMDLoader;
 			this._buildInfoPath = [];
 			this._buildInfoDefineStack = [];
 			this._buildInfoDependencies = [];
+			this._requireFunc.moduleManager = this;
 		}
 		reset() {
 			return new ModuleManager(this._env, this._scriptLoader, this._defineFunc, this._requireFunc, this._loaderAvailableTimestamp);

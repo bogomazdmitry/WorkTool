@@ -38,6 +38,7 @@ CodeActionKind.RefactorExtract = CodeActionKind.Refactor.append('extract');
 CodeActionKind.RefactorInline = CodeActionKind.Refactor.append('inline');
 CodeActionKind.RefactorMove = CodeActionKind.Refactor.append('move');
 CodeActionKind.RefactorRewrite = CodeActionKind.Refactor.append('rewrite');
+CodeActionKind.Notebook = new CodeActionKind('notebook');
 CodeActionKind.Source = new CodeActionKind('source');
 CodeActionKind.SourceOrganizeImports = CodeActionKind.Source.append('organizeImports');
 CodeActionKind.SourceFixAll = CodeActionKind.Source.append('fixAll');
@@ -141,9 +142,10 @@ export class CodeActionCommandArgs {
     }
 }
 export class CodeActionItem {
-    constructor(action, provider) {
+    constructor(action, provider, highlightRange) {
         this.action = action;
         this.provider = provider;
+        this.highlightRange = highlightRange;
     }
     resolve(token) {
         var _a;

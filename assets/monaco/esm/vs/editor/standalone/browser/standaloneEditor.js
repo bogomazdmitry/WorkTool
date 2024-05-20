@@ -11,38 +11,35 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-import './standalone-tokens.css';
 import { Disposable, DisposableStore } from '../../../base/common/lifecycle.js';
 import { splitLines } from '../../../base/common/strings.js';
 import { URI } from '../../../base/common/uri.js';
+import './standalone-tokens.css';
 import { FontMeasurements } from '../../browser/config/fontMeasurements.js';
+import { EditorCommand } from '../../browser/editorExtensions.js';
 import { ICodeEditorService } from '../../browser/services/codeEditorService.js';
-import { DiffNavigator } from '../../browser/widget/diffNavigator.js';
+import { createWebWorker as actualCreateWebWorker } from '../../browser/services/webWorker.js';
 import { ApplyUpdateResult, ConfigurationChangedEvent, EditorOptions } from '../../common/config/editorOptions.js';
+import { EditorZoom } from '../../common/config/editorZoom.js';
 import { BareFontInfo, FontInfo } from '../../common/config/fontInfo.js';
 import { EditorType } from '../../common/editorCommon.js';
-import { FindMatch, TextModelResolvedOptions } from '../../common/model.js';
 import * as languages from '../../common/languages.js';
-import { ILanguageConfigurationService } from '../../common/languages/languageConfigurationRegistry.js';
-import { NullState, nullTokenize } from '../../common/languages/nullTokenize.js';
 import { ILanguageService } from '../../common/languages/language.js';
+import { ILanguageConfigurationService } from '../../common/languages/languageConfigurationRegistry.js';
+import { PLAINTEXT_LANGUAGE_ID } from '../../common/languages/modesRegistry.js';
+import { NullState, nullTokenize } from '../../common/languages/nullTokenize.js';
+import { FindMatch, TextModelResolvedOptions } from '../../common/model.js';
 import { IModelService } from '../../common/services/model.js';
-import { createWebWorker as actualCreateWebWorker } from '../../browser/services/webWorker.js';
 import * as standaloneEnums from '../../common/standalone/standaloneEnums.js';
 import { Colorizer } from './colorizer.js';
-import { createTextModel, StandaloneDiffEditor, StandaloneDiffEditor2, StandaloneEditor } from './standaloneCodeEditor.js';
+import { StandaloneDiffEditor2, StandaloneEditor, createTextModel } from './standaloneCodeEditor.js';
 import { StandaloneKeybindingService, StandaloneServices } from './standaloneServices.js';
 import { IStandaloneThemeService } from '../common/standaloneTheme.js';
+import { MenuId, MenuRegistry } from '../../../platform/actions/common/actions.js';
 import { CommandsRegistry } from '../../../platform/commands/common/commands.js';
-import { IMarkerService } from '../../../platform/markers/common/markers.js';
-import { IKeybindingService } from '../../../platform/keybinding/common/keybinding.js';
-import { EditorCommand } from '../../browser/editorExtensions.js';
-import { MenuRegistry, MenuId } from '../../../platform/actions/common/actions.js';
 import { ContextKeyExpr } from '../../../platform/contextkey/common/contextkey.js';
-import { PLAINTEXT_LANGUAGE_ID } from '../../common/languages/modesRegistry.js';
-import { LineRangeMapping, MovedText, RangeMapping, SimpleLineRangeMapping } from '../../common/diff/linesDiffComputer.js';
-import { LineRange } from '../../common/core/lineRange.js';
-import { EditorZoom } from '../../common/config/editorZoom.js';
+import { IKeybindingService } from '../../../platform/keybinding/common/keybinding.js';
+import { IMarkerService } from '../../../platform/markers/common/markers.js';
 import { IOpenerService } from '../../../platform/opener/common/opener.js';
 /**
  * Create a new editor under `domElement`.
@@ -94,16 +91,8 @@ export function getDiffEditors() {
  * The editor will read the size of `domElement`.
  */
 export function createDiffEditor(domElement, options, override) {
-    var _a;
     const instantiationService = StandaloneServices.initialize(override || {});
-    if ((_a = options === null || options === void 0 ? void 0 : options.experimental) === null || _a === void 0 ? void 0 : _a.useVersion2) {
-        return instantiationService.createInstance(StandaloneDiffEditor2, domElement, options);
-    }
-    return instantiationService.createInstance(StandaloneDiffEditor, domElement, options);
-}
-export function createDiffNavigator(diffEditor, opts) {
-    const instantiationService = StandaloneServices.initialize({});
-    return instantiationService.createInstance(DiffNavigator, diffEditor, opts);
+    return instantiationService.createInstance(StandaloneDiffEditor2, domElement, options);
 }
 /**
  * Add a command.
@@ -290,8 +279,9 @@ export function createWebWorker(opts) {
 export function colorizeElement(domNode, options) {
     const languageService = StandaloneServices.get(ILanguageService);
     const themeService = StandaloneServices.get(IStandaloneThemeService);
-    themeService.registerEditorContainer(domNode);
-    return Colorizer.colorizeElement(themeService, languageService, domNode, options);
+    return Colorizer.colorizeElement(themeService, languageService, domNode, options).then(() => {
+        themeService.registerEditorContainer(domNode);
+    });
 }
 /**
  * Colorize `text` using language `languageId`.
@@ -427,7 +417,6 @@ export function createMonacoEditorAPI() {
         onDidCreateEditor: onDidCreateEditor,
         onDidCreateDiffEditor: onDidCreateDiffEditor,
         createDiffEditor: createDiffEditor,
-        createDiffNavigator: createDiffNavigator,
         addCommand: addCommand,
         addEditorAction: addEditorAction,
         addKeybindingRule: addKeybindingRule,
@@ -485,12 +474,7 @@ export function createMonacoEditorAPI() {
         TextModelResolvedOptions: TextModelResolvedOptions,
         FindMatch: FindMatch,
         ApplyUpdateResult: ApplyUpdateResult,
-        LineRange: LineRange,
-        LineRangeMapping: LineRangeMapping,
-        RangeMapping: RangeMapping,
         EditorZoom: EditorZoom,
-        MovedText: MovedText,
-        SimpleLineRangeMapping: SimpleLineRangeMapping,
         // vars
         EditorType: EditorType,
         EditorOptions: EditorOptions

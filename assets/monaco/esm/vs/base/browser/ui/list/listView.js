@@ -17,7 +17,7 @@ import { distinct, equals } from '../../../common/arrays.js';
 import { Delayer, disposableTimeout } from '../../../common/async.js';
 import { memoize } from '../../../common/decorators.js';
 import { Emitter, Event } from '../../../common/event.js';
-import { Disposable, DisposableStore, dispose, toDisposable } from '../../../common/lifecycle.js';
+import { Disposable, DisposableStore, toDisposable } from '../../../common/lifecycle.js';
 import { Range } from '../../../common/range.js';
 import { Scrollable } from '../../../common/scrollable.js';
 import { RangeMap, shift } from './rangeMap.js';
@@ -37,7 +37,8 @@ const DefaultOptions = {
         getDragURI() { return null; },
         onDragStart() { },
         onDragOver() { return false; },
-        drop() { }
+        drop() { },
+        dispose() { }
     },
     horizontalScrolling: false,
     transformOptimization: true,
@@ -207,11 +208,11 @@ export class ListView {
             this.rowsContainer.style.contain = 'strict';
         }
         this.disposables.add(Gesture.addTarget(this.rowsContainer));
-        this.scrollable = new Scrollable({
+        this.scrollable = this.disposables.add(new Scrollable({
             forceIntegerValues: true,
             smoothScrollDuration: ((_d = options.smoothScrolling) !== null && _d !== void 0 ? _d : false) ? 125 : 0,
             scheduleAtNextAnimationFrame: cb => scheduleAtNextAnimationFrame(cb)
-        });
+        }));
         this.scrollableElement = this.disposables.add(new SmoothScrollableElement(this.rowsContainer, {
             alwaysConsumeMouseWheel: (_e = options.alwaysConsumeMouseWheel) !== null && _e !== void 0 ? _e : DefaultOptions.alwaysConsumeMouseWheel,
             horizontal: 1 /* ScrollbarVisibility.Auto */,
@@ -235,7 +236,7 @@ export class ListView {
         this.setRowLineHeight = (_h = options.setRowLineHeight) !== null && _h !== void 0 ? _h : DefaultOptions.setRowLineHeight;
         this.setRowHeight = (_j = options.setRowHeight) !== null && _j !== void 0 ? _j : DefaultOptions.setRowHeight;
         this.supportDynamicHeights = (_k = options.supportDynamicHeights) !== null && _k !== void 0 ? _k : DefaultOptions.supportDynamicHeights;
-        this.dnd = (_l = options.dnd) !== null && _l !== void 0 ? _l : DefaultOptions.dnd;
+        this.dnd = (_l = options.dnd) !== null && _l !== void 0 ? _l : this.disposables.add(DefaultOptions.dnd);
         this.layout((_m = options.initialSize) === null || _m === void 0 ? void 0 : _m.height, (_o = options.initialSize) === null || _o === void 0 ? void 0 : _o.width);
     }
     updateOptions(options) {
@@ -798,7 +799,7 @@ export class ListView {
     onDragLeave(event) {
         var _a, _b;
         this.onDragLeaveTimeout.dispose();
-        this.onDragLeaveTimeout = disposableTimeout(() => this.clearDragOverFeedback(), 100);
+        this.onDragLeaveTimeout = disposableTimeout(() => this.clearDragOverFeedback(), 100, this.disposables);
         if (this.currentDragData) {
             (_b = (_a = this.dnd).onDragLeave) === null || _b === void 0 ? void 0 : _b.call(_a, this.currentDragData, event.element, event.index, event.browserEvent);
         }
@@ -847,7 +848,7 @@ export class ListView {
                 this.dragOverAnimationDisposable.dispose();
                 this.dragOverAnimationDisposable = undefined;
             }
-        }, 1000);
+        }, 1000, this.disposables);
         this.dragOverMouseY = event.pageY;
     }
     animateDragAndDropScrollTop(viewTop) {
@@ -1023,23 +1024,24 @@ export class ListView {
     }
     // Dispose
     dispose() {
-        var _a;
-        if (this.items) {
-            for (const item of this.items) {
-                if (item.row) {
-                    const renderer = this.renderers.get(item.row.templateId);
-                    if (renderer) {
-                        (_a = renderer.disposeElement) === null || _a === void 0 ? void 0 : _a.call(renderer, item.element, -1, item.row.templateData, undefined);
-                        renderer.disposeTemplate(item.row.templateData);
-                    }
+        var _a, _b;
+        for (const item of this.items) {
+            item.dragStartDisposable.dispose();
+            item.checkedDisposable.dispose();
+            if (item.row) {
+                const renderer = this.renderers.get(item.row.templateId);
+                if (renderer) {
+                    (_a = renderer.disposeElement) === null || _a === void 0 ? void 0 : _a.call(renderer, item.element, -1, item.row.templateData, undefined);
+                    renderer.disposeTemplate(item.row.templateData);
                 }
             }
-            this.items = [];
         }
+        this.items = [];
         if (this.domNode && this.domNode.parentNode) {
             this.domNode.parentNode.removeChild(this.domNode);
         }
-        dispose(this.disposables);
+        (_b = this.dragOverAnimationDisposable) === null || _b === void 0 ? void 0 : _b.dispose();
+        this.disposables.dispose();
     }
 }
 ListView.InstanceCount = 0;

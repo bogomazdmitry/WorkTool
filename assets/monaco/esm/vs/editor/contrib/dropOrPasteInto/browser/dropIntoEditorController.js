@@ -20,9 +20,10 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var DropIntoEditorController_1;
 import { coalesce } from '../../../../base/common/arrays.js';
 import { createCancelablePromise, raceCancellation } from '../../../../base/common/async.js';
-import { VSDataTransfer } from '../../../../base/common/dataTransfer.js';
+import { VSDataTransfer, matchesMimeType } from '../../../../base/common/dataTransfer.js';
 import { Disposable } from '../../../../base/common/lifecycle.js';
 import { toExternalVSDataTransfer } from '../../../browser/dnd.js';
 import { Range } from '../../../common/core/range.js';
@@ -32,18 +33,22 @@ import { ITreeViewsDnDService } from '../../../common/services/treeViewsDndServi
 import { EditorStateCancellationTokenSource } from '../../editorState/browser/editorState.js';
 import { InlineProgressManager } from '../../inlineProgress/browser/inlineProgress.js';
 import { localize } from '../../../../nls.js';
+import { IConfigurationService } from '../../../../platform/configuration/common/configuration.js';
 import { RawContextKey } from '../../../../platform/contextkey/common/contextkey.js';
 import { LocalSelectionTransfer } from '../../../../platform/dnd/browser/dnd.js';
 import { IInstantiationService } from '../../../../platform/instantiation/common/instantiation.js';
+import { sortEditsByYieldTo } from './edit.js';
 import { PostEditWidgetManager } from './postEditWidget.js';
+export const defaultProviderConfig = 'editor.experimental.dropIntoEditor.defaultProvider';
 export const changeDropTypeCommandId = 'editor.changeDropType';
 export const dropWidgetVisibleCtx = new RawContextKey('dropWidgetVisible', false, localize('dropWidgetVisible', "Whether the drop widget is showing"));
-let DropIntoEditorController = class DropIntoEditorController extends Disposable {
+let DropIntoEditorController = DropIntoEditorController_1 = class DropIntoEditorController extends Disposable {
     static get(editor) {
-        return editor.getContribution(DropIntoEditorController.ID);
+        return editor.getContribution(DropIntoEditorController_1.ID);
     }
-    constructor(editor, instantiationService, _languageFeaturesService, _treeViewsDragAndDropService) {
+    constructor(editor, instantiationService, _configService, _languageFeaturesService, _treeViewsDragAndDropService) {
         super();
+        this._configService = _configService;
         this._languageFeaturesService = _languageFeaturesService;
         this._treeViewsDragAndDropService = _treeViewsDragAndDropService;
         this.treeItemsTransfer = LocalSelectionTransfer.getInstance();
@@ -88,9 +93,10 @@ let DropIntoEditorController = class DropIntoEditorController extends Disposable
                         return;
                     }
                     if (edits.length) {
-                        const canShowWidget = editor.getOption(35 /* EditorOption.dropIntoEditor */).showDropSelector === 'afterDrop';
+                        const activeEditIndex = this.getInitialActiveEditIndex(model, edits);
+                        const canShowWidget = editor.getOption(36 /* EditorOption.dropIntoEditor */).showDropSelector === 'afterDrop';
                         // Pass in the parent token here as it tracks cancelling the entire drop operation
-                        yield this._postDropWidgetManager.applyEditAndShowIfNeeded([Range.fromPositions(position)], { activeEditIndex: 0, allEdits: edits }, canShowWidget, token);
+                        yield this._postDropWidgetManager.applyEditAndShowIfNeeded([Range.fromPositions(position)], { activeEditIndex, allEdits: edits }, canShowWidget, token);
                     }
                 }
                 finally {
@@ -106,13 +112,32 @@ let DropIntoEditorController = class DropIntoEditorController extends Disposable
     }
     getDropEdits(providers, model, position, dataTransfer, tokenSource) {
         return __awaiter(this, void 0, void 0, function* () {
-            const results = yield raceCancellation(Promise.all(providers.map(provider => {
-                return provider.provideDocumentOnDropEdits(model, position, dataTransfer, tokenSource.token);
-            })), tokenSource.token);
+            const results = yield raceCancellation(Promise.all(providers.map((provider) => __awaiter(this, void 0, void 0, function* () {
+                try {
+                    const edit = yield provider.provideDocumentOnDropEdits(model, position, dataTransfer, tokenSource.token);
+                    if (edit) {
+                        return Object.assign(Object.assign({}, edit), { providerId: provider.id });
+                    }
+                }
+                catch (err) {
+                    console.error(err);
+                }
+                return undefined;
+            }))), tokenSource.token);
             const edits = coalesce(results !== null && results !== void 0 ? results : []);
-            edits.sort((a, b) => b.priority - a.priority);
-            return edits;
+            return sortEditsByYieldTo(edits);
         });
+    }
+    getInitialActiveEditIndex(model, edits) {
+        const preferredProviders = this._configService.getValue(defaultProviderConfig, { resource: model.uri });
+        for (const [configMime, desiredId] of Object.entries(preferredProviders)) {
+            const editIndex = edits.findIndex(edit => desiredId === edit.providerId
+                && edit.handledMimeType && matchesMimeType(configMime, [edit.handledMimeType]));
+            if (editIndex >= 0) {
+                return editIndex;
+            }
+        }
+        return 0;
     }
     extractDataTransferData(dragEvent) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -138,9 +163,10 @@ let DropIntoEditorController = class DropIntoEditorController extends Disposable
     }
 };
 DropIntoEditorController.ID = 'editor.contrib.dropIntoEditorController';
-DropIntoEditorController = __decorate([
+DropIntoEditorController = DropIntoEditorController_1 = __decorate([
     __param(1, IInstantiationService),
-    __param(2, ILanguageFeaturesService),
-    __param(3, ITreeViewsDnDService)
+    __param(2, IConfigurationService),
+    __param(3, ILanguageFeaturesService),
+    __param(4, ITreeViewsDnDService)
 ], DropIntoEditorController);
 export { DropIntoEditorController };

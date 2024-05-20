@@ -20,6 +20,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var PostEditWidget_1;
 import * as dom from '../../../../base/browser/dom.js';
 import { Button } from '../../../../base/browser/ui/button/button.js';
 import { toAction } from '../../../../base/common/actions.js';
@@ -31,7 +32,7 @@ import { IContextKeyService } from '../../../../platform/contextkey/common/conte
 import { IContextMenuService } from '../../../../platform/contextview/browser/contextView.js';
 import { IInstantiationService } from '../../../../platform/instantiation/common/instantiation.js';
 import { IKeybindingService } from '../../../../platform/keybinding/common/keybinding.js';
-let PostEditWidget = class PostEditWidget extends Disposable {
+let PostEditWidget = PostEditWidget_1 = class PostEditWidget extends Disposable {
     constructor(typeId, editor, visibleContext, showCommand, range, edits, onSelectNewEdit, _contextMenuService, contextKeyService, _keybindingService) {
         super();
         this.typeId = typeId;
@@ -74,7 +75,7 @@ let PostEditWidget = class PostEditWidget extends Disposable {
         this._register(dom.addDisposableListener(this.domNode, dom.EventType.CLICK, () => this.showSelector()));
     }
     getId() {
-        return PostEditWidget.baseId + '.' + this.typeId;
+        return PostEditWidget_1.baseId + '.' + this.typeId;
     }
     getDomNode() {
         return this.domNode;
@@ -107,7 +108,7 @@ let PostEditWidget = class PostEditWidget extends Disposable {
     }
 };
 PostEditWidget.baseId = 'editor.widget.postEditWidget';
-PostEditWidget = __decorate([
+PostEditWidget = PostEditWidget_1 = __decorate([
     __param(7, IContextMenuService),
     __param(8, IContextKeyService),
     __param(9, IKeybindingService)

@@ -11,6 +11,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
+var WordHighlighterContribution_1;
 import { alert } from '../../../../base/browser/ui/aria/aria.js';
 import * as arrays from '../../../../base/common/arrays.js';
 import { createCancelablePromise, first, timeout } from '../../../../base/common/async.js';
@@ -143,7 +144,7 @@ class WordHighlighter {
         this.linkedHighlighters = linkedHighlighters;
         this._hasWordHighlights = ctxHasWordHighlights.bindTo(contextKeyService);
         this._ignorePositionChangeEvent = false;
-        this.occurrencesHighlight = this.editor.getOption(79 /* EditorOption.occurrencesHighlight */);
+        this.occurrencesHighlight = this.editor.getOption(80 /* EditorOption.occurrencesHighlight */);
         this.model = this.editor.getModel();
         this.toUnhook.add(editor.onDidChangeCursorPosition((e) => {
             if (this._ignorePositionChangeEvent) {
@@ -161,7 +162,7 @@ class WordHighlighter {
             this._stopAll();
         }));
         this.toUnhook.add(editor.onDidChangeConfiguration((e) => {
-            const newValue = this.editor.getOption(79 /* EditorOption.occurrencesHighlight */);
+            const newValue = this.editor.getOption(80 /* EditorOption.occurrencesHighlight */);
             if (this.occurrencesHighlight !== newValue) {
                 this.occurrencesHighlight = newValue;
                 this._stopAll();
@@ -316,7 +317,7 @@ class WordHighlighter {
             this._stopAll();
             const myRequestId = ++this.workerRequestTokenId;
             this.workerRequestCompleted = false;
-            this.workerRequest = computeOccurencesAtPosition(this.providers, this.model, this.editor.getSelection(), this.editor.getOption(128 /* EditorOption.wordSeparators */));
+            this.workerRequest = computeOccurencesAtPosition(this.providers, this.model, this.editor.getSelection(), this.editor.getOption(129 /* EditorOption.wordSeparators */));
             this.workerRequest.result.then(data => {
                 if (myRequestId === this.workerRequestTokenId) {
                     this.workerRequestCompleted = true;
@@ -368,16 +369,16 @@ class WordHighlighter {
         this.toUnhook.dispose();
     }
 }
-let WordHighlighterContribution = class WordHighlighterContribution extends Disposable {
+let WordHighlighterContribution = WordHighlighterContribution_1 = class WordHighlighterContribution extends Disposable {
     static get(editor) {
-        return editor.getContribution(WordHighlighterContribution.ID);
+        return editor.getContribution(WordHighlighterContribution_1.ID);
     }
     constructor(editor, contextKeyService, languageFeaturesService) {
         super();
         this.wordHighlighter = null;
         this.linkedContributions = new Set();
         const createWordHighlighterIfPossible = () => {
-            if (editor.hasModel()) {
+            if (editor.hasModel() && !editor.getModel().isTooLargeForTokenization()) {
                 this.wordHighlighter = new WordHighlighter(editor, languageFeaturesService.documentHighlightProvider, () => Iterable.map(this.linkedContributions, c => c.wordHighlighter), contextKeyService);
             }
         };
@@ -418,7 +419,7 @@ let WordHighlighterContribution = class WordHighlighterContribution extends Disp
     }
 };
 WordHighlighterContribution.ID = 'editor.contrib.wordHighlighter';
-WordHighlighterContribution = __decorate([
+WordHighlighterContribution = WordHighlighterContribution_1 = __decorate([
     __param(1, IContextKeyService),
     __param(2, ILanguageFeaturesService)
 ], WordHighlighterContribution);

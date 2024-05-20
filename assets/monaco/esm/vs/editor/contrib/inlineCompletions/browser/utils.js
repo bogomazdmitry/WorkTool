@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 import { BugIndicatingError } from '../../../../base/common/errors.js';
 import { DisposableStore } from '../../../../base/common/lifecycle.js';
-import { autorun } from '../../../../base/common/observable.js';
+import { autorunOpts } from '../../../../base/common/observable.js';
 import { Position } from '../../../common/core/position.js';
 import { Range } from '../../../common/core/range.js';
 export function applyEdits(text, edits) {
@@ -52,11 +52,15 @@ export class ColumnRange {
     toRange(lineNumber) {
         return new Range(lineNumber, this.startColumn, lineNumber, this.endColumnExclusive);
     }
+    equals(other) {
+        return this.startColumn === other.startColumn
+            && this.endColumnExclusive === other.endColumnExclusive;
+    }
 }
 export function applyObservableDecorations(editor, decorations) {
     const d = new DisposableStore();
     const decorationsCollection = editor.createDecorationsCollection();
-    d.add(autorun(`Apply decorations from ${decorations.debugName}`, reader => {
+    d.add(autorunOpts({ debugName: () => `Apply decorations from ${decorations.debugName}` }, reader => {
         const d = decorations.read(reader);
         decorationsCollection.set(d);
     }));

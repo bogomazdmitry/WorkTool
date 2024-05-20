@@ -27,3 +27,11 @@ Registry.as(Extensions.Configuration).registerConfiguration(Object.assign(Object
             default: true,
         },
     } }));
+Registry.as(Extensions.Configuration).registerConfiguration(Object.assign(Object.assign({}, editorConfigurationBaseNode), { properties: {
+        'editor.codeActionWidget.includeNearbyQuickfixes': {
+            type: 'boolean',
+            scope: 5 /* ConfigurationScope.LANGUAGE_OVERRIDABLE */,
+            description: nls.localize('includeNearbyQuickfixes', "Enable/disable showing nearest quickfix within a line when not currently on a diagnostic."),
+            default: false,
+        },
+    } }));

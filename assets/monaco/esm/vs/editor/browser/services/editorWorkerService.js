@@ -29,13 +29,13 @@ import { ILanguageConfigurationService } from '../../common/languages/languageCo
 import { EditorSimpleWorker } from '../../common/services/editorSimpleWorker.js';
 import { IModelService } from '../../common/services/model.js';
 import { ITextResourceConfigurationService } from '../../common/services/textResourceConfiguration.js';
-import { regExpFlags } from '../../../base/common/strings.js';
 import { isNonEmptyArray } from '../../../base/common/arrays.js';
 import { ILogService } from '../../../platform/log/common/log.js';
 import { StopWatch } from '../../../base/common/stopwatch.js';
 import { canceled } from '../../../base/common/errors.js';
 import { ILanguageFeaturesService } from '../../common/services/languageFeatures.js';
-import { LineRangeMapping, MovedText, RangeMapping, SimpleLineRangeMapping } from '../../common/diff/linesDiffComputer.js';
+import { MovedText } from '../../common/diff/linesDiffComputer.js';
+import { DetailedLineRangeMapping, RangeMapping, LineRangeMapping } from '../../common/diff/rangeMapping.js';
 import { LineRange } from '../../common/core/lineRange.js';
 /**
  * Stop syncing a model to the worker if it was not needed for 1 min.
@@ -94,13 +94,13 @@ let EditorWorkerService = class EditorWorkerService extends Disposable {
                 identical: result.identical,
                 quitEarly: result.quitEarly,
                 changes: toLineRangeMappings(result.changes),
-                moves: result.moves.map(m => new MovedText(new SimpleLineRangeMapping(new LineRange(m[0], m[1]), new LineRange(m[2], m[3])), toLineRangeMappings(m[4])))
+                moves: result.moves.map(m => new MovedText(new LineRangeMapping(new LineRange(m[0], m[1]), new LineRange(m[2], m[3])), toLineRangeMappings(m[4])))
             };
             return diff;
             function toLineRangeMappings(changes) {
                 return changes.map((c) => {
                     var _a;
-                    return new LineRangeMapping(new LineRange(c[0], c[1]), new LineRange(c[2], c[3]), (_a = c[4]) === null || _a === void 0 ? void 0 : _a.map((c) => new RangeMapping(new Range(c[0], c[1], c[2], c[3]), new Range(c[4], c[5], c[6], c[7]))));
+                    return new DetailedLineRangeMapping(new LineRange(c[0], c[1]), new LineRange(c[2], c[3]), (_a = c[4]) === null || _a === void 0 ? void 0 : _a.map((c) => new RangeMapping(new Range(c[0], c[1], c[2], c[3]), new Range(c[4], c[5], c[6], c[7]))));
                 });
             }
         });
@@ -434,7 +434,7 @@ export class EditorWorkerClient extends Disposable {
         return __awaiter(this, void 0, void 0, function* () {
             const proxy = yield this._withSyncedResources(resources);
             const wordDef = wordDefRegExp.source;
-            const wordDefFlags = regExpFlags(wordDefRegExp);
+            const wordDefFlags = wordDefRegExp.flags;
             return proxy.textualSuggest(resources.map(r => r.toString()), leadingWord, wordDef, wordDefFlags);
         });
     }
@@ -446,7 +446,7 @@ export class EditorWorkerClient extends Disposable {
             }
             const wordDefRegExp = this.languageConfigurationService.getLanguageConfiguration(model.getLanguageId()).getWordDefinition();
             const wordDef = wordDefRegExp.source;
-            const wordDefFlags = regExpFlags(wordDefRegExp);
+            const wordDefFlags = wordDefRegExp.flags;
             return proxy.computeWordRanges(resource.toString(), range, wordDef, wordDefFlags);
         });
     }
@@ -458,7 +458,7 @@ export class EditorWorkerClient extends Disposable {
             }
             const wordDefRegExp = this.languageConfigurationService.getLanguageConfiguration(model.getLanguageId()).getWordDefinition();
             const wordDef = wordDefRegExp.source;
-            const wordDefFlags = regExpFlags(wordDefRegExp);
+            const wordDefFlags = wordDefRegExp.flags;
             return proxy.navigateValueSet(resource.toString(), range, up, wordDef, wordDefFlags);
         });
     }

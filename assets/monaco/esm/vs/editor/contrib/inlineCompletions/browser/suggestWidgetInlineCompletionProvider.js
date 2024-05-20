@@ -12,21 +12,23 @@ import { SnippetSession } from '../../snippet/browser/snippetSession.js';
 import { SuggestController } from '../../suggest/browser/suggestController.js';
 import { observableValue, transaction } from '../../../../base/common/observable.js';
 import { SingleTextEdit } from './singleTextEdit.js';
-import { compareBy, findMaxBy, numberComparator } from '../../../../base/common/arrays.js';
+import { compareBy, numberComparator } from '../../../../base/common/arrays.js';
+import { findFirstMaxBy } from '../../../../base/common/arraysFind.js';
 export class SuggestWidgetAdaptor extends Disposable {
     get selectedItem() {
         return this._selectedItem;
     }
-    constructor(editor, suggestControllerPreselector, checkModelVersion) {
+    constructor(editor, suggestControllerPreselector, checkModelVersion, onWillAccept) {
         super();
         this.editor = editor;
         this.suggestControllerPreselector = suggestControllerPreselector;
         this.checkModelVersion = checkModelVersion;
+        this.onWillAccept = onWillAccept;
         this.isSuggestWidgetVisible = false;
         this.isShiftKeyPressed = false;
         this._isActive = false;
         this._currentSuggestItemInfo = undefined;
-        this._selectedItem = observableValue('suggestWidgetInlineCompletionProvider.selectedItem', undefined);
+        this._selectedItem = observableValue(this, undefined);
         // See the command acceptAlternativeSelectedSuggestion that is bound to shift+tab
         this._register(editor.onKeyDown(e => {
             if (e.shiftKey && !this.isShiftKeyPressed) {
@@ -65,7 +67,7 @@ export class SuggestWidgetAdaptor extends Disposable {
                         return { index, valid, prefixLength: suggestItemTextEdit.text.length, suggestItem };
                     })
                         .filter(item => item && item.valid && item.prefixLength > 0);
-                    const result = findMaxBy(candidates, compareBy(s => s.prefixLength, numberComparator));
+                    const result = findFirstMaxBy(candidates, compareBy(s => s.prefixLength, numberComparator));
                     return result ? result.index : -1;
                 }
             }));
@@ -91,6 +93,15 @@ export class SuggestWidgetAdaptor extends Disposable {
             this._register(Event.once(suggestController.model.onDidTrigger)(e => {
                 bindToSuggestWidget();
             }));
+            this._register(suggestController.onWillInsertSuggestItem(e => {
+                const position = this.editor.getPosition();
+                const model = this.editor.getModel();
+                if (!position || !model) {
+                    return undefined;
+                }
+                const suggestItemInfo = SuggestItemInfo.fromSuggestion(suggestController, model, position, e.item, this.isShiftKeyPressed);
+                this.onWillAccept(suggestItemInfo);
+            }));
         }
         this.update(this._isActive);
     }
@@ -100,6 +111,7 @@ export class SuggestWidgetAdaptor extends Disposable {
             this._isActive = newActive;
             this._currentSuggestItemInfo = newInlineCompletion;
             transaction(tx => {
+                /** @description Update state from suggest widget */
                 this.checkModelVersion(tx);
                 this._selectedItem.set(this._isActive ? this._currentSuggestItemInfo : undefined, tx);
             });

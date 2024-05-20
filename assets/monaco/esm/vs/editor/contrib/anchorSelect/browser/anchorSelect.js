@@ -20,6 +20,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var SelectionAnchorController_1;
 import { alert } from '../../../../base/browser/ui/aria/aria.js';
 import { MarkdownString } from '../../../../base/common/htmlContent.js';
 import { KeyChord } from '../../../../base/common/keyCodes.js';
@@ -30,9 +31,9 @@ import { EditorContextKeys } from '../../../common/editorContextKeys.js';
 import { localize } from '../../../../nls.js';
 import { IContextKeyService, RawContextKey } from '../../../../platform/contextkey/common/contextkey.js';
 export const SelectionAnchorSet = new RawContextKey('selectionAnchorSet', false);
-let SelectionAnchorController = class SelectionAnchorController {
+let SelectionAnchorController = SelectionAnchorController_1 = class SelectionAnchorController {
     static get(editor) {
-        return editor.getContribution(SelectionAnchorController.ID);
+        return editor.getContribution(SelectionAnchorController_1.ID);
     }
     constructor(editor, contextKeyService) {
         this.editor = editor;
@@ -91,7 +92,7 @@ let SelectionAnchorController = class SelectionAnchorController {
     }
 };
 SelectionAnchorController.ID = 'editor.contrib.selectionAnchorController';
-SelectionAnchorController = __decorate([
+SelectionAnchorController = SelectionAnchorController_1 = __decorate([
     __param(1, IContextKeyService)
 ], SelectionAnchorController);
 class SetSelectionAnchor extends EditorAction {

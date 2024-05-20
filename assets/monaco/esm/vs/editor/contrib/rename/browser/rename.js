@@ -20,6 +20,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var RenameController_1;
 import { alert } from '../../../../base/browser/ui/aria/aria.js';
 import { raceCancellation } from '../../../../base/common/async.js';
 import { CancellationToken, CancellationTokenSource } from '../../../../base/common/cancellation.js';
@@ -125,9 +126,9 @@ export function rename(registry, model, position, newName) {
     });
 }
 // ---  register actions and commands
-let RenameController = class RenameController {
+let RenameController = RenameController_1 = class RenameController {
     static get(editor) {
-        return editor.getContribution(RenameController.ID);
+        return editor.getContribution(RenameController_1.ID);
     }
     constructor(editor, _instaService, _notificationService, _bulkEditService, _progressService, _logService, _configService, _languageFeaturesService) {
         this.editor = editor;
@@ -249,7 +250,7 @@ let RenameController = class RenameController {
     }
 };
 RenameController.ID = 'editor.contrib.renameController';
-RenameController = __decorate([
+RenameController = RenameController_1 = __decorate([
     __param(1, IInstantiationService),
     __param(2, INotificationService),
     __param(3, IBulkEditService),

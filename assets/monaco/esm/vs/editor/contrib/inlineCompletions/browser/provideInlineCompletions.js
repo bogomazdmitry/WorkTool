@@ -14,7 +14,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 import { assertNever } from '../../../../base/common/assert.js';
 import { DeferredPromise } from '../../../../base/common/async.js';
 import { CancellationToken } from '../../../../base/common/cancellation.js';
-import { SetMap } from '../../../../base/common/collections.js';
+import { SetMap } from '../../../../base/common/map.js';
 import { onUnexpectedExternalError } from '../../../../base/common/errors.js';
 import { Range } from '../../../common/core/range.js';
 import { fixBracketsInLine } from '../../../common/model/bracketPairsTextModelPart/fixBrackets.js';

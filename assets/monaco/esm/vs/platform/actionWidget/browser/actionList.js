@@ -7,6 +7,15 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
@@ -14,6 +23,7 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 import * as dom from '../../../base/browser/dom.js';
 import { KeybindingLabel } from '../../../base/browser/ui/keybindingLabel/keybindingLabel.js';
 import { List } from '../../../base/browser/ui/list/listWidget.js';
+import { CancellationTokenSource } from '../../../base/common/cancellation.js';
 import { Codicon } from '../../../base/common/codicons.js';
 import { Disposable } from '../../../base/common/lifecycle.js';
 import { OS } from '../../../base/common/platform.js';
@@ -84,7 +94,7 @@ let ActionItemRenderer = class ActionItemRenderer {
             data.container.title = element.label;
         }
         else if (actionTitle && previewTitle) {
-            if (this._supportsPreview) {
+            if (this._supportsPreview && element.canPreview) {
                 data.container.title = localize({ key: 'label-preview', comment: ['placeholders are keybindings, e.g "F2 to apply, Shift+F2 to preview"'] }, "{0} to apply, {1} to preview", actionTitle, previewTitle);
             }
             else {
@@ -108,6 +118,13 @@ class AcceptSelectedEvent extends UIEvent {
 class PreviewSelectedEvent extends UIEvent {
     constructor() { super('previewSelectedAction'); }
 }
+function getKeyboardNavigationLabel(item) {
+    // Filter out header vs. action
+    if (item.kind === 'action') {
+        return item.label;
+    }
+    return undefined;
+}
 let ActionList = class ActionList extends Disposable {
     constructor(user, preview, items, _delegate, _contextViewService, _keybindingService) {
         super();
@@ -116,6 +133,7 @@ let ActionList = class ActionList extends Disposable {
         this._keybindingService = _keybindingService;
         this._actionLineHeight = 24;
         this._headerLineHeight = 26;
+        this.cts = this._register(new CancellationTokenSource());
         this.domNode = document.createElement('div');
         this.domNode.classList.add('actionList');
         const virtualDelegate = {
@@ -127,6 +145,8 @@ let ActionList = class ActionList extends Disposable {
             new HeaderRenderer(),
         ], {
             keyboardSupport: false,
+            typeNavigationEnabled: true,
+            keyboardNavigationLabelProvider: { getKeyboardNavigationLabel },
             accessibilityProvider: {
                 getAriaLabel: element => {
                     if (element.kind === "action" /* ActionListItemKind.Action */) {
@@ -140,13 +160,13 @@ let ActionList = class ActionList extends Disposable {
                 },
                 getWidgetAriaLabel: () => localize({ key: 'customQuickFixWidget', comment: [`An action widget option`] }, "Action Widget"),
                 getRole: (e) => e.kind === "action" /* ActionListItemKind.Action */ ? 'option' : 'separator',
-                getWidgetRole: () => 'listbox'
+                getWidgetRole: () => 'listbox',
             },
         }));
         this._list.style(defaultListStyles);
         this._register(this._list.onMouseClick(e => this.onListClick(e)));
         this._register(this._list.onMouseOver(e => this.onListHover(e)));
-        this._register(this._list.onDidChangeFocus(() => this._list.domFocus()));
+        this._register(this._list.onDidChangeFocus(() => this.onFocus()));
         this._register(this._list.onDidChangeSelection(e => this.onListSelection(e)));
         this._allMenuItems = items;
         this._list.splice(0, this._list.length, this._allMenuItems);
@@ -159,6 +179,7 @@ let ActionList = class ActionList extends Disposable {
     }
     hide(didCancel) {
         this._delegate.onHide(didCancel);
+        this.cts.cancel();
         this._contextViewService.hideContextView();
     }
     layout(minWidth) {
@@ -218,8 +239,31 @@ let ActionList = class ActionList extends Disposable {
             this._list.setSelection([]);
         }
     }
+    onFocus() {
+        var _a, _b;
+        this._list.domFocus();
+        const focused = this._list.getFocus();
+        if (focused.length === 0) {
+            return;
+        }
+        const focusIndex = focused[0];
+        const element = this._list.element(focusIndex);
+        (_b = (_a = this._delegate).onFocus) === null || _b === void 0 ? void 0 : _b.call(_a, element.item);
+    }
     onListHover(e) {
-        this._list.setFocus(typeof e.index === 'number' ? [e.index] : []);
+        return __awaiter(this, void 0, void 0, function* () {
+            const element = e.element;
+            if (element && element.item && this.focusCondition(element)) {
+                if (this._delegate.onHover && !element.disabled && element.kind === "action" /* ActionListItemKind.Action */) {
+                    const result = yield this._delegate.onHover(element.item, this.cts.token);
+                    element.canPreview = result ? result.canPreview : undefined;
+                }
+                if (e.index) {
+                    this._list.splice(e.index, 1, [element]);
+                }
+            }
+            this._list.setFocus(typeof e.index === 'number' ? [e.index] : []);
+        });
     }
     onListClick(e) {
         if (e.element && this.focusCondition(e.element)) {

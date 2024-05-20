@@ -308,6 +308,14 @@ export function matchesFuzzy(word, wordToMatchAgainst, enableSeparateSubstringMa
     // Default Filter
     return enableSeparateSubstringMatching ? fuzzySeparateFilter(word, wordToMatchAgainst) : fuzzyContiguousFilter(word, wordToMatchAgainst);
 }
+/**
+ * Match pattern against word in a fuzzy way. As in IntelliSense and faster and more
+ * powerful than `matchesFuzzy`
+ */
+export function matchesFuzzy2(pattern, word) {
+    const score = fuzzyScore(pattern, pattern.toLowerCase(), 0, word, word.toLowerCase(), 0, { firstMatchCanBeWeak: true, boostFullMatch: true });
+    return score ? createMatches(score) : null;
+}
 export function anyScore(pattern, lowPattern, patternPos, word, lowWord, wordPos) {
     const max = Math.min(13, pattern.length);
     for (; patternPos < max; patternPos++) {

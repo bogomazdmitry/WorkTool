@@ -20,6 +20,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var StandaloneColorPickerController_1, StandaloneColorPickerWidget_1;
 import { Disposable } from '../../../../base/common/lifecycle.js';
 import { StandaloneColorPickerParticipant } from './colorHoverParticipant.js';
 import { IInstantiationService } from '../../../../platform/instantiation/common/instantiation.js';
@@ -35,7 +36,7 @@ import { ILanguageConfigurationService } from '../../../common/languages/languag
 import { DefaultDocumentColorProvider } from './defaultDocumentColorProvider.js';
 import * as dom from '../../../../base/browser/dom.js';
 import './colorPicker.css';
-let StandaloneColorPickerController = class StandaloneColorPickerController extends Disposable {
+let StandaloneColorPickerController = StandaloneColorPickerController_1 = class StandaloneColorPickerController extends Disposable {
     constructor(_editor, _contextKeyService, _modelService, _keybindingService, _instantiationService, _languageFeatureService, _languageConfigurationService) {
         super();
         this._editor = _editor;
@@ -73,11 +74,11 @@ let StandaloneColorPickerController = class StandaloneColorPickerController exte
         this.hide();
     }
     static get(editor) {
-        return editor.getContribution(StandaloneColorPickerController.ID);
+        return editor.getContribution(StandaloneColorPickerController_1.ID);
     }
 };
 StandaloneColorPickerController.ID = 'editor.contrib.standaloneColorPickerController';
-StandaloneColorPickerController = __decorate([
+StandaloneColorPickerController = StandaloneColorPickerController_1 = __decorate([
     __param(1, IContextKeyService),
     __param(2, IModelService),
     __param(3, IKeybindingService),
@@ -89,7 +90,7 @@ export { StandaloneColorPickerController };
 registerEditorContribution(StandaloneColorPickerController.ID, StandaloneColorPickerController, 1 /* EditorContributionInstantiation.AfterFirstRender */);
 const PADDING = 8;
 const CLOSE_BUTTON_WIDTH = 22;
-let StandaloneColorPickerWidget = class StandaloneColorPickerWidget extends Disposable {
+let StandaloneColorPickerWidget = StandaloneColorPickerWidget_1 = class StandaloneColorPickerWidget extends Disposable {
     constructor(_editor, _standaloneColorPickerVisible, _standaloneColorPickerFocused, _instantiationService, _modelService, _keybindingService, _languageFeaturesService, _languageConfigurationService) {
         var _a;
         super();
@@ -101,8 +102,8 @@ let StandaloneColorPickerWidget = class StandaloneColorPickerWidget extends Disp
         this._languageFeaturesService = _languageFeaturesService;
         this._languageConfigurationService = _languageConfigurationService;
         this.allowEditorOverflow = true;
-        this.body = document.createElement('div');
         this._position = undefined;
+        this._body = document.createElement('div');
         this._colorHover = null;
         this._selectionSetInEditor = false;
         this._onResult = this._register(new Emitter());
@@ -118,7 +119,7 @@ let StandaloneColorPickerWidget = class StandaloneColorPickerWidget extends Disp
                 endLineNumber: editorSelection.endLineNumber,
                 endColumn: editorSelection.endColumn
             } : { startLineNumber: 0, endLineNumber: 0, endColumn: 0, startColumn: 0 };
-        const focusTracker = this._register(dom.trackFocus(this.body));
+        const focusTracker = this._register(dom.trackFocus(this._body));
         this._register(focusTracker.onDidBlur(_ => {
             this.hide();
         }));
@@ -146,6 +147,7 @@ let StandaloneColorPickerWidget = class StandaloneColorPickerWidget extends Disp
             this._render(result.value, result.foundInEditor);
         }));
         this._start(selection);
+        this._body.style.zIndex = '50';
         this._editor.addContentWidget(this);
     }
     updateEditor() {
@@ -154,16 +156,16 @@ let StandaloneColorPickerWidget = class StandaloneColorPickerWidget extends Disp
         }
     }
     getId() {
-        return StandaloneColorPickerWidget.ID;
+        return StandaloneColorPickerWidget_1.ID;
     }
     getDomNode() {
-        return this.body;
+        return this._body;
     }
     getPosition() {
         if (!this._position) {
             return null;
         }
-        const positionPreference = this._editor.getOption(59 /* EditorOption.hover */).above;
+        const positionPreference = this._editor.getOption(60 /* EditorOption.hover */).above;
         return {
             position: this._position,
             secondaryPosition: this._position,
@@ -180,7 +182,7 @@ let StandaloneColorPickerWidget = class StandaloneColorPickerWidget extends Disp
     }
     focus() {
         this._standaloneColorPickerFocused.set(true);
-        this.body.focus();
+        this._body.focus();
     }
     _start(selection) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -223,11 +225,11 @@ let StandaloneColorPickerWidget = class StandaloneColorPickerWidget extends Disp
         if (colorPickerWidget === undefined) {
             return;
         }
-        this.body.classList.add('standalone-colorpicker-body');
-        this.body.style.maxHeight = Math.max(this._editor.getLayoutInfo().height / 4, 250) + 'px';
-        this.body.style.maxWidth = Math.max(this._editor.getLayoutInfo().width * 0.66, 500) + 'px';
-        this.body.tabIndex = 0;
-        this.body.appendChild(fragment);
+        this._body.classList.add('standalone-colorpicker-body');
+        this._body.style.maxHeight = Math.max(this._editor.getLayoutInfo().height / 4, 250) + 'px';
+        this._body.style.maxWidth = Math.max(this._editor.getLayoutInfo().width * 0.66, 500) + 'px';
+        this._body.tabIndex = 0;
+        this._body.appendChild(fragment);
         colorPickerWidget.layout();
         const colorPickerBody = colorPickerWidget.body;
         const saturationBoxWidth = colorPickerBody.saturationBox.domNode.clientWidth;
@@ -258,7 +260,7 @@ let StandaloneColorPickerWidget = class StandaloneColorPickerWidget extends Disp
     }
 };
 StandaloneColorPickerWidget.ID = 'editor.contrib.standaloneColorPickerWidget';
-StandaloneColorPickerWidget = __decorate([
+StandaloneColorPickerWidget = StandaloneColorPickerWidget_1 = __decorate([
     __param(3, IInstantiationService),
     __param(4, IModelService),
     __param(5, IKeybindingService),

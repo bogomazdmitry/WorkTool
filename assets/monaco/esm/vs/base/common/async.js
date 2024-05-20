@@ -105,7 +105,7 @@ export class Throttler {
     }
     queue(promiseFactory) {
         if (this.isDisposed) {
-            throw new Error('Throttler is disposed');
+            return Promise.reject(new Error('Throttler is disposed'));
         }
         if (this.activePromise) {
             this.queuedPromiseFactory = promiseFactory;
@@ -289,9 +289,36 @@ export function timeout(millis, token) {
         });
     });
 }
-export function disposableTimeout(handler, timeout = 0) {
-    const timer = setTimeout(handler, timeout);
-    return toDisposable(() => clearTimeout(timer));
+/**
+ * Creates a timeout that can be disposed using its returned value.
+ * @param handler The timeout handler.
+ * @param timeout An optional timeout in milliseconds.
+ * @param store An optional {@link DisposableStore} that will have the timeout disposable managed automatically.
+ *
+ * @example
+ * const store = new DisposableStore;
+ * // Call the timeout after 1000ms at which point it will be automatically
+ * // evicted from the store.
+ * const timeoutDisposable = disposableTimeout(() => {}, 1000, store);
+ *
+ * if (foo) {
+ *   // Cancel the timeout and evict it from store.
+ *   timeoutDisposable.dispose();
+ * }
+ */
+export function disposableTimeout(handler, timeout = 0, store) {
+    const timer = setTimeout(() => {
+        handler();
+        if (store) {
+            disposable.dispose();
+        }
+    }, timeout);
+    const disposable = toDisposable(() => {
+        clearTimeout(timer);
+        store === null || store === void 0 ? void 0 : store.deleteAndLeak(disposable);
+    });
+    store === null || store === void 0 ? void 0 : store.add(disposable);
+    return disposable;
 }
 export function first(promiseFactories, shouldStop = t => !!t, defaultValue = null) {
     let index = 0;

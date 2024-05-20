@@ -28,7 +28,7 @@ import { timeout } from '../../../common/async.js';
 import { Color } from '../../../common/color.js';
 import { memoize } from '../../../common/decorators.js';
 import { Emitter, Event, EventBufferer } from '../../../common/event.js';
-import { matchesPrefix } from '../../../common/filters.js';
+import { matchesFuzzy2, matchesPrefix } from '../../../common/filters.js';
 import { DisposableStore, dispose } from '../../../common/lifecycle.js';
 import { clamp } from '../../../common/numbers.js';
 import * as platform from '../../../common/platform.js';
@@ -240,8 +240,7 @@ export function isButton(e) {
 }
 class KeyboardController {
     get onKeyDown() {
-        return this.disposables.add(Event.chain(this.disposables.add(new DomEmitter(this.view.domNode, 'keydown')).event)
-            .filter(e => !isInputElement(e.target))
+        return Event.chain(this.disposables.add(new DomEmitter(this.view.domNode, 'keydown')).event, $ => $.filter(e => !isInputElement(e.target))
             .map(e => new StandardKeyboardEvent(e)));
     }
     constructor(list, view, options) {
@@ -249,22 +248,31 @@ class KeyboardController {
         this.view = view;
         this.disposables = new DisposableStore();
         this.multipleSelectionDisposables = new DisposableStore();
-        this.onKeyDown.filter(e => e.keyCode === 3 /* KeyCode.Enter */).on(this.onEnter, this, this.disposables);
-        this.onKeyDown.filter(e => e.keyCode === 16 /* KeyCode.UpArrow */).on(this.onUpArrow, this, this.disposables);
-        this.onKeyDown.filter(e => e.keyCode === 18 /* KeyCode.DownArrow */).on(this.onDownArrow, this, this.disposables);
-        this.onKeyDown.filter(e => e.keyCode === 11 /* KeyCode.PageUp */).on(this.onPageUpArrow, this, this.disposables);
-        this.onKeyDown.filter(e => e.keyCode === 12 /* KeyCode.PageDown */).on(this.onPageDownArrow, this, this.disposables);
-        this.onKeyDown.filter(e => e.keyCode === 9 /* KeyCode.Escape */).on(this.onEscape, this, this.disposables);
-        if (options.multipleSelectionSupport !== false) {
-            this.onKeyDown.filter(e => (platform.isMacintosh ? e.metaKey : e.ctrlKey) && e.keyCode === 31 /* KeyCode.KeyA */).on(this.onCtrlA, this, this.multipleSelectionDisposables);
-        }
+        this.multipleSelectionSupport = options.multipleSelectionSupport;
+        this.disposables.add(this.onKeyDown(e => {
+            switch (e.keyCode) {
+                case 3 /* KeyCode.Enter */:
+                    return this.onEnter(e);
+                case 16 /* KeyCode.UpArrow */:
+                    return this.onUpArrow(e);
+                case 18 /* KeyCode.DownArrow */:
+                    return this.onDownArrow(e);
+                case 11 /* KeyCode.PageUp */:
+                    return this.onPageUpArrow(e);
+                case 12 /* KeyCode.PageDown */:
+                    return this.onPageDownArrow(e);
+                case 9 /* KeyCode.Escape */:
+                    return this.onEscape(e);
+                case 31 /* KeyCode.KeyA */:
+                    if (this.multipleSelectionSupport && (platform.isMacintosh ? e.metaKey : e.ctrlKey)) {
+                        this.onCtrlA(e);
+                    }
+            }
+        }));
     }
     updateOptions(optionsUpdate) {
         if (optionsUpdate.multipleSelectionSupport !== undefined) {
-            this.multipleSelectionDisposables.clear();
-            if (optionsUpdate.multipleSelectionSupport) {
-                this.onKeyDown.filter(e => (platform.isMacintosh ? e.metaKey : e.ctrlKey) && e.keyCode === 31 /* KeyCode.KeyA */).on(this.onCtrlA, this, this.multipleSelectionDisposables);
-            }
+            this.multipleSelectionSupport = optionsUpdate.multipleSelectionSupport;
         }
     }
     onEnter(e) {
@@ -384,15 +392,13 @@ class TypeNavigationController {
             return;
         }
         let typing = false;
-        const onChar = this.enabledDisposables.add(Event.chain(this.enabledDisposables.add(new DomEmitter(this.view.domNode, 'keydown')).event))
-            .filter(e => !isInputElement(e.target))
+        const onChar = Event.chain(this.enabledDisposables.add(new DomEmitter(this.view.domNode, 'keydown')).event, $ => $.filter(e => !isInputElement(e.target))
             .filter(() => this.mode === TypeNavigationMode.Automatic || this.triggered)
             .map(event => new StandardKeyboardEvent(event))
             .filter(e => typing || this.keyboardNavigationEventFilter(e))
             .filter(e => this.delegate.mightProducePrintableCharacter(e))
             .forEach(e => EventHelper.stop(e, true))
-            .map(event => event.browserEvent.key)
-            .event;
+            .map(event => event.browserEvent.key));
         const onClear = Event.debounce(onChar, () => null, 800, undefined, undefined, undefined, this.enabledDisposables);
         const onInput = Event.reduce(Event.any(onChar, onClear), (r, i) => i === null ? null : ((r || '') + i), undefined, this.enabledDisposables);
         onInput(this.onInput, this, this.enabledDisposables);
@@ -437,7 +443,29 @@ class TypeNavigationController {
             const index = (start + i + delta) % this.list.length;
             const label = this.keyboardNavigationLabelProvider.getKeyboardNavigationLabel(this.view.element(index));
             const labelStr = label && label.toString();
-            if (typeof labelStr === 'undefined' || matchesPrefix(word, labelStr)) {
+            if (this.list.options.typeNavigationEnabled) {
+                if (typeof labelStr !== 'undefined') {
+                    // If prefix is found, focus and return early
+                    if (matchesPrefix(word, labelStr)) {
+                        this.previouslyFocused = start;
+                        this.list.setFocus([index]);
+                        this.list.reveal(index);
+                        return;
+                    }
+                    const fuzzy = matchesFuzzy2(word, labelStr);
+                    if (fuzzy) {
+                        const fuzzyScore = fuzzy[0].end - fuzzy[0].start;
+                        // ensures that when fuzzy matching, doesn't clash with prefix matching (1 input vs 1+ should be prefix and fuzzy respecitvely). Also makes sure that exact matches are prioritized.
+                        if (fuzzyScore > 1 && fuzzy.length === 1) {
+                            this.previouslyFocused = start;
+                            this.list.setFocus([index]);
+                            this.list.reveal(index);
+                            return;
+                        }
+                    }
+                }
+            }
+            else if (typeof labelStr === 'undefined' || matchesPrefix(word, labelStr)) {
                 this.previouslyFocused = start;
                 this.list.setFocus([index]);
                 this.list.reveal(index);
@@ -456,11 +484,11 @@ class DOMFocusController {
         this.list = list;
         this.view = view;
         this.disposables = new DisposableStore();
-        const onKeyDown = this.disposables.add(Event.chain(this.disposables.add(new DomEmitter(view.domNode, 'keydown')).event))
+        const onKeyDown = Event.chain(this.disposables.add(new DomEmitter(view.domNode, 'keydown')).event, $ => $
             .filter(e => !isInputElement(e.target))
-            .map(e => new StandardKeyboardEvent(e));
-        onKeyDown.filter(e => e.keyCode === 2 /* KeyCode.Tab */ && !e.ctrlKey && !e.metaKey && !e.shiftKey && !e.altKey)
-            .on(this.onTab, this, this.disposables);
+            .map(e => new StandardKeyboardEvent(e)));
+        const onTab = Event.chain(onKeyDown, $ => $.filter(e => e.keyCode === 2 /* KeyCode.Tab */ && !e.ctrlKey && !e.metaKey && !e.shiftKey && !e.altKey));
+        onTab(this.onTab, this, this.disposables);
     }
     onTab(e) {
         if (e.target !== this.view.domNode) {
@@ -577,9 +605,6 @@ export class MouseController {
             this.list.setSelection([], e.browserEvent);
             this.list.setAnchor(undefined);
             return;
-        }
-        if (this.isSelectionRangeChangeEvent(e)) {
-            return this.changeSelection(e);
         }
         if (this.isSelectionChangeEvent(e)) {
             return this.changeSelection(e);
@@ -804,7 +829,8 @@ const DefaultOptions = {
         getDragURI() { return null; },
         onDragStart() { },
         onDragOver() { return false; },
-        drop() { }
+        drop() { },
+        dispose() { }
     }
 };
 // TODO@Joao: move these utils into a SortedArray class
@@ -980,6 +1006,9 @@ class ListViewDragAndDrop {
     drop(data, targetElement, targetIndex, originalEvent) {
         this.dnd.drop(data, targetElement, targetIndex, originalEvent);
     }
+    dispose() {
+        this.dnd.dispose();
+    }
 }
 /**
  * The {@link List} is a virtual scrolling widget, built on top of the {@link ListView}
@@ -1023,14 +1052,11 @@ export class List {
      */
     get onContextMenu() {
         let didJustPressContextMenuKey = false;
-        const fromKeyDown = this.disposables.add(Event.chain(this.disposables.add(new DomEmitter(this.view.domNode, 'keydown')).event))
-            .map(e => new StandardKeyboardEvent(e))
+        const fromKeyDown = Event.chain(this.disposables.add(new DomEmitter(this.view.domNode, 'keydown')).event, $ => $.map(e => new StandardKeyboardEvent(e))
             .filter(e => didJustPressContextMenuKey = e.keyCode === 58 /* KeyCode.ContextMenu */ || (e.shiftKey && e.keyCode === 68 /* KeyCode.F10 */))
             .map(e => EventHelper.stop(e, true))
-            .filter(() => false)
-            .event;
-        const fromKeyUp = this.disposables.add(Event.chain(this.disposables.add(new DomEmitter(this.view.domNode, 'keyup')).event))
-            .forEach(() => didJustPressContextMenuKey = false)
+            .filter(() => false));
+        const fromKeyUp = Event.chain(this.disposables.add(new DomEmitter(this.view.domNode, 'keyup')).event, $ => $.forEach(() => didJustPressContextMenuKey = false)
             .map(e => new StandardKeyboardEvent(e))
             .filter(e => e.keyCode === 58 /* KeyCode.ContextMenu */ || (e.shiftKey && e.keyCode === 68 /* KeyCode.F10 */))
             .map(e => EventHelper.stop(e, true))
@@ -1040,12 +1066,9 @@ export class List {
             const element = typeof index !== 'undefined' ? this.view.element(index) : undefined;
             const anchor = typeof index !== 'undefined' ? this.view.domElement(index) : this.view.domNode;
             return { index, element, anchor, browserEvent };
-        })
-            .event;
-        const fromMouse = this.disposables.add(Event.chain(this.view.onContextMenu))
-            .filter(_ => !didJustPressContextMenuKey)
-            .map(({ element, index, browserEvent }) => ({ element, index, anchor: new StandardMouseEvent(browserEvent), browserEvent }))
-            .event;
+        }));
+        const fromMouse = Event.chain(this.view.onContextMenu, $ => $.filter(_ => !didJustPressContextMenuKey)
+            .map(({ element, index, browserEvent }) => ({ element, index, anchor: new StandardMouseEvent(browserEvent), browserEvent })));
         return Event.any(fromKeyDown, fromKeyUp, fromMouse);
     }
     get onKeyDown() { return this.disposables.add(new DomEmitter(this.view.domNode, 'keydown')).event; }

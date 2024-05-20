@@ -4,6 +4,11 @@ export class GhostText {
         this.lineNumber = lineNumber;
         this.parts = parts;
     }
+    equals(other) {
+        return this.lineNumber === other.lineNumber &&
+            this.parts.length === other.parts.length &&
+            this.parts.every((part, index) => part.equals(other.parts[index]));
+    }
     renderForScreenReader(lineText) {
         if (this.parts.length === 0) {
             return '';
@@ -33,6 +38,11 @@ export class GhostTextPart {
         this.lines = lines;
         this.preview = preview;
     }
+    equals(other) {
+        return this.column === other.column &&
+            this.lines.length === other.lines.length &&
+            this.lines.every((line, index) => line === other.lines[index]);
+    }
 }
 export class GhostTextReplacement {
     constructor(lineNumber, columnRange, newLines, additionalReservedLineCount = 0) {
@@ -53,4 +63,26 @@ export class GhostTextReplacement {
     isEmpty() {
         return this.parts.every(p => p.lines.length === 0);
     }
+    equals(other) {
+        return this.lineNumber === other.lineNumber &&
+            this.columnRange.equals(other.columnRange) &&
+            this.newLines.length === other.newLines.length &&
+            this.newLines.every((line, index) => line === other.newLines[index]) &&
+            this.additionalReservedLineCount === other.additionalReservedLineCount;
+    }
+}
+export function ghostTextOrReplacementEquals(a, b) {
+    if (a === b) {
+        return true;
+    }
+    if (!a || !b) {
+        return false;
+    }
+    if (a instanceof GhostText && b instanceof GhostText) {
+        return a.equals(b);
+    }
+    if (a instanceof GhostTextReplacement && b instanceof GhostTextReplacement) {
+        return a.equals(b);
+    }
+    return false;
 }

@@ -258,7 +258,7 @@ let ReferenceWidget = class ReferenceWidget extends peekView.PeekViewWidget {
                 useShadows: true,
                 verticalHasArrows: false,
                 horizontalHasArrows: false,
-                alwaysConsumeMouseWheel: false
+                alwaysConsumeMouseWheel: true
             },
             overviewRulerLanes: 2,
             fixedOverflowWidgets: true,

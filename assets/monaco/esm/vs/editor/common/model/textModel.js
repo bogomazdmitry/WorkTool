@@ -11,6 +11,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
+var TextModel_1;
 import { ArrayQueue, pushMany } from '../../../base/common/arrays.js';
 import { Color } from '../../../base/common/color.js';
 import { BugIndicatingError, illegalArgument, onUnexpectedError } from '../../../base/common/errors.js';
@@ -104,13 +105,13 @@ class TextModelSnapshot {
     }
 }
 const invalidFunc = () => { throw new Error(`Invalid change accessor`); };
-let TextModel = class TextModel extends Disposable {
+let TextModel = TextModel_1 = class TextModel extends Disposable {
     static resolveOptions(textBuffer, options) {
         if (options.detectIndentation) {
             const guessedIndentation = guessIndentation(textBuffer, options.tabSize, options.insertSpaces);
             return new model.TextModelResolvedOptions({
                 tabSize: guessedIndentation.tabSize,
-                indentSize: 'tabSize',
+                indentSize: 'tabSize', // TODO@Alex: guess indentSize independent of tabSize
                 insertSpaces: guessedIndentation.insertSpaces,
                 trimAutoWhitespace: options.trimAutoWhitespace,
                 defaultEOL: options.defaultEOL,
@@ -165,7 +166,7 @@ let TextModel = class TextModel extends Disposable {
         const { textBuffer, disposable } = createTextBuffer(source, creationOptions.defaultEOL);
         this._buffer = textBuffer;
         this._bufferDisposable = disposable;
-        this._options = TextModel.resolveOptions(this._buffer, creationOptions);
+        this._options = TextModel_1.resolveOptions(this._buffer, creationOptions);
         const languageId = (typeof languageIdOrSelection === 'string' ? languageIdOrSelection : languageIdOrSelection.languageId);
         if (typeof languageIdOrSelection !== 'string') {
             this._languageSelectionListener.value = languageIdOrSelection.onDidChange(() => this._setLanguage(languageIdOrSelection.languageId));
@@ -180,13 +181,15 @@ let TextModel = class TextModel extends Disposable {
         // If a model is too large at construction time, it will never get tokenized,
         // under no circumstances.
         if (creationOptions.largeFileOptimizations) {
-            this._isTooLargeForTokenization = ((bufferTextLength > TextModel.LARGE_FILE_SIZE_THRESHOLD)
-                || (bufferLineCount > TextModel.LARGE_FILE_LINE_COUNT_THRESHOLD));
+            this._isTooLargeForTokenization = ((bufferTextLength > TextModel_1.LARGE_FILE_SIZE_THRESHOLD)
+                || (bufferLineCount > TextModel_1.LARGE_FILE_LINE_COUNT_THRESHOLD));
+            this._isTooLargeForHeapOperation = bufferTextLength > TextModel_1.LARGE_FILE_HEAP_OPERATION_THRESHOLD;
         }
         else {
             this._isTooLargeForTokenization = false;
+            this._isTooLargeForHeapOperation = false;
         }
-        this._isTooLargeForSyncing = (bufferTextLength > TextModel._MODEL_SYNC_LIMIT);
+        this._isTooLargeForSyncing = (bufferTextLength > TextModel_1._MODEL_SYNC_LIMIT);
         this._versionId = 1;
         this._alternativeVersionId = 1;
         this._initialUndoRedoSnapshot = null;
@@ -349,6 +352,9 @@ let TextModel = class TextModel extends Disposable {
     isTooLargeForTokenization() {
         return this._isTooLargeForTokenization;
     }
+    isTooLargeForHeapOperation() {
+        return this._isTooLargeForHeapOperation;
+    }
     isDisposed() {
         return this._isDisposed;
     }
@@ -476,6 +482,9 @@ let TextModel = class TextModel extends Disposable {
     }
     getValue(eol, preserveBOM = false) {
         this._assertNotDisposed();
+        if (this.isTooLargeForHeapOperation()) {
+            throw new BugIndicatingError('Operation would exceed heap memory limits');
+        }
         const fullModelRange = this.getFullModelRange();
         const fullModelValue = this.getValueInRange(fullModelRange, eol);
         if (preserveBOM) {
@@ -527,6 +536,9 @@ let TextModel = class TextModel extends Disposable {
     }
     getLinesContent() {
         this._assertNotDisposed();
+        if (this.isTooLargeForHeapOperation()) {
+            throw new BugIndicatingError('Operation would exceed heap memory limits');
+        }
         return this._buffer.getLinesContent();
     }
     getEOL() {
@@ -1462,6 +1474,7 @@ let TextModel = class TextModel extends Disposable {
 TextModel._MODEL_SYNC_LIMIT = 50 * 1024 * 1024; // 50 MB,  // used in tests
 TextModel.LARGE_FILE_SIZE_THRESHOLD = 20 * 1024 * 1024; // 20 MB;
 TextModel.LARGE_FILE_LINE_COUNT_THRESHOLD = 300 * 1000; // 300K lines
+TextModel.LARGE_FILE_HEAP_OPERATION_THRESHOLD = 256 * 1024 * 1024; // 256M characters, usually ~> 512MB memory usage
 TextModel.DEFAULT_CREATION_OPTIONS = {
     isForSimpleWidget: false,
     tabSize: EDITOR_MODEL_DEFAULTS.tabSize,
@@ -1473,7 +1486,7 @@ TextModel.DEFAULT_CREATION_OPTIONS = {
     largeFileOptimizations: EDITOR_MODEL_DEFAULTS.largeFileOptimizations,
     bracketPairColorizationOptions: EDITOR_MODEL_DEFAULTS.bracketPairColorizationOptions,
 };
-TextModel = __decorate([
+TextModel = TextModel_1 = __decorate([
     __param(4, IUndoRedoService),
     __param(5, ILanguageService),
     __param(6, ILanguageConfigurationService)

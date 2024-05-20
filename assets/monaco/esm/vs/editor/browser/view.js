@@ -260,7 +260,7 @@ let View = class View extends ViewEventHandler {
     }
     _applyLayout() {
         const options = this._context.configuration.options;
-        const layoutInfo = options.get(142 /* EditorOption.layoutInfo */);
+        const layoutInfo = options.get(143 /* EditorOption.layoutInfo */);
         this.domNode.setWidth(layoutInfo.width);
         this.domNode.setHeight(layoutInfo.height);
         this._overflowGuardContainer.setWidth(layoutInfo.width);
@@ -270,7 +270,7 @@ let View = class View extends ViewEventHandler {
     }
     _getEditorClassName() {
         const focused = this._textAreaHandler.isFocused() ? ' focused' : '';
-        return this._context.configuration.options.get(139 /* EditorOption.editorClassName */) + ' ' + getThemeTypeSelector(this._context.theme.type) + focused;
+        return this._context.configuration.options.get(140 /* EditorOption.editorClassName */) + ' ' + getThemeTypeSelector(this._context.theme.type) + focused;
     }
     // --- begin event handlers
     handleEvents(events) {

@@ -50,7 +50,7 @@ let FormatOnType = class FormatOnType {
         this._disposables.add(_editor.onDidChangeModel(() => this._update()));
         this._disposables.add(_editor.onDidChangeModelLanguage(() => this._update()));
         this._disposables.add(_editor.onDidChangeConfiguration(e => {
-            if (e.hasChanged(55 /* EditorOption.formatOnType */)) {
+            if (e.hasChanged(56 /* EditorOption.formatOnType */)) {
                 this._update();
             }
         }));
@@ -64,7 +64,7 @@ let FormatOnType = class FormatOnType {
         // clean up
         this._sessionDisposables.clear();
         // we are disabled
-        if (!this._editor.getOption(55 /* EditorOption.formatOnType */)) {
+        if (!this._editor.getOption(56 /* EditorOption.formatOnType */)) {
             return;
         }
         // no model
@@ -138,6 +138,7 @@ FormatOnType = __decorate([
     __param(1, ILanguageFeaturesService),
     __param(2, IEditorWorkerService)
 ], FormatOnType);
+export { FormatOnType };
 let FormatOnPaste = class FormatOnPaste {
     constructor(editor, _languageFeaturesService, _instantiationService) {
         this.editor = editor;
@@ -158,7 +159,7 @@ let FormatOnPaste = class FormatOnPaste {
         // clean up
         this._callOnModel.clear();
         // we are disabled
-        if (!this.editor.getOption(54 /* EditorOption.formatOnPaste */)) {
+        if (!this.editor.getOption(55 /* EditorOption.formatOnPaste */)) {
             return;
         }
         // no model

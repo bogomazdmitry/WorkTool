@@ -328,7 +328,7 @@ export class TextAreaInput extends Disposable {
         // `selectionchange` events often come multiple times for a single logical change
         // so throttle multiple `selectionchange` events that burst in a short period of time.
         let previousSelectionChangeEventTime = 0;
-        return dom.addDisposableListener(document, 'selectionchange', (e) => {
+        return dom.addDisposableListener(this._textArea.ownerDocument, 'selectionchange', (e) => {
             inputLatency.onSelectionChange();
             if (!this._hasFocus) {
                 return;
@@ -485,6 +485,9 @@ export const ClipboardEventUtils = {
     }
 };
 export class TextAreaWrapper extends Disposable {
+    get ownerDocument() {
+        return this._actual.ownerDocument;
+    }
     constructor(_actual) {
         super();
         this._actual = _actual;
@@ -515,7 +518,7 @@ export class TextAreaWrapper extends Disposable {
             return shadowRoot.activeElement === this._actual;
         }
         else if (dom.isInDOM(this._actual)) {
-            return document.activeElement === this._actual;
+            return this._actual.ownerDocument.activeElement === this._actual;
         }
         else {
             return false;
@@ -558,7 +561,7 @@ export class TextAreaWrapper extends Disposable {
             activeElement = shadowRoot.activeElement;
         }
         else {
-            activeElement = document.activeElement;
+            activeElement = textArea.ownerDocument.activeElement;
         }
         const currentIsFocused = (activeElement === textArea);
         const currentSelectionStart = textArea.selectionStart;

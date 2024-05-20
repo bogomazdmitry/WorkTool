@@ -42,7 +42,7 @@ export class Storage extends Disposable {
         this.onDidChangeStorage = this._onDidChangeStorage.event;
         this.state = StorageState.None;
         this.cache = new Map();
-        this.flushDelayer = new ThrottledDelayer(Storage.DEFAULT_FLUSH_DELAY);
+        this.flushDelayer = this._register(new ThrottledDelayer(Storage.DEFAULT_FLUSH_DELAY));
         this.pendingDeletes = new Set();
         this.pendingInserts = new Map();
         this.whenFlushedCallbacks = [];
@@ -181,12 +181,11 @@ export class Storage extends Disposable {
     }
     doFlush(delay) {
         return __awaiter(this, void 0, void 0, function* () {
+            if (this.options.hint === StorageHint.STORAGE_IN_MEMORY) {
+                return this.flushPending(); // return early if in-memory
+            }
             return this.flushDelayer.trigger(() => this.flushPending(), delay);
         });
-    }
-    dispose() {
-        this.flushDelayer.dispose();
-        super.dispose();
     }
 }
 Storage.DEFAULT_FLUSH_DELAY = 100;

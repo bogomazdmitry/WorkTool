@@ -20,6 +20,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var MarkdownRenderer_1;
 import { renderMarkdown } from '../../../../base/browser/markdownRenderer.js';
 import { createTrustedTypesPolicy } from '../../../../base/browser/trustedTypes.js';
 import { onUnexpectedError } from '../../../../base/common/errors.js';
@@ -35,7 +36,7 @@ import { IOpenerService } from '../../../../platform/opener/common/opener.js';
  * Markdown renderer that can render codeblocks with the editor mechanics. This
  * renderer should always be preferred.
  */
-let MarkdownRenderer = class MarkdownRenderer {
+let MarkdownRenderer = MarkdownRenderer_1 = class MarkdownRenderer {
     constructor(_options, _languageService, _openerService) {
         this._options = _options;
         this._languageService = _languageService;
@@ -78,10 +79,10 @@ let MarkdownRenderer = class MarkdownRenderer {
                 }
                 const html = yield tokenizeToString(this._languageService, value, languageId);
                 const element = document.createElement('span');
-                element.innerHTML = ((_c = (_b = MarkdownRenderer._ttpTokenizer) === null || _b === void 0 ? void 0 : _b.createHTML(html)) !== null && _c !== void 0 ? _c : html);
+                element.innerHTML = ((_c = (_b = MarkdownRenderer_1._ttpTokenizer) === null || _b === void 0 ? void 0 : _b.createHTML(html)) !== null && _c !== void 0 ? _c : html);
                 // use "good" font
                 if (this._options.editor) {
-                    const fontInfo = this._options.editor.getOption(49 /* EditorOption.fontInfo */);
+                    const fontInfo = this._options.editor.getOption(50 /* EditorOption.fontInfo */);
                     applyFontInfo(element, fontInfo);
                 }
                 else if (this._options.codeBlockFontFamily) {
@@ -105,7 +106,7 @@ MarkdownRenderer._ttpTokenizer = createTrustedTypesPolicy('tokenizeToString', {
         return html;
     }
 });
-MarkdownRenderer = __decorate([
+MarkdownRenderer = MarkdownRenderer_1 = __decorate([
     __param(1, ILanguageService),
     __param(2, IOpenerService)
 ], MarkdownRenderer);

@@ -11,6 +11,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
+var ModelService_1;
 import { Emitter } from '../../../base/common/event.js';
 import { Disposable, DisposableStore } from '../../../base/common/lifecycle.js';
 import * as platform from '../../../base/common/platform.js';
@@ -28,16 +29,6 @@ import { equals } from '../../../base/common/objects.js';
 import { ILanguageConfigurationService } from '../languages/languageConfigurationRegistry.js';
 function MODEL_ID(resource) {
     return resource.toString();
-}
-function computeModelSha1(model) {
-    // compute the sha1
-    const shaComputer = new StringSHA1();
-    const snapshot = model.createSnapshot();
-    let text;
-    while ((text = snapshot.read())) {
-        shaComputer.update(text);
-    }
-    return shaComputer.digest();
 }
 class ModelData {
     constructor(model, onWillDispose, onDidChangeLanguage) {
@@ -64,7 +55,7 @@ class DisposedModelInfo {
         this.alternativeVersionId = alternativeVersionId;
     }
 }
-let ModelService = class ModelService extends Disposable {
+let ModelService = ModelService_1 = class ModelService extends Disposable {
     constructor(_configurationService, _resourcePropertiesService, _undoRedoService, _languageService, _languageConfigurationService) {
         super();
         this._configurationService = _configurationService;
@@ -170,7 +161,7 @@ let ModelService = class ModelService extends Disposable {
         if (!creationOptions) {
             const editor = this._configurationService.getValue('editor', { overrideIdentifier: language, resource });
             const eol = this._getEOL(resource, language);
-            creationOptions = ModelService._readModelOptions({ editor, eol }, isForSimpleWidget);
+            creationOptions = ModelService_1._readModelOptions({ editor, eol }, isForSimpleWidget);
             this._modelCreationOptionsByLanguageAndResource[language + resource] = creationOptions;
         }
         return creationOptions;
@@ -190,7 +181,7 @@ let ModelService = class ModelService extends Disposable {
             }
             const oldOptions = oldOptionsByLanguageAndResource[language + uri];
             const newOptions = this.getCreationOptions(language, uri, modelData.model.isForSimpleWidget);
-            ModelService._setModelOptionsForModel(modelData.model, newOptions, oldOptions);
+            ModelService_1._setModelOptionsForModel(modelData.model, newOptions, oldOptions);
         }
     }
     static _setModelOptionsForModel(model, newOptions, currentOptions) {
@@ -263,7 +254,10 @@ let ModelService = class ModelService extends Disposable {
         if (resource && this._disposedModels.has(MODEL_ID(resource))) {
             const disposedModelData = this._removeDisposedModel(resource);
             const elements = this._undoRedoService.getElements(resource);
-            const sha1IsEqual = (computeModelSha1(model) === disposedModelData.sha1);
+            const sha1Computer = this._getSHA1Computer();
+            const sha1IsEqual = (sha1Computer.canComputeSHA1(model)
+                ? sha1Computer.computeSHA1(model) === disposedModelData.sha1
+                : false);
             if (sha1IsEqual || disposedModelData.sharesUndoRedoStack) {
                 for (const element of elements.past) {
                     if (isEditStackElement(element) && element.matchesResource(resource)) {
@@ -359,7 +353,8 @@ let ModelService = class ModelService extends Disposable {
                 }
             }
         }
-        const maxMemory = ModelService.MAX_MEMORY_FOR_CLOSED_FILES_UNDO_STACK;
+        const maxMemory = ModelService_1.MAX_MEMORY_FOR_CLOSED_FILES_UNDO_STACK;
+        const sha1Computer = this._getSHA1Computer();
         if (!maintainUndoRedoStack) {
             if (!sharesUndoRedoStack) {
                 const initialUndoRedoSnapshot = modelData.model.getInitialUndoRedoSnapshot();
@@ -368,8 +363,8 @@ let ModelService = class ModelService extends Disposable {
                 }
             }
         }
-        else if (!sharesUndoRedoStack && heapSize > maxMemory) {
-            // the undo stack for this file would never fit in the configured memory, so don't bother with it.
+        else if (!sharesUndoRedoStack && (heapSize > maxMemory || !sha1Computer.canComputeSHA1(model))) {
+            // the undo stack for this file would never fit in the configured memory or the file is very large, so don't bother with it.
             const initialUndoRedoSnapshot = modelData.model.getInitialUndoRedoSnapshot();
             if (initialUndoRedoSnapshot !== null) {
                 this._undoRedoService.restoreSnapshot(initialUndoRedoSnapshot);
@@ -379,7 +374,7 @@ let ModelService = class ModelService extends Disposable {
             this._ensureDisposedModelsHeapSize(maxMemory - heapSize);
             // We only invalidate the elements, but they remain in the undo-redo service.
             this._undoRedoService.setElementsValidFlag(model.uri, false, (element) => (isEditStackElement(element) && element.matchesResource(model.uri)));
-            this._insertDisposedModel(new DisposedModelInfo(model.uri, modelData.model.getInitialUndoRedoSnapshot(), Date.now(), sharesUndoRedoStack, heapSize, computeModelSha1(model), model.getVersionId(), model.getAlternativeVersionId()));
+            this._insertDisposedModel(new DisposedModelInfo(model.uri, modelData.model.getInitialUndoRedoSnapshot(), Date.now(), sharesUndoRedoStack, heapSize, sha1Computer.computeSHA1(model), model.getVersionId(), model.getAlternativeVersionId()));
         }
         delete this._models[modelId];
         modelData.dispose();
@@ -392,12 +387,15 @@ let ModelService = class ModelService extends Disposable {
         const newLanguageId = model.getLanguageId();
         const oldOptions = this.getCreationOptions(oldLanguageId, model.uri, model.isForSimpleWidget);
         const newOptions = this.getCreationOptions(newLanguageId, model.uri, model.isForSimpleWidget);
-        ModelService._setModelOptionsForModel(model, newOptions, oldOptions);
+        ModelService_1._setModelOptionsForModel(model, newOptions, oldOptions);
         this._onModelModeChanged.fire({ model, oldLanguageId: oldLanguageId });
+    }
+    _getSHA1Computer() {
+        return new DefaultModelSHA1Computer();
     }
 };
 ModelService.MAX_MEMORY_FOR_CLOSED_FILES_UNDO_STACK = 20 * 1024 * 1024;
-ModelService = __decorate([
+ModelService = ModelService_1 = __decorate([
     __param(0, IConfigurationService),
     __param(1, ITextResourcePropertiesService),
     __param(2, IUndoRedoService),
@@ -405,3 +403,19 @@ ModelService = __decorate([
     __param(4, ILanguageConfigurationService)
 ], ModelService);
 export { ModelService };
+export class DefaultModelSHA1Computer {
+    canComputeSHA1(model) {
+        return (model.getValueLength() <= DefaultModelSHA1Computer.MAX_MODEL_SIZE);
+    }
+    computeSHA1(model) {
+        // compute the sha1
+        const shaComputer = new StringSHA1();
+        const snapshot = model.createSnapshot();
+        let text;
+        while ((text = snapshot.read())) {
+            shaComputer.update(text);
+        }
+        return shaComputer.digest();
+    }
+}
+DefaultModelSHA1Computer.MAX_MODEL_SIZE = 10 * 1024 * 1024; // takes 200ms to compute a sha1 on a 10MB model on a new machine

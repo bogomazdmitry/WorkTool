@@ -150,12 +150,6 @@ export function regExpLeadsToEndlessLoop(regexp) {
     const match = regexp.exec('');
     return !!(match && regexp.lastIndex === 0);
 }
-export function regExpFlags(regexp) {
-    return (regexp.global ? 'g' : '')
-        + (regexp.ignoreCase ? 'i' : '')
-        + (regexp.multiline ? 'm' : '')
-        + (regexp /* standalone editor compilation */.unicode ? 'u' : '');
-}
 export function splitLines(str) {
     return str.split(/\r\n|\r|\n/);
 }
@@ -731,10 +725,10 @@ function isEmojiModifier(codePoint) {
 export const noBreakWhitespace = '\xa0';
 export class AmbiguousCharacters {
     static getInstance(locales) {
-        return AmbiguousCharacters.cache.get(Array.from(locales));
+        return _a.cache.get(Array.from(locales));
     }
     static getLocales() {
-        return AmbiguousCharacters._locales.value;
+        return _a._locales.value;
     }
     constructor(confusableDictionary) {
         this.confusableDictionary = confusableDictionary;
@@ -798,9 +792,9 @@ AmbiguousCharacters.cache = new LRUCachedFunction((locales) => {
     }
     const commonMap = arrayToMap(data['_common']);
     const map = mergeMaps(commonMap, languageSpecificMap);
-    return new AmbiguousCharacters(map);
+    return new _a(map);
 });
-AmbiguousCharacters._locales = new Lazy(() => Object.keys(AmbiguousCharacters.ambiguousCharacterData.value).filter((k) => !k.startsWith('_')));
+AmbiguousCharacters._locales = new Lazy(() => Object.keys(_a.ambiguousCharacterData.value).filter((k) => !k.startsWith('_')));
 export class InvisibleCharacters {
     static getRawData() {
         // Generated using https://github.com/hediet/vscode-unicode-data

@@ -53,10 +53,10 @@ let CodeLensContribution = class CodeLensContribution {
         this._disposables.add(this._editor.onDidChangeModel(() => this._onModelChange()));
         this._disposables.add(this._editor.onDidChangeModelLanguage(() => this._onModelChange()));
         this._disposables.add(this._editor.onDidChangeConfiguration((e) => {
-            if (e.hasChanged(49 /* EditorOption.fontInfo */) || e.hasChanged(18 /* EditorOption.codeLensFontSize */) || e.hasChanged(17 /* EditorOption.codeLensFontFamily */)) {
+            if (e.hasChanged(50 /* EditorOption.fontInfo */) || e.hasChanged(19 /* EditorOption.codeLensFontSize */) || e.hasChanged(18 /* EditorOption.codeLensFontFamily */)) {
                 this._updateLensStyle();
             }
-            if (e.hasChanged(16 /* EditorOption.codeLens */)) {
+            if (e.hasChanged(17 /* EditorOption.codeLens */)) {
                 this._onModelChange();
             }
         }));
@@ -72,10 +72,10 @@ let CodeLensContribution = class CodeLensContribution {
         (_a = this._currentCodeLensModel) === null || _a === void 0 ? void 0 : _a.dispose();
     }
     _getLayoutInfo() {
-        const lineHeightFactor = Math.max(1.3, this._editor.getOption(65 /* EditorOption.lineHeight */) / this._editor.getOption(51 /* EditorOption.fontSize */));
-        let fontSize = this._editor.getOption(18 /* EditorOption.codeLensFontSize */);
+        const lineHeightFactor = Math.max(1.3, this._editor.getOption(66 /* EditorOption.lineHeight */) / this._editor.getOption(52 /* EditorOption.fontSize */));
+        let fontSize = this._editor.getOption(19 /* EditorOption.codeLensFontSize */);
         if (!fontSize || fontSize < 5) {
-            fontSize = (this._editor.getOption(51 /* EditorOption.fontSize */) * .9) | 0;
+            fontSize = (this._editor.getOption(52 /* EditorOption.fontSize */) * .9) | 0;
         }
         return {
             fontSize,
@@ -84,8 +84,8 @@ let CodeLensContribution = class CodeLensContribution {
     }
     _updateLensStyle() {
         const { codeLensHeight, fontSize } = this._getLayoutInfo();
-        const fontFamily = this._editor.getOption(17 /* EditorOption.codeLensFontFamily */);
-        const editorFontInfo = this._editor.getOption(49 /* EditorOption.fontInfo */);
+        const fontFamily = this._editor.getOption(18 /* EditorOption.codeLensFontFamily */);
+        const editorFontInfo = this._editor.getOption(50 /* EditorOption.fontInfo */);
         const { style } = this._editor.getContainerDomNode();
         style.setProperty('--vscode-editorCodeLens-lineHeight', `${codeLensHeight}px`);
         style.setProperty('--vscode-editorCodeLens-fontSize', `${fontSize}px`);
@@ -117,7 +117,7 @@ let CodeLensContribution = class CodeLensContribution {
         if (!model) {
             return;
         }
-        if (!this._editor.getOption(16 /* EditorOption.codeLens */)) {
+        if (!this._editor.getOption(17 /* EditorOption.codeLens */) || model.isTooLargeForTokenization()) {
             return;
         }
         const cachedLenses = this._codeLensCache.get(model);
@@ -201,6 +201,9 @@ let CodeLensContribution = class CodeLensContribution {
         }));
         this._localToDispose.add(this._editor.onDidFocusEditorWidget(() => {
             scheduler.schedule();
+        }));
+        this._localToDispose.add(this._editor.onDidBlurEditorText(() => {
+            scheduler.cancel();
         }));
         this._localToDispose.add(this._editor.onDidScrollChange(e => {
             if (e.scrollTopChanged && this._lenses.length > 0) {
@@ -391,7 +394,14 @@ let CodeLensContribution = class CodeLensContribution {
         });
     }
     getModel() {
-        return this._currentCodeLensModel;
+        var _a;
+        return __awaiter(this, void 0, void 0, function* () {
+            yield this._getCodeLensModelPromise;
+            yield this._resolveCodeLensesPromise;
+            return !((_a = this._currentCodeLensModel) === null || _a === void 0 ? void 0 : _a.isDisposed)
+                ? this._currentCodeLensModel
+                : undefined;
+        });
     }
 };
 CodeLensContribution.ID = 'css.editor.codeLens';
@@ -426,7 +436,7 @@ registerEditorAction(class ShowLensesInCurrentLine extends EditorAction {
             if (!codelensController) {
                 return;
             }
-            const model = codelensController.getModel();
+            const model = yield codelensController.getModel();
             if (!model) {
                 // nothing
                 return;
@@ -444,17 +454,28 @@ registerEditorAction(class ShowLensesInCurrentLine extends EditorAction {
                 // We dont want an empty picker
                 return;
             }
-            const item = yield quickInputService.pick(items, { canPickMany: false });
+            const item = yield quickInputService.pick(items, {
+                canPickMany: false,
+                placeHolder: localize('placeHolder', "Select a command")
+            });
             if (!item) {
                 // Nothing picked
                 return;
             }
+            let command = item.command;
             if (model.isDisposed) {
-                // retry whenever the model has been disposed
-                return yield commandService.executeCommand(this.id);
+                // try to find the same command again in-case the model has been re-created in the meantime
+                // this is a best attempt approach which shouldn't be needed because eager model re-creates
+                // shouldn't happen due to focus in/out anymore
+                const newModel = yield codelensController.getModel();
+                const newLens = newModel === null || newModel === void 0 ? void 0 : newModel.lenses.find(lens => { var _a; return lens.symbol.range.startLineNumber === lineNumber && ((_a = lens.symbol.command) === null || _a === void 0 ? void 0 : _a.title) === command.title; });
+                if (!newLens || !newLens.symbol.command) {
+                    return;
+                }
+                command = newLens.symbol.command;
             }
             try {
-                yield commandService.executeCommand(item.command.id, ...(item.command.arguments || []));
+                yield commandService.executeCommand(command.id, ...(command.arguments || []));
             }
             catch (err) {
                 notificationService.error(err);

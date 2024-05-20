@@ -20,11 +20,14 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var CodeActionController_1;
 import { getDomNodePagePosition } from '../../../../base/browser/dom.js';
+import * as aria from '../../../../base/browser/ui/aria/aria.js';
 import { onUnexpectedError } from '../../../../base/common/errors.js';
 import { Lazy } from '../../../../base/common/lazy.js';
 import { Disposable, MutableDisposable } from '../../../../base/common/lifecycle.js';
 import { Position } from '../../../common/core/position.js';
+import { ModelDecorationOptions } from '../../../common/model/textModel.js';
 import { ILanguageFeaturesService } from '../../../common/services/languageFeatures.js';
 import { ApplyCodeActionReason, applyCodeAction } from './codeAction.js';
 import { CodeActionKeybindingResolver } from './codeActionKeybindingResolver.js';
@@ -39,11 +42,15 @@ import { IContextKeyService } from '../../../../platform/contextkey/common/conte
 import { IInstantiationService } from '../../../../platform/instantiation/common/instantiation.js';
 import { IMarkerService } from '../../../../platform/markers/common/markers.js';
 import { IEditorProgressService } from '../../../../platform/progress/common/progress.js';
+import { editorFindMatchHighlight, editorFindMatchHighlightBorder } from '../../../../platform/theme/common/colorRegistry.js';
+import { isHighContrast } from '../../../../platform/theme/common/theme.js';
+import { registerThemingParticipant } from '../../../../platform/theme/common/themeService.js';
 import { CodeActionTriggerSource } from '../common/types.js';
 import { CodeActionModel } from './codeActionModel.js';
-let CodeActionController = class CodeActionController extends Disposable {
+const DECORATION_CLASS_NAME = 'quickfix-edit-highlight';
+let CodeActionController = CodeActionController_1 = class CodeActionController extends Disposable {
     static get(editor) {
-        return editor.getContribution(CodeActionController.ID);
+        return editor.getContribution(CodeActionController_1.ID);
     }
     constructor(editor, markerService, contextKeyService, instantiationService, languageFeaturesService, progressService, _commandService, _configurationService, _actionWidgetService, _instantiationService) {
         super();
@@ -55,7 +62,7 @@ let CodeActionController = class CodeActionController extends Disposable {
         this._showDisabled = false;
         this._disposed = false;
         this._editor = editor;
-        this._model = this._register(new CodeActionModel(this._editor, languageFeaturesService.codeActionProvider, markerService, contextKeyService, progressService));
+        this._model = this._register(new CodeActionModel(this._editor, languageFeaturesService.codeActionProvider, markerService, contextKeyService, progressService, _configurationService));
         this._register(this._model.onDidChangeState(newState => this.update(newState)));
         this._lightBulbWidget = new Lazy(() => {
             const widget = this._editor.getContribution(LightBulbWidget.ID);
@@ -187,6 +194,7 @@ let CodeActionController = class CodeActionController extends Disposable {
     }
     showCodeActionList(actions, at, options) {
         return __awaiter(this, void 0, void 0, function* () {
+            const currentDecorations = this._editor.createDecorationsCollection();
             const editorDom = this._editor.getDomNode();
             if (!editorDom) {
                 return;
@@ -200,10 +208,33 @@ let CodeActionController = class CodeActionController extends Disposable {
                 onSelect: (action, preview) => __awaiter(this, void 0, void 0, function* () {
                     this._applyCodeAction(action, /* retrigger */ true, !!preview);
                     this._actionWidgetService.hide();
+                    currentDecorations.clear();
                 }),
                 onHide: () => {
                     var _a;
                     (_a = this._editor) === null || _a === void 0 ? void 0 : _a.focus();
+                    currentDecorations.clear();
+                },
+                onHover: (action, token) => __awaiter(this, void 0, void 0, function* () {
+                    var _a;
+                    yield action.resolve(token);
+                    if (token.isCancellationRequested) {
+                        return;
+                    }
+                    return { canPreview: !!((_a = action.action.edit) === null || _a === void 0 ? void 0 : _a.edits.length) };
+                }),
+                onFocus: (action) => {
+                    var _a, _b;
+                    if (action && action.highlightRange && action.action.diagnostics) {
+                        const decorations = [{ range: action.action.diagnostics[0], options: CodeActionController_1.DECORATION }];
+                        currentDecorations.set(decorations);
+                        const diagnostic = action.action.diagnostics[0];
+                        const selectionText = (_b = (_a = this._editor.getModel()) === null || _a === void 0 ? void 0 : _a.getWordAtPosition({ lineNumber: diagnostic.startLineNumber, column: diagnostic.startColumn })) === null || _b === void 0 ? void 0 : _b.word;
+                        aria.status(localize('editingNewSelection', "Context: {0} at line {1} and column {2}.", selectionText, diagnostic.startLineNumber, diagnostic.startColumn));
+                    }
+                    else {
+                        currentDecorations.clear();
+                    }
                 }
             };
             this._actionWidgetService.show('codeActionWidget', true, toMenuItems(actionsToShow, this._shouldShowHeaders(), this._resolver.getResolver()), delegate, anchor, editorDom, this._getActionBarActions(actions, at, options));
@@ -269,7 +300,11 @@ let CodeActionController = class CodeActionController extends Disposable {
     }
 };
 CodeActionController.ID = 'editor.contrib.codeActionController';
-CodeActionController = __decorate([
+CodeActionController.DECORATION = ModelDecorationOptions.register({
+    description: 'quickfix-highlight',
+    className: DECORATION_CLASS_NAME
+});
+CodeActionController = CodeActionController_1 = __decorate([
     __param(1, IMarkerService),
     __param(2, IContextKeyService),
     __param(3, IInstantiationService),
@@ -281,3 +316,15 @@ CodeActionController = __decorate([
     __param(9, IInstantiationService)
 ], CodeActionController);
 export { CodeActionController };
+registerThemingParticipant((theme, collector) => {
+    const addBackgroundColorRule = (selector, color) => {
+        if (color) {
+            collector.addRule(`.monaco-editor ${selector} { background-color: ${color}; }`);
+        }
+    };
+    addBackgroundColorRule('.quickfix-edit-highlight', theme.getColor(editorFindMatchHighlight));
+    const findMatchHighlightBorder = theme.getColor(editorFindMatchHighlightBorder);
+    if (findMatchHighlightBorder) {
+        collector.addRule(`.monaco-editor .quickfix-edit-highlight { border: 1px ${isHighContrast(theme.type) ? 'dotted' : 'solid'} ${findMatchHighlightBorder}; box-sizing: border-box; }`);
+    }
+});

@@ -166,7 +166,7 @@ export class GlobalEditorPointerMoveMonitor extends Disposable {
     startMonitoring(initialElement, pointerId, initialButtons, pointerMoveCallback, onStopCallback) {
         // Add a <<capture>> keydown event listener that will cancel the monitoring
         // if something other than a modifier key is pressed
-        this._keydownListener = dom.addStandardDisposableListener(document, 'keydown', (e) => {
+        this._keydownListener = dom.addStandardDisposableListener(initialElement.ownerDocument, 'keydown', (e) => {
             const chord = e.toKeyCodeChord();
             if (chord.isModifierKey()) {
                 // Allow modifier keys

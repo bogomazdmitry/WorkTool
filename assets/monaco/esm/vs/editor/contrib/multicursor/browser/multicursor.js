@@ -11,6 +11,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
+var SelectionHighlighter_1;
 import { status } from '../../../../base/browser/ui/aria/aria.js';
 import { RunOnceScheduler } from '../../../../base/common/async.js';
 import { KeyChord } from '../../../../base/common/keyCodes.js';
@@ -319,7 +320,7 @@ export class MultiCursorSession {
         this.findController.highlightFindOptions();
         const allSelections = this._editor.getSelections();
         const lastAddedSelection = allSelections[allSelections.length - 1];
-        const nextMatch = this._editor.getModel().findNextMatch(this.searchText, lastAddedSelection.getEndPosition(), false, this.matchCase, this.wholeWord ? this._editor.getOption(128 /* EditorOption.wordSeparators */) : null, false);
+        const nextMatch = this._editor.getModel().findNextMatch(this.searchText, lastAddedSelection.getEndPosition(), false, this.matchCase, this.wholeWord ? this._editor.getOption(129 /* EditorOption.wordSeparators */) : null, false);
         if (!nextMatch) {
             return null;
         }
@@ -359,7 +360,7 @@ export class MultiCursorSession {
         this.findController.highlightFindOptions();
         const allSelections = this._editor.getSelections();
         const lastAddedSelection = allSelections[allSelections.length - 1];
-        const previousMatch = this._editor.getModel().findPreviousMatch(this.searchText, lastAddedSelection.getStartPosition(), false, this.matchCase, this.wholeWord ? this._editor.getOption(128 /* EditorOption.wordSeparators */) : null, false);
+        const previousMatch = this._editor.getModel().findPreviousMatch(this.searchText, lastAddedSelection.getStartPosition(), false, this.matchCase, this.wholeWord ? this._editor.getOption(129 /* EditorOption.wordSeparators */) : null, false);
         if (!previousMatch) {
             return null;
         }
@@ -372,9 +373,9 @@ export class MultiCursorSession {
         this.findController.highlightFindOptions();
         const editorModel = this._editor.getModel();
         if (searchScope) {
-            return editorModel.findMatches(this.searchText, searchScope, false, this.matchCase, this.wholeWord ? this._editor.getOption(128 /* EditorOption.wordSeparators */) : null, false, 1073741824 /* Constants.MAX_SAFE_SMALL_INTEGER */);
+            return editorModel.findMatches(this.searchText, searchScope, false, this.matchCase, this.wholeWord ? this._editor.getOption(129 /* EditorOption.wordSeparators */) : null, false, 1073741824 /* Constants.MAX_SAFE_SMALL_INTEGER */);
         }
-        return editorModel.findMatches(this.searchText, true, false, this.matchCase, this.wholeWord ? this._editor.getOption(128 /* EditorOption.wordSeparators */) : null, false, 1073741824 /* Constants.MAX_SAFE_SMALL_INTEGER */);
+        return editorModel.findMatches(this.searchText, true, false, this.matchCase, this.wholeWord ? this._editor.getOption(129 /* EditorOption.wordSeparators */) : null, false, 1073741824 /* Constants.MAX_SAFE_SMALL_INTEGER */);
     }
 }
 export class MultiCursorSelectionController extends Disposable {
@@ -521,10 +522,10 @@ export class MultiCursorSelectionController extends Disposable {
         if (findState.isRevealed && findState.searchString.length > 0 && findState.isRegex) {
             const editorModel = this._editor.getModel();
             if (findState.searchScope) {
-                matches = editorModel.findMatches(findState.searchString, findState.searchScope, findState.isRegex, findState.matchCase, findState.wholeWord ? this._editor.getOption(128 /* EditorOption.wordSeparators */) : null, false, 1073741824 /* Constants.MAX_SAFE_SMALL_INTEGER */);
+                matches = editorModel.findMatches(findState.searchString, findState.searchScope, findState.isRegex, findState.matchCase, findState.wholeWord ? this._editor.getOption(129 /* EditorOption.wordSeparators */) : null, false, 1073741824 /* Constants.MAX_SAFE_SMALL_INTEGER */);
             }
             else {
-                matches = editorModel.findMatches(findState.searchString, true, findState.isRegex, findState.matchCase, findState.wholeWord ? this._editor.getOption(128 /* EditorOption.wordSeparators */) : null, false, 1073741824 /* Constants.MAX_SAFE_SMALL_INTEGER */);
+                matches = editorModel.findMatches(findState.searchString, true, findState.isRegex, findState.matchCase, findState.wholeWord ? this._editor.getOption(129 /* EditorOption.wordSeparators */) : null, false, 1073741824 /* Constants.MAX_SAFE_SMALL_INTEGER */);
             }
         }
         else {
@@ -719,17 +720,17 @@ class SelectionHighlighterState {
         return this._cachedFindMatches;
     }
 }
-let SelectionHighlighter = class SelectionHighlighter extends Disposable {
+let SelectionHighlighter = SelectionHighlighter_1 = class SelectionHighlighter extends Disposable {
     constructor(editor, _languageFeaturesService) {
         super();
         this._languageFeaturesService = _languageFeaturesService;
         this.editor = editor;
-        this._isEnabled = editor.getOption(106 /* EditorOption.selectionHighlight */);
+        this._isEnabled = editor.getOption(107 /* EditorOption.selectionHighlight */);
         this._decorations = editor.createDecorationsCollection();
         this.updateSoon = this._register(new RunOnceScheduler(() => this._update(), 300));
         this.state = null;
         this._register(editor.onDidChangeConfiguration((e) => {
-            this._isEnabled = editor.getOption(106 /* EditorOption.selectionHighlight */);
+            this._isEnabled = editor.getOption(107 /* EditorOption.selectionHighlight */);
         }));
         this._register(editor.onDidChangeCursorSelection((e) => {
             if (!this._isEnabled) {
@@ -770,7 +771,7 @@ let SelectionHighlighter = class SelectionHighlighter extends Disposable {
         this.updateSoon.schedule();
     }
     _update() {
-        this._setState(SelectionHighlighter._createState(this.state, this._isEnabled, this.editor));
+        this._setState(SelectionHighlighter_1._createState(this.state, this._isEnabled, this.editor));
     }
     static _createState(oldState, isEnabled, editor) {
         if (!isEnabled) {
@@ -838,7 +839,7 @@ let SelectionHighlighter = class SelectionHighlighter extends Disposable {
                 return null;
             }
         }
-        return new SelectionHighlighterState(editor.getModel(), r.searchText, r.matchCase, r.wholeWord ? editor.getOption(128 /* EditorOption.wordSeparators */) : null, oldState);
+        return new SelectionHighlighterState(editor.getModel(), r.searchText, r.matchCase, r.wholeWord ? editor.getOption(129 /* EditorOption.wordSeparators */) : null, oldState);
     }
     _setState(newState) {
         this.state = newState;
@@ -886,7 +887,7 @@ let SelectionHighlighter = class SelectionHighlighter extends Disposable {
                 }
             }
         }
-        const hasSemanticHighlights = this._languageFeaturesService.documentHighlightProvider.has(model) && this.editor.getOption(79 /* EditorOption.occurrencesHighlight */);
+        const hasSemanticHighlights = this._languageFeaturesService.documentHighlightProvider.has(model) && this.editor.getOption(80 /* EditorOption.occurrencesHighlight */);
         const decorations = matches.map(r => {
             return {
                 range: r,
@@ -901,7 +902,7 @@ let SelectionHighlighter = class SelectionHighlighter extends Disposable {
     }
 };
 SelectionHighlighter.ID = 'editor.contrib.selectionHighlighter';
-SelectionHighlighter = __decorate([
+SelectionHighlighter = SelectionHighlighter_1 = __decorate([
     __param(1, ILanguageFeaturesService)
 ], SelectionHighlighter);
 export { SelectionHighlighter };

@@ -1,6 +1,6 @@
 /*!-----------------------------------------------------------
  * Copyright (c) Microsoft Corporation. All rights reserved.
- * Version: 0.41.0(38e1e3d097f84e336c311d071a9ffb5191d4ffd1)
+ * Version: 0.44.0(3e047efd345ff102c8c61b5398fb30845aaac166)
  * Released under the MIT license
  * https://github.com/microsoft/vscode/blob/main/LICENSE.txt
  *-----------------------------------------------------------*/
@@ -20,6 +20,10 @@ define("vs/editor/editor.main.nls.de", {
 	"vs/base/browser/ui/findinput/replaceInput": [
 		"Eingabe",
 		"Groß-/Kleinschreibung beibehalten",
+	],
+	"vs/base/browser/ui/hover/hoverWidget": [
+		"Überprüfen Sie dies in der barrierefreien Ansicht mit \"{0}\".",
+		"Überprüfen Sie dies in der barrierefreien Ansicht über den Befehl \"Barrierefreie Ansicht öffnen\", der zurzeit nicht über eine Tastenzuordnung ausgelöst werden kann.",
 	],
 	"vs/base/browser/ui/iconLabel/iconLabelHover": [
 		"Wird geladen...",
@@ -109,20 +113,7 @@ define("vs/editor/editor.main.nls.de", {
 		"Die Anzahl der Cursor wurde auf {0} beschränkt. Erwägen Sie die Verwendung von [Suchen und Ersetzen](https://code.visualstudio.com/docs/editor/codebasics#_find-und-ersetzen) für größere Änderungen, oder erhöhen Sie die Multicursorbegrenzungseinstellung des Editors.",
 		"Erhöhen des Grenzwerts für mehrere Cursor",
 	],
-	"vs/editor/browser/widget/diffEditor.contribution": [
-		"Barrierefreier Diff-Viewer",
-		"Zum nächsten Unterschied wechseln",
-		"Barrierefreien Diff-Viewer öffnen",
-		"Zum vorherigen Unterschied wechseln",
-	],
-	"vs/editor/browser/widget/diffEditorWidget": [
-		"Zeilenformatierung für Einfügungen im Diff-Editor",
-		"Zeilenformatierung für Entfernungen im Diff-Editor",
-		" verwenden Sie UMSCHALT+F7, um durch Änderungen zu navigieren.",
-		"Kann die Dateien nicht vergleichen, da eine Datei zu groß ist.",
-		"Klicken Sie, um die Änderung rückgängig zu machen",
-	],
-	"vs/editor/browser/widget/diffEditorWidget2/accessibleDiffViewer": [
+	"vs/editor/browser/widget/diffEditor/accessibleDiffViewer": [
 		"Symbol für \"Einfügen\" im barrierefreien Diff-Viewer.",
 		"Symbol für \"Entfernen\" im barrierefreien Diff-Viewer.",
 		"Symbol für \"Schließen\" im barrierefreien Diff-Viewer.",
@@ -138,45 +129,43 @@ define("vs/editor/editor.main.nls.de", {
 		"+ {0} geänderte Zeile(n) {1}",
 		"– {0} Originalzeile {1}",
 	],
-	"vs/editor/browser/widget/diffEditorWidget2/colors": [
+	"vs/editor/browser/widget/diffEditor/colors": [
 		"Die Rahmenfarbe für Text, der im Diff-Editor verschoben wurde.",
+		"Die aktive Rahmenfarbe für Text, der im Diff-Editor verschoben wurde.",
 	],
-	"vs/editor/browser/widget/diffEditorWidget2/decorations": [
+	"vs/editor/browser/widget/diffEditor/decorations": [
 		"Zeilenformatierung für Einfügungen im Diff-Editor",
 		"Zeilenformatierung für Entfernungen im Diff-Editor",
 		"Klicken Sie, um die Änderung rückgängig zu machen",
 	],
-	"vs/editor/browser/widget/diffEditorWidget2/diffEditorEditors": [
+	"vs/editor/browser/widget/diffEditor/diffEditor.contribution": [
+		"\"Unveränderte Bereiche reduzieren\" umschalten",
+		"\"Verschobene Codeblöcke anzeigen\" umschalten",
+		"\"Bei eingeschränktem Speicherplatz Inlineansicht verwenden\" umschalten",
+		"Bei eingeschränktem Speicherplatz Inlineansicht verwenden",
+		"Verschobene Codeblöcke anzeigen",
+		"Diff-Editor",
+		"Seite wechseln",
+		"Vergleichsmodus beenden",
+		"Alle unveränderten Regionen reduzieren",
+		"Alle unveränderten Regionen anzeigen",
+		"Barrierefreier Diff-Viewer",
+		"Zum nächsten Unterschied wechseln",
+		"Barrierefreien Diff-Viewer öffnen",
+		"Zum vorherigen Unterschied wechseln",
+	],
+	"vs/editor/browser/widget/diffEditor/diffEditorEditors": [
 		" verwenden Sie {0}, um die Hilfe zur Barrierefreiheit zu öffnen.",
 	],
-	"vs/editor/browser/widget/diffEditorWidget2/inlineDiffDeletedCodeMargin": [
-		"Gelöschte Zeilen kopieren",
-		"Gelöschte Zeile kopieren",
-		"Geänderte Zeilen kopieren",
-		"Geänderte Zeile kopieren",
-		"Gelöschte Zeile kopieren ({0})",
-		"Geänderte Zeile ({0}) kopieren",
-		"Diese Änderung rückgängig machen",
-	],
-	"vs/editor/browser/widget/diffEditorWidget2/unchangedRanges": [
+	"vs/editor/browser/widget/diffEditor/hideUnchangedRegionsFeature": [
 		"Unveränderten Bereich falten",
+		"Klicken oder ziehen Sie, um oben mehr anzuzeigen.",
+		"Alle anzeigen",
+		"Klicken oder ziehen Sie, um unten mehr anzuzeigen.",
+		"{0} ausgeblendete Linien",
+		"Zum Auffalten doppelklicken",
 	],
-	"vs/editor/browser/widget/diffReview": [
-		"Symbol für \"Einfügen\" in der Diff-Überprüfung.",
-		"Symbol für \"Entfernen\" in der Diff-Überprüfung.",
-		"Symbol für \"Schließen\" in der Diff-Überprüfung.",
-		"Schließen",
-		"keine geänderten Zeilen",
-		"1 Zeile geändert",
-		"{0} Zeilen geändert",
-		"Unterschied {0} von {1}: ursprüngliche Zeile {2}, {3}, geänderte Zeile {4}, {5}",
-		"leer",
-		"{0}: unveränderte Zeile {1}",
-		"{0} ursprüngliche Zeile {1} geänderte Zeile {2}",
-		"+ {0} geänderte Zeile(n) {1}",
-		"– {0} Originalzeile {1}",
-	],
-	"vs/editor/browser/widget/inlineDiffMargin": [
+	"vs/editor/browser/widget/diffEditor/inlineDiffDeletedCodeMargin": [
 		"Gelöschte Zeilen kopieren",
 		"Gelöschte Zeile kopieren",
 		"Geänderte Zeilen kopieren",
@@ -184,8 +173,12 @@ define("vs/editor/editor.main.nls.de", {
 		"Gelöschte Zeile kopieren ({0})",
 		"Geänderte Zeile ({0}) kopieren",
 		"Diese Änderung rückgängig machen",
-		"Gelöschte Zeile kopieren ({0})",
-		"Geänderte Zeile ({0}) kopieren",
+	],
+	"vs/editor/browser/widget/diffEditor/movedBlocksLines": [
+		"Code mit Änderungen in Zeile {0}-{1} verschoben",
+		"Code mit Änderungen aus Zeile {0}-{1} verschoben",
+		"Code in Zeile {0}-{1} verschoben",
+		"Code aus Zeile {0}-{1} verschoben",
 	],
 	"vs/editor/common/config/editorConfigurationSchema": [
 		"Editor",
@@ -218,6 +211,8 @@ define("vs/editor/editor.main.nls.de", {
 		"Timeout in Millisekunden, nach dem die Diff-Berechnung abgebrochen wird. Bei 0 wird kein Timeout verwendet.",
 		"Maximale Dateigröße in MB, für die Diffs berechnet werden sollen. Verwenden Sie 0, um keinen Grenzwert zu setzen.",
 		"Steuert, ob der Diff-Editor die Unterschiede nebeneinander oder im Text anzeigt.",
+		"Wenn die Breite des Diff-Editors unter diesem Wert liegt, wird die Inlineansicht verwendet.",
+		"Wenn diese Option aktiviert ist und die Breite des Editors nicht ausreicht, wird die Inlineansicht verwendet.",
 		"Wenn diese Option aktiviert ist, zeigt der Diff-Editor Pfeile in seinem Glyphenrand an, um Änderungen rückgängig zu machen.",
 		"Wenn aktiviert, ignoriert der Diff-Editor Änderungen an voran- oder nachgestellten Leerzeichen.",
 		"Steuert, ob der Diff-Editor die Indikatoren \"+\" und \"-\" für hinzugefügte/entfernte Änderungen anzeigt.",
@@ -227,9 +222,11 @@ define("vs/editor/editor.main.nls.de", {
 		"Zeilen werden gemäß der Einstellung „{0}“ umbrochen.",
 		"Verwendet den Legacyvergleichsalgorithmus.",
 		"Verwendet den erweiterten Vergleichsalgorithmus.",
-		"Steuert, ob der Diff-Editor unveränderte Bereiche anzeigt. Funktioniert nur, wenn {0} festgelegt ist.",
-		"Steuert, ob der Diff-Editor erkannte Codeverschiebevorgänge anzeigen soll. Funktioniert nur, wenn {0} festgelegt ist.",
-		"Steuert, ob der Diff-Editor die neue oder die alte Implementierung verwendet.",
+		"Steuert, ob der Diff-Editor unveränderte Regionen anzeigt.",
+		"Steuert, wie viele Zeilen für unveränderte Regionen verwendet werden.",
+		"Steuert, wie viele Zeilen als Mindestwert für unveränderte Regionen verwendet werden.",
+		"Steuert, wie viele Zeilen beim Vergleich unveränderter Regionen als Kontext verwendet werden.",
+		"Steuert, ob der Diff-Editor erkannte Codeverschiebevorgänge anzeigen soll.",
 		"Steuert, ob der diff-Editor leere Dekorationen anzeigt, um anzuzeigen, wo Zeichen eingefügt oder gelöscht wurden.",
 	],
 	"vs/editor/common/config/editorOptions": [
@@ -278,6 +275,7 @@ define("vs/editor/editor.main.nls.de", {
 		"Steuert, ob die Hovermarkierung angezeigt wird.",
 		"Steuert die Verzögerung in Millisekunden, nach der die Hovermarkierung angezeigt wird.",
 		"Steuert, ob die Hovermarkierung sichtbar bleiben soll, wenn der Mauszeiger darüber bewegt wird.",
+		"Steuert die Verzögerung in Millisekunden, nach der die Hovermarkierung ausgeblendet wird. Erfordert die Aktivierung von \"editor.hover.sticky\".",
 		"Zeigen Sie den Mauszeiger lieber über der Linie an, wenn Platz vorhanden ist.",
 		"Es wird angenommen, dass alle Zeichen gleich breit sind. Dies ist ein schneller Algorithmus, der für Festbreitenschriftarten und bestimmte Alphabete (wie dem lateinischen), bei denen die Glyphen gleich breit sind, korrekt funktioniert.",
 		"Delegiert die Berechnung von Umbruchpunkten an den Browser. Dies ist ein langsamer Algorithmus, der bei großen Dateien Code Freezes verursachen kann, aber in allen Fällen korrekt funktioniert.",
@@ -286,6 +284,7 @@ define("vs/editor/editor.main.nls.de", {
 		"Zeigt die geschachtelten aktuellen Bereiche während des Bildlaufs am oberen Rand des Editors an.",
 		"Definiert die maximale Anzahl fixierter Zeilen, die angezeigt werden sollen.",
 		"Legt das Modell fest, das zur Bestimmung der zu fixierenden Zeilen verwendet wird. Existiert das Gliederungsmodell nicht, wird auf das Modell des Folding Providers zurückgegriffen, der wiederum auf das Einrückungsmodell zurückgreift. Diese Reihenfolge wird in allen drei Fällen beachtet.",
+		"Aktiviert das Scrollen des Widgets für den fixierten Bildlauf mit der horizontalen Scrollleiste des Editors.",
 		"Aktiviert die Inlay-Hinweise im Editor.",
 		"Inlay-Hinweise sind aktiviert",
 		"Inlay-Hinweise werden standardmäßig angezeigt und ausgeblendet, wenn Sie {0} gedrückt halten",
@@ -436,6 +435,9 @@ define("vs/editor/editor.main.nls.de", {
 		"Verwenden Sie Sprachkonfigurationen, um zu bestimmen, wann Klammern automatisch geschlossen werden sollen.",
 		"Schließe Klammern nur automatisch, wenn der Cursor sich links von einem Leerzeichen befindet.",
 		"Steuert, ob der Editor automatisch Klammern schließen soll, nachdem der Benutzer eine öffnende Klammer hinzugefügt hat.",
+		"Verwenden Sie Sprachkonfigurationen, um festzulegen, wann Kommentare automatisch geschlossen werden sollen.",
+		"Kommentare werden nur dann automatisch geschlossen, wenn sich der Cursor links von einem Leerraum befindet.",
+		"Steuert, ob der Editor Kommentare automatisch schließen soll, nachdem die Benutzer*innen einen ersten Kommentar hinzugefügt haben.",
 		"Angrenzende schließende Anführungszeichen oder Klammern werden nur überschrieben, wenn sie automatisch eingefügt wurden.",
 		"Steuert, ob der Editor angrenzende schließende Anführungszeichen oder Klammern beim Löschen entfernen soll.",
 		"Schließende Anführungszeichen oder Klammern werden nur überschrieben, wenn sie automatisch eingefügt wurden.",
@@ -474,7 +476,7 @@ define("vs/editor/editor.main.nls.de", {
 		"Steuert die Mindestanzahl sichtbarer führender Zeilen (mindestens 0) und nachfolgender Zeilen (mindestens 1) um den Cursor. Dies wird in einigen anderen Editoren als „scrollOff“ oder „scrollOffset“ bezeichnet.",
 		"\"cursorSurroundingLines\" wird nur erzwungen, wenn die Auslösung über die Tastatur oder API erfolgt.",
 		"\"cursorSurroundingLines\" wird immer erzwungen.",
-		"Legt fest, wann cursorSurroundingLines erzwungen werden soll",
+		"Steuert, wann \"#cursorSurroundingLines#\" erzwungen werden soll.",
 		"Steuert die Breite des Cursors, wenn `#editor.cursorStyle#` auf `line` festgelegt ist.",
 		"Steuert, ob der Editor das Verschieben einer Auswahl per Drag and Drop zulässt.",
 		"Verwenden Sie eine neue Rendering-Methode mit SVGs.",
@@ -545,6 +547,7 @@ define("vs/editor/editor.main.nls.de", {
 		"Keine Schnipselvorschläge anzeigen.",
 		"Steuert, ob Codeschnipsel mit anderen Vorschlägen angezeigt und wie diese sortiert werden.",
 		"Legt fest, ob der Editor Bildläufe animiert ausführt.",
+		"Steuert, ob für Benutzer*innen, die eine Sprachausgabe nutzen, bei Anzeige einer Inlinevervollständigung ein Hinweis zur Barrierefreiheit angezeigt werden soll.",
 		"Schriftgrad für das Vorschlagswidget. Bei Festlegung auf {0} wird der Wert von {1} verwendet.",
 		"Zeilenhöhe für das Vorschlagswidget. Bei Festlegung auf {0} wird der Wert von {1} verwendet. Der Mindestwert ist 8.",
 		"Steuert, ob Vorschläge automatisch angezeigt werden sollen, wenn Triggerzeichen eingegeben werden.",
@@ -650,7 +653,9 @@ define("vs/editor/editor.main.nls.de", {
 		"Gibt an, ob der Editor schreibgeschützt ist",
 		"Gibt an, ob der Kontext ein Diff-Editor ist.",
 		"Gibt an, ob der Kontext ein eingebetteter Diff-Editor ist.",
+		"Gibt an, ob ein verschobener Codeblock für den Vergleich ausgewählt wird.",
 		"Gibt an, ob der barrierefreie Diff-Viewer sichtbar ist.",
+		"Gibt an, ob für den Diff-Editor der Breakpoint für das Rendern im Modus \"Parallel\" oder \"Inline\" erreicht wurde.",
 		"Gibt an, ob \"editor.columnSelection\" aktiviert ist.",
 		"Gibt an, ob im Editor Text ausgewählt ist.",
 		"Gibt an, ob der Editor über Mehrfachauswahl verfügt.",
@@ -811,20 +816,22 @@ define("vs/editor/editor.main.nls.de", {
 	],
 	"vs/editor/contrib/codeAction/browser/codeActionContributions": [
 		"Aktivieren/Deaktivieren Sie die Anzeige von Gruppenheadern im Codeaktionsmenü.",
+		"Aktivieren/deaktivieren Sie die Anzeige der nächstgelegenen schnellen Problembehebung innerhalb einer Zeile, wenn derzeit keine Diagnose durchgeführt wird.",
 	],
 	"vs/editor/contrib/codeAction/browser/codeActionController": [
+		"Kontext: {0} in Zeile {1} und Spalte {2}.",
 		"Deaktivierte Elemente ausblenden",
 		"Deaktivierte Elemente anzeigen",
 	],
 	"vs/editor/contrib/codeAction/browser/codeActionMenu": [
 		"Weitere Aktionen...",
-		"Schnelle Problembehebung...",
-		"Extrahieren...",
-		"Inline...",
-		"Erneut generieren...",
-		"Verschieben...",
-		"Umgeben mit...",
-		"Quellaktion...",
+		"Schnelle Problembehebung",
+		"Extrahieren",
+		"Inline",
+		"Erneut generieren",
+		"Verschieben",
+		"Umgeben mit",
+		"Quellaktion",
 	],
 	"vs/editor/contrib/codeAction/browser/lightBulbWidget": [
 		"Zeigt Codeaktionen an. Bevorzugte Schnellkorrektur verfügbar ({0})",
@@ -833,6 +840,7 @@ define("vs/editor/editor.main.nls.de", {
 	],
 	"vs/editor/contrib/codelens/browser/codelensController": [
 		"CodeLens-Befehle für aktuelle Zeile anzeigen",
+		"Befehl auswählen",
 	],
 	"vs/editor/contrib/colorPicker/browser/colorPickerWidget": [
 		"Zum Umschalten zwischen Farboptionen (rgb/hsl/hex) klicken",
@@ -889,6 +897,9 @@ define("vs/editor/editor.main.nls.de", {
 		"Relative Pfade einfügen",
 		"Relativen Pfad einfügen",
 	],
+	"vs/editor/contrib/dropOrPasteInto/browser/dropIntoEditorContribution": [
+		"Konfiguriert den Standardablageanbieter für den Inhalt eines vorgegebenen MIME-Typs.",
+	],
 	"vs/editor/contrib/dropOrPasteInto/browser/dropIntoEditorController": [
 		"Gibt an, ob das Ablagewidget angezeigt wird.",
 		"Ablageoptionen anzeigen...",
@@ -898,6 +909,7 @@ define("vs/editor/editor.main.nls.de", {
 		"Gibt an, ob der Editor einen abbrechbaren Vorgang ausführt, z. B. \"Verweisvorschau\".",
 	],
 	"vs/editor/contrib/find/browser/findController": [
+		"Die Datei ist zu groß, um einen Vorgang zum Ersetzen aller Elemente auszuführen.",
 		"Suchen",
 		"&&Suchen",
 		"Überschreibt das Flag „Use Regular Expression“.\r\nDas Flag wird für die Zukunft nicht gespeichert.\r\n0: Nichts unternehmen\r\n1: TRUE\r\n2: FALSE",
@@ -956,8 +968,8 @@ define("vs/editor/editor.main.nls.de", {
 		"Alle Blockkommentare falten",
 		"Alle Regionen falten",
 		"Alle Regionen auffalten",
-		"Alle Regionen mit Ausnahme der ausgewählten zuklappen",
-		"Alle Regionen mit Ausnahme der ausgewählten auffalten",
+		"Alle bis auf ausgewählte falten",
+		"Alle bis auf ausgewählte auffalten",
 		"Alle falten",
 		"Alle auffalten",
 		"Zur übergeordneten Reduzierung wechseln",
@@ -1092,8 +1104,6 @@ define("vs/editor/editor.main.nls.de", {
 	],
 	"vs/editor/contrib/hover/browser/hover": [
 		"Anzeigen oder Fokus beim Daraufzeigen",
-		"Überprüfen Sie dies in der barrierefreien Ansicht mit {0}.",
-		"Überprüfen Sie dies in der barrierefreien Ansicht über den Befehl \"Barrierefreie Ansicht öffnen\", der zurzeit nicht per Tastenzuordnung ausgelöst werden kann.",
 		"Definitionsvorschauhover anzeigen",
 		"Bildlauf nach oben beim Daraufzeigen",
 		"Bildlauf nach unten beim Daraufzeigen",
@@ -1165,6 +1175,9 @@ define("vs/editor/editor.main.nls.de", {
 		"Gibt an, ob der Inline-Vorschlag mit Leerzeichen beginnt.",
 		"Ob der Inline-Vorschlag mit Leerzeichen beginnt, das kleiner ist als das, was durch die Tabulatortaste eingefügt werden würde",
 		"Gibt an, ob Vorschläge für den aktuellen Vorschlag unterdrückt werden sollen",
+	],
+	"vs/editor/contrib/inlineCompletions/browser/inlineCompletionsController": [
+		"Überprüfen Sie dies in der barrierefreien Ansicht ({0}).",
 	],
 	"vs/editor/contrib/inlineCompletions/browser/inlineCompletionsHintsWidget": [
 		"Symbol für die Anzeige des nächsten Parameterhinweises.",
@@ -1566,6 +1579,7 @@ define("vs/editor/editor.main.nls.de", {
 		"Aktionswidget",
 	],
 	"vs/platform/actionWidget/browser/actionWidget": [
+		"Hintergrundfarbe für umgeschaltete Aktionselemente in der Aktionsleiste.",
 		"Gibt an, ob die Aktionswidgetliste sichtbar ist.",
 		"Codeaktionswidget ausblenden",
 		"Vorherige Aktion auswählen",
@@ -1685,7 +1699,7 @@ define("vs/editor/editor.main.nls.de", {
 		"Verwenden Sie bei der Suche eine zusammenhängende Übereinstimmung.",
 		"Steuert den Typ der Übereinstimmung, der beim Durchsuchen von Listen und Strukturen in der Workbench verwendet wird.",
 		"Steuert, wie Strukturordner beim Klicken auf die Ordnernamen erweitert werden. Beachten Sie, dass einige Strukturen und Listen diese Einstellung ggf. ignorieren, wenn sie nicht zutrifft.",
-		"Steuert die Funktionsweise der Typnavigation in Listen und Strukturen in der Workbench. Bei Festlegung auf „trigger“ beginnt die Typnavigation, sobald der Befehl „list.triggerTypeNavigation“ ausgeführt wird.",
+		"Steuert die Funktionsweise der Typnavigation in Listen und Strukturen in der Workbench. Bei einer Festlegung auf \"trigger\" beginnt die Typnavigation, sobald der Befehl \"list.triggerTypeNavigation\" ausgeführt wird.",
 	],
 	"vs/platform/markers/common/markers": [
 		"Fehler",
@@ -1694,8 +1708,10 @@ define("vs/editor/editor.main.nls.de", {
 	],
 	"vs/platform/quickinput/browser/commandsQuickAccess": [
 		"zuletzt verwendet",
+		"ähnliche Befehle",
 		"häufig verwendet",
 		"andere Befehle",
+		"ähnliche Befehle",
 		"{0}, {1}",
 		"Der Befehl \"{0}\" hat zu einem Fehler geführt.",
 	],
@@ -1707,6 +1723,8 @@ define("vs/editor/editor.main.nls.de", {
 		"Drücken Sie die EINGABETASTE, um Ihre Eingabe zu bestätigen, oder ESC, um den Vorgang abzubrechen.",
 		"{0}/{1}",
 		"Nehmen Sie eine Eingabe vor, um die Ergebnisse einzugrenzen.",
+	],
+	"vs/platform/quickinput/browser/quickInputController": [
 		"Aktivieren Sie alle Kontrollkästchen",
 		"{0} Ergebnisse",
 		"{0} ausgewählt",
@@ -1922,8 +1940,9 @@ define("vs/editor/editor.main.nls.de", {
 		"Minimap-Markerfarbe für gefundene Übereinstimmungen.",
 		"Minimap-Markerfarbe für wiederholte Editorauswahlen.",
 		"Minimap-Markerfarbe für die Editorauswahl.",
-		"Minimapmarkerfarbe für Fehler",
+		"Minimapmarkerfarbe für Informationen.",
 		"Minimapmarkerfarbe für Warnungen",
+		"Minimapmarkerfarbe für Fehler",
 		"Hintergrundfarbe der Minimap.",
 		"Deckkraft von Vordergrundelementen, die in der Minimap gerendert werden. Beispiel: „#000000c0“ wird die Elemente mit einer Deckkraft von 75 % rendern.",
 		"Hintergrundfarbe des Minimap-Schiebereglers.",

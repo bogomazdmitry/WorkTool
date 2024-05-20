@@ -158,7 +158,7 @@ let MarkerHoverParticipant = class MarkerHoverParticipant {
                 }
             });
         }
-        if (!this._editor.getOption(89 /* EditorOption.readOnly */)) {
+        if (!this._editor.getOption(90 /* EditorOption.readOnly */)) {
             const quickfixPlaceholderElement = context.statusBar.append($('div'));
             if (this.recentMarkerCodeActionsInfo) {
                 if (IMarkerData.makeKey(this.recentMarkerCodeActionsInfo.marker) === IMarkerData.makeKey(markerHover.marker)) {

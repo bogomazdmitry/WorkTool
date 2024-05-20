@@ -20,6 +20,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var FoldingController_1;
 import { createCancelablePromise, Delayer, RunOnceScheduler } from '../../../../base/common/async.js';
 import { CancellationToken } from '../../../../base/common/cancellation.js';
 import { illegalArgument, onUnexpectedError } from '../../../../base/common/errors.js';
@@ -51,14 +52,14 @@ import { URI } from '../../../../base/common/uri.js';
 import { IModelService } from '../../../common/services/model.js';
 import { IConfigurationService } from '../../../../platform/configuration/common/configuration.js';
 const CONTEXT_FOLDING_ENABLED = new RawContextKey('foldingEnabled', false);
-let FoldingController = class FoldingController extends Disposable {
+let FoldingController = FoldingController_1 = class FoldingController extends Disposable {
     static get(editor) {
-        return editor.getContribution(FoldingController.ID);
+        return editor.getContribution(FoldingController_1.ID);
     }
     static getFoldingRangeProviders(languageFeaturesService, model) {
         var _a, _b;
         const foldingRangeProviders = languageFeaturesService.foldingRangeProvider.ordered(model);
-        return (_b = ((_a = FoldingController._foldingRangeSelector) === null || _a === void 0 ? void 0 : _a.call(FoldingController, foldingRangeProviders, model))) !== null && _b !== void 0 ? _b : foldingRangeProviders;
+        return (_b = ((_a = FoldingController_1._foldingRangeSelector) === null || _a === void 0 ? void 0 : _a.call(FoldingController_1, foldingRangeProviders, model))) !== null && _b !== void 0 ? _b : foldingRangeProviders;
     }
     constructor(editor, contextKeyService, languageConfigurationService, notificationService, languageFeatureDebounceService, languageFeaturesService) {
         super();
@@ -69,12 +70,12 @@ let FoldingController = class FoldingController extends Disposable {
         this.editor = editor;
         this._foldingLimitReporter = new RangesLimitReporter(editor);
         const options = this.editor.getOptions();
-        this._isEnabled = options.get(42 /* EditorOption.folding */);
-        this._useFoldingProviders = options.get(43 /* EditorOption.foldingStrategy */) !== 'indentation';
-        this._unfoldOnClickAfterEndOfLine = options.get(47 /* EditorOption.unfoldOnClickAfterEndOfLine */);
+        this._isEnabled = options.get(43 /* EditorOption.folding */);
+        this._useFoldingProviders = options.get(44 /* EditorOption.foldingStrategy */) !== 'indentation';
+        this._unfoldOnClickAfterEndOfLine = options.get(48 /* EditorOption.unfoldOnClickAfterEndOfLine */);
         this._restoringViewState = false;
         this._currentModelHasFoldedImports = false;
-        this._foldingImportsByDefault = options.get(45 /* EditorOption.foldingImportsByDefault */);
+        this._foldingImportsByDefault = options.get(46 /* EditorOption.foldingImportsByDefault */);
         this.updateDebounceInfo = languageFeatureDebounceService.for(languageFeaturesService.foldingRangeProvider, 'Folding', { min: 200 });
         this.foldingModel = null;
         this.hiddenRangeModel = null;
@@ -85,35 +86,35 @@ let FoldingController = class FoldingController extends Disposable {
         this.cursorChangedScheduler = null;
         this.mouseDownInfo = null;
         this.foldingDecorationProvider = new FoldingDecorationProvider(editor);
-        this.foldingDecorationProvider.showFoldingControls = options.get(108 /* EditorOption.showFoldingControls */);
-        this.foldingDecorationProvider.showFoldingHighlights = options.get(44 /* EditorOption.foldingHighlight */);
+        this.foldingDecorationProvider.showFoldingControls = options.get(109 /* EditorOption.showFoldingControls */);
+        this.foldingDecorationProvider.showFoldingHighlights = options.get(45 /* EditorOption.foldingHighlight */);
         this.foldingEnabled = CONTEXT_FOLDING_ENABLED.bindTo(this.contextKeyService);
         this.foldingEnabled.set(this._isEnabled);
         this._register(this.editor.onDidChangeModel(() => this.onModelChanged()));
         this._register(this.editor.onDidChangeConfiguration((e) => {
-            if (e.hasChanged(42 /* EditorOption.folding */)) {
-                this._isEnabled = this.editor.getOptions().get(42 /* EditorOption.folding */);
+            if (e.hasChanged(43 /* EditorOption.folding */)) {
+                this._isEnabled = this.editor.getOptions().get(43 /* EditorOption.folding */);
                 this.foldingEnabled.set(this._isEnabled);
                 this.onModelChanged();
             }
-            if (e.hasChanged(46 /* EditorOption.foldingMaximumRegions */)) {
+            if (e.hasChanged(47 /* EditorOption.foldingMaximumRegions */)) {
                 this.onModelChanged();
             }
-            if (e.hasChanged(108 /* EditorOption.showFoldingControls */) || e.hasChanged(44 /* EditorOption.foldingHighlight */)) {
+            if (e.hasChanged(109 /* EditorOption.showFoldingControls */) || e.hasChanged(45 /* EditorOption.foldingHighlight */)) {
                 const options = this.editor.getOptions();
-                this.foldingDecorationProvider.showFoldingControls = options.get(108 /* EditorOption.showFoldingControls */);
-                this.foldingDecorationProvider.showFoldingHighlights = options.get(44 /* EditorOption.foldingHighlight */);
+                this.foldingDecorationProvider.showFoldingControls = options.get(109 /* EditorOption.showFoldingControls */);
+                this.foldingDecorationProvider.showFoldingHighlights = options.get(45 /* EditorOption.foldingHighlight */);
                 this.triggerFoldingModelChanged();
             }
-            if (e.hasChanged(43 /* EditorOption.foldingStrategy */)) {
-                this._useFoldingProviders = this.editor.getOptions().get(43 /* EditorOption.foldingStrategy */) !== 'indentation';
+            if (e.hasChanged(44 /* EditorOption.foldingStrategy */)) {
+                this._useFoldingProviders = this.editor.getOptions().get(44 /* EditorOption.foldingStrategy */) !== 'indentation';
                 this.onFoldingStrategyChanged();
             }
-            if (e.hasChanged(47 /* EditorOption.unfoldOnClickAfterEndOfLine */)) {
-                this._unfoldOnClickAfterEndOfLine = this.editor.getOptions().get(47 /* EditorOption.unfoldOnClickAfterEndOfLine */);
+            if (e.hasChanged(48 /* EditorOption.unfoldOnClickAfterEndOfLine */)) {
+                this._unfoldOnClickAfterEndOfLine = this.editor.getOptions().get(48 /* EditorOption.unfoldOnClickAfterEndOfLine */);
             }
-            if (e.hasChanged(45 /* EditorOption.foldingImportsByDefault */)) {
-                this._foldingImportsByDefault = this.editor.getOptions().get(45 /* EditorOption.foldingImportsByDefault */);
+            if (e.hasChanged(46 /* EditorOption.foldingImportsByDefault */)) {
+                this._foldingImportsByDefault = this.editor.getOptions().get(46 /* EditorOption.foldingImportsByDefault */);
             }
         }));
         this.onModelChanged();
@@ -209,7 +210,7 @@ let FoldingController = class FoldingController extends Disposable {
         const indentRangeProvider = new IndentRangeProvider(editorModel, this.languageConfigurationService, this._foldingLimitReporter);
         this.rangeProvider = indentRangeProvider; // fallback
         if (this._useFoldingProviders && this.foldingModel) {
-            const selectedProviders = FoldingController.getFoldingRangeProviders(this.languageFeaturesService, editorModel);
+            const selectedProviders = FoldingController_1.getFoldingRangeProviders(this.languageFeaturesService, editorModel);
             if (selectedProviders.length > 0) {
                 this.rangeProvider = new SyntaxRangeProvider(editorModel, selectedProviders, () => this.triggerFoldingModelChanged(), this._foldingLimitReporter, indentRangeProvider);
             }
@@ -418,7 +419,7 @@ let FoldingController = class FoldingController extends Disposable {
     }
 };
 FoldingController.ID = 'editor.contrib.folding';
-FoldingController = __decorate([
+FoldingController = FoldingController_1 = __decorate([
     __param(1, IContextKeyService),
     __param(2, ILanguageConfigurationService),
     __param(3, INotificationService),
@@ -434,7 +435,7 @@ export class RangesLimitReporter {
         this._limited = false;
     }
     get limit() {
-        return this.editor.getOptions().get(46 /* EditorOption.foldingMaximumRegions */);
+        return this.editor.getOptions().get(47 /* EditorOption.foldingMaximumRegions */);
     }
     update(computed, limited) {
         if (computed !== this._computed || limited !== this._limited) {
@@ -775,12 +776,12 @@ class UnfoldAllRegionsAction extends FoldingAction {
         }
     }
 }
-class FoldAllRegionsExceptAction extends FoldingAction {
+class FoldAllExceptAction extends FoldingAction {
     constructor() {
         super({
             id: 'editor.foldAllExcept',
-            label: nls.localize('foldAllExcept.label', "Fold All Regions Except Selected"),
-            alias: 'Fold All Regions Except Selected',
+            label: nls.localize('foldAllExcept.label', "Fold All Except Selected"),
+            alias: 'Fold All Except Selected',
             precondition: CONTEXT_FOLDING_ENABLED,
             kbOpts: {
                 kbExpr: EditorContextKeys.editorTextFocus,
@@ -794,12 +795,12 @@ class FoldAllRegionsExceptAction extends FoldingAction {
         setCollapseStateForRest(foldingModel, true, selectedLines);
     }
 }
-class UnfoldAllRegionsExceptAction extends FoldingAction {
+class UnfoldAllExceptAction extends FoldingAction {
     constructor() {
         super({
             id: 'editor.unfoldAllExcept',
-            label: nls.localize('unfoldAllExcept.label', "Unfold All Regions Except Selected"),
-            alias: 'Unfold All Regions Except Selected',
+            label: nls.localize('unfoldAllExcept.label', "Unfold All Except Selected"),
+            alias: 'Unfold All Except Selected',
             precondition: CONTEXT_FOLDING_ENABLED,
             kbOpts: {
                 kbExpr: EditorContextKeys.editorTextFocus,
@@ -1033,8 +1034,8 @@ registerEditorAction(UnfoldAllAction);
 registerEditorAction(FoldAllBlockCommentsAction);
 registerEditorAction(FoldAllRegionsAction);
 registerEditorAction(UnfoldAllRegionsAction);
-registerEditorAction(FoldAllRegionsExceptAction);
-registerEditorAction(UnfoldAllRegionsExceptAction);
+registerEditorAction(FoldAllExceptAction);
+registerEditorAction(UnfoldAllExceptAction);
 registerEditorAction(ToggleFoldAction);
 registerEditorAction(GotoParentFoldAction);
 registerEditorAction(GotoPreviousFoldAction);

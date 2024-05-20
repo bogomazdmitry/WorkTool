@@ -30,6 +30,12 @@ export var Iterable;
         return iterable || _empty;
     }
     Iterable.from = from;
+    function* reverse(array) {
+        for (let i = array.length - 1; i >= 0; i--) {
+            yield array[i];
+        }
+    }
+    Iterable.reverse = reverse;
     function isEmpty(iterable) {
         return !iterable || iterable[Symbol.iterator]().next().done === true;
     }

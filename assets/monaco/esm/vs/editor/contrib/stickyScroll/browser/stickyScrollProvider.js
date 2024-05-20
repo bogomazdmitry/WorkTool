@@ -25,11 +25,9 @@ import { ILanguageFeaturesService } from '../../../common/services/languageFeatu
 import { CancellationTokenSource } from '../../../../base/common/cancellation.js';
 import { RunOnceScheduler } from '../../../../base/common/async.js';
 import { binarySearch } from '../../../../base/common/arrays.js';
-import { isEqual } from '../../../../base/common/resources.js';
 import { Emitter } from '../../../../base/common/event.js';
 import { ILanguageConfigurationService } from '../../../common/languages/languageConfigurationRegistry.js';
 import { StickyModelProvider } from './stickyScrollModelProvider.js';
-import { StickyModel } from './stickyScrollElement.js';
 export class StickyLineCandidate {
     constructor(startLineNumber, endLineNumber, nestingDepth) {
         this.startLineNumber = startLineNumber;
@@ -42,34 +40,37 @@ let StickyLineCandidateProvider = class StickyLineCandidateProvider extends Disp
         super();
         this._languageFeaturesService = _languageFeaturesService;
         this._languageConfigurationService = _languageConfigurationService;
-        this._onDidChangeStickyScroll = this._store.add(new Emitter());
+        this._onDidChangeStickyScroll = this._register(new Emitter());
         this.onDidChangeStickyScroll = this._onDidChangeStickyScroll.event;
         this._options = null;
         this._model = null;
         this._cts = null;
         this._stickyModelProvider = null;
         this._editor = editor;
-        this._sessionStore = new DisposableStore();
+        this._sessionStore = this._register(new DisposableStore());
         this._updateSoon = this._register(new RunOnceScheduler(() => this.update(), 50));
         this._register(this._editor.onDidChangeConfiguration(e => {
-            if (e.hasChanged(113 /* EditorOption.stickyScroll */)) {
+            if (e.hasChanged(114 /* EditorOption.stickyScroll */)) {
                 this.readConfiguration();
             }
         }));
         this.readConfiguration();
     }
-    dispose() {
-        super.dispose();
-        this._sessionStore.dispose();
-    }
     readConfiguration() {
-        this._options = this._editor.getOption(113 /* EditorOption.stickyScroll */);
+        this._stickyModelProvider = null;
+        this._sessionStore.clear();
+        this._options = this._editor.getOption(114 /* EditorOption.stickyScroll */);
         if (!this._options.enabled) {
-            this._sessionStore.clear();
             return;
         }
-        this._stickyModelProvider = new StickyModelProvider(this._editor, this._languageConfigurationService, this._languageFeaturesService, this._options.defaultModel);
-        this._sessionStore.add(this._editor.onDidChangeModel(() => this.update()));
+        this._stickyModelProvider = this._sessionStore.add(new StickyModelProvider(this._editor, this._languageConfigurationService, this._languageFeaturesService, this._options.defaultModel));
+        this._sessionStore.add(this._editor.onDidChangeModel(() => {
+            // We should not show an old model for a different file, it will always be wrong.
+            // So we clear the model here immediately and then trigger an update.
+            this._model = null;
+            this._onDidChangeStickyScroll.fire();
+            this.update();
+        }));
         this._sessionStore.add(this._editor.onDidChangeHiddenAreas(() => this.update()));
         this._sessionStore.add(this._editor.onDidChangeModelContent(() => this._updateSoon.schedule()));
         this._sessionStore.add(this._languageFeaturesService.documentSymbolProvider.onDidChange(() => this.update()));
@@ -90,21 +91,18 @@ let StickyLineCandidateProvider = class StickyLineCandidateProvider extends Disp
     }
     updateStickyModel(token) {
         return __awaiter(this, void 0, void 0, function* () {
-            if (!this._editor.hasModel() || !this._stickyModelProvider) {
+            if (!this._editor.hasModel() || !this._stickyModelProvider || this._editor.getModel().isTooLargeForTokenization()) {
+                this._model = null;
                 return;
             }
             const textModel = this._editor.getModel();
             const modelVersionId = textModel.getVersionId();
-            const isDifferentModel = this._model ? !isEqual(this._model.uri, textModel.uri) : false;
-            // Clear sticky scroll to not show stale data for too long
-            const resetHandle = isDifferentModel ? setTimeout(() => {
-                if (!token.isCancellationRequested) {
-                    this._model = new StickyModel(textModel.uri, textModel.getVersionId(), undefined, undefined);
-                    this._onDidChangeStickyScroll.fire();
-                }
-            }, 75) : undefined;
-            this._model = yield this._stickyModelProvider.update(textModel, modelVersionId, token);
-            clearTimeout(resetHandle);
+            const model = yield this._stickyModelProvider.update(textModel, modelVersionId, token);
+            if (token.isCancellationRequested) {
+                // the computation was canceled, so do not overwrite the model
+                return;
+            }
+            this._model = model;
         });
     }
     updateIndex(index) {

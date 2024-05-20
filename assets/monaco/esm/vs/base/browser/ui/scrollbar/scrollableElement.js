@@ -290,7 +290,14 @@ export class AbstractScrollableElement extends Widget {
             let deltaY = e.deltaY * this._options.mouseWheelScrollSensitivity;
             let deltaX = e.deltaX * this._options.mouseWheelScrollSensitivity;
             if (this._options.scrollPredominantAxis) {
-                if (Math.abs(deltaY) >= Math.abs(deltaX)) {
+                if (this._options.scrollYToX && deltaX + deltaY === 0) {
+                    // when configured to map Y to X and we both see
+                    // no dominant axis and X and Y are competing with
+                    // identical values into opposite directions, we
+                    // ignore the delta as we cannot make a decision then
+                    deltaX = deltaY = 0;
+                }
+                else if (Math.abs(deltaY) >= Math.abs(deltaX)) {
                     deltaX = 0;
                 }
                 else {
@@ -466,21 +473,21 @@ export class DomScrollableElement extends AbstractScrollableElement {
         options = options || {};
         options.mouseWheelSmoothScroll = false;
         const scrollable = new Scrollable({
-            forceIntegerValues: false,
+            forceIntegerValues: false, // See https://github.com/microsoft/vscode/issues/139877
             smoothScrollDuration: 0,
             scheduleAtNextAnimationFrame: (callback) => dom.scheduleAtNextAnimationFrame(callback)
         });
         super(element, options, scrollable);
         this._register(scrollable);
         this._element = element;
-        this.onScroll((e) => {
+        this._register(this.onScroll((e) => {
             if (e.scrollTopChanged) {
                 this._element.scrollTop = e.scrollTop;
             }
             if (e.scrollLeftChanged) {
                 this._element.scrollLeft = e.scrollLeft;
             }
-        });
+        }));
         this.scanDomNode();
     }
     setScrollPosition(update) {

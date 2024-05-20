@@ -17,7 +17,6 @@ import { AbstractGotoSymbolQuickAccessProvider } from '../../../contrib/quickAcc
 import { Registry } from '../../../../platform/registry/common/platform.js';
 import { Extensions } from '../../../../platform/quickinput/common/quickAccess.js';
 import { ICodeEditorService } from '../../../browser/services/codeEditorService.js';
-import { withNullAsUndefined } from '../../../../base/common/types.js';
 import { QuickOutlineNLS } from '../../../common/standaloneStrings.js';
 import { Event } from '../../../../base/common/event.js';
 import { EditorAction, registerEditorAction } from '../../../browser/editorExtensions.js';
@@ -32,7 +31,8 @@ let StandaloneGotoSymbolQuickAccessProvider = class StandaloneGotoSymbolQuickAcc
         this.onDidActiveTextEditorControlChange = Event.None;
     }
     get activeTextEditorControl() {
-        return withNullAsUndefined(this.editorService.getFocusedCodeEditor());
+        var _a;
+        return (_a = this.editorService.getFocusedCodeEditor()) !== null && _a !== void 0 ? _a : undefined;
     }
 };
 StandaloneGotoSymbolQuickAccessProvider = __decorate([

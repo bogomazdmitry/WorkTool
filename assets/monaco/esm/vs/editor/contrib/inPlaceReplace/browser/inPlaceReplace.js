@@ -11,6 +11,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
+var InPlaceReplaceController_1;
 import { createCancelablePromise, timeout } from '../../../../base/common/async.js';
 import { onUnexpectedError } from '../../../../base/common/errors.js';
 import { EditorState } from '../../editorState/browser/editorState.js';
@@ -23,9 +24,9 @@ import { IEditorWorkerService } from '../../../common/services/editorWorker.js';
 import * as nls from '../../../../nls.js';
 import { InPlaceReplaceCommand } from './inPlaceReplaceCommand.js';
 import './inPlaceReplace.css';
-let InPlaceReplaceController = class InPlaceReplaceController {
+let InPlaceReplaceController = InPlaceReplaceController_1 = class InPlaceReplaceController {
     static get(editor) {
-        return editor.getContribution(InPlaceReplaceController.ID);
+        return editor.getContribution(InPlaceReplaceController_1.ID);
     }
     constructor(editor, editorWorkerService) {
         this.editor = editor;
@@ -86,7 +87,7 @@ let InPlaceReplaceController = class InPlaceReplaceController {
             // add decoration
             this.decorations.set([{
                     range: highlightRange,
-                    options: InPlaceReplaceController.DECORATION
+                    options: InPlaceReplaceController_1.DECORATION
                 }]);
             // remove decoration after delay
             (_a = this.decorationRemover) === null || _a === void 0 ? void 0 : _a.cancel();
@@ -100,7 +101,7 @@ InPlaceReplaceController.DECORATION = ModelDecorationOptions.register({
     description: 'in-place-replace',
     className: 'valueSetReplacement'
 });
-InPlaceReplaceController = __decorate([
+InPlaceReplaceController = InPlaceReplaceController_1 = __decorate([
     __param(1, IEditorWorkerService)
 ], InPlaceReplaceController);
 class InPlaceReplaceUp extends EditorAction {

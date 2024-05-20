@@ -402,7 +402,7 @@ let AutoIndentOnPaste = class AutoIndentOnPaste {
         // clean up
         this.callOnModel.clear();
         // we are disabled
-        if (this.editor.getOption(11 /* EditorOption.autoIndent */) < 4 /* EditorAutoIndentStrategy.Full */ || this.editor.getOption(54 /* EditorOption.formatOnPaste */)) {
+        if (this.editor.getOption(12 /* EditorOption.autoIndent */) < 4 /* EditorAutoIndentStrategy.Full */ || this.editor.getOption(55 /* EditorOption.formatOnPaste */)) {
             return;
         }
         // no model
@@ -425,7 +425,7 @@ let AutoIndentOnPaste = class AutoIndentOnPaste {
         if (!model.tokenization.isCheapToTokenize(range.getStartPosition().lineNumber)) {
             return;
         }
-        const autoIndent = this.editor.getOption(11 /* EditorOption.autoIndent */);
+        const autoIndent = this.editor.getOption(12 /* EditorOption.autoIndent */);
         const { tabSize, indentSize, insertSpaces } = model.getOptions();
         const textEdits = [];
         const indentConverter = {

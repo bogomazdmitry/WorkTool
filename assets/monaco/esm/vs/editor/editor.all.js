@@ -4,8 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 import './browser/coreCommands.js';
 import './browser/widget/codeEditorWidget.js';
-import './browser/widget/diffEditorWidget.js';
-import './browser/widget/diffNavigator.js';
+import './browser/widget/diffEditor/diffEditor.contribution.js';
 import './contrib/anchorSelect/browser/anchorSelect.js';
 import './contrib/bracketMatching/browser/bracketMatching.js';
 import './contrib/caretOperations/browser/caretOperations.js';

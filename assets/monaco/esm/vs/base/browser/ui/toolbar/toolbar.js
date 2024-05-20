@@ -18,7 +18,6 @@ import { Codicon } from '../../../common/codicons.js';
 import { ThemeIcon } from '../../../common/themables.js';
 import { EventMultiplexer } from '../../../common/event.js';
 import { Disposable, DisposableStore } from '../../../common/lifecycle.js';
-import { withNullAsUndefined } from '../../../common/types.js';
 import './toolbar.css';
 import * as nls from '../../../../nls.js';
 /**
@@ -31,7 +30,7 @@ export class ToolBar extends Disposable {
         this.hasSecondaryActions = false;
         this._onDidChangeDropdownVisibility = this._register(new EventMultiplexer());
         this.onDidChangeDropdownVisibility = this._onDidChangeDropdownVisibility.event;
-        this.disposables = new DisposableStore();
+        this.disposables = this._register(new DisposableStore());
         this.options = options;
         this.lookupKeybindings = typeof this.options.getKeyBinding === 'function';
         this.toggleMenuAction = this._register(new ToggleMenuAction(() => { var _a; return (_a = this.toggleMenuActionViewItem) === null || _a === void 0 ? void 0 : _a.show(); }, options.toggleMenuTitle));
@@ -43,6 +42,7 @@ export class ToolBar extends Disposable {
             ariaLabel: options.ariaLabel,
             actionRunner: options.actionRunner,
             allowContextMenu: options.allowContextMenu,
+            highlightToggledItems: options.highlightToggledItems,
             actionViewItemProvider: (action, viewItemOptions) => {
                 var _a;
                 if (action.id === ToggleMenuAction.ID) {
@@ -110,9 +110,9 @@ export class ToolBar extends Disposable {
         });
     }
     getKeybindingLabel(action) {
-        var _a, _b;
+        var _a, _b, _c;
         const key = this.lookupKeybindings ? (_b = (_a = this.options).getKeyBinding) === null || _b === void 0 ? void 0 : _b.call(_a, action) : undefined;
-        return withNullAsUndefined(key === null || key === void 0 ? void 0 : key.getLabel());
+        return (_c = key === null || key === void 0 ? void 0 : key.getLabel()) !== null && _c !== void 0 ? _c : undefined;
     }
     clear() {
         this.submenuActionViewItems = [];
@@ -121,6 +121,7 @@ export class ToolBar extends Disposable {
     }
     dispose() {
         this.clear();
+        this.disposables.dispose();
         super.dispose();
     }
 }

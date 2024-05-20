@@ -21,7 +21,7 @@ import { Selection } from '../../../common/core/selection.js';
 import { EventType, Gesture } from '../../../../base/browser/touch.js';
 import { MinimapCharRendererFactory } from './minimapCharRendererFactory.js';
 import { MinimapPosition } from '../../../common/model.js';
-import { once } from '../../../../base/common/functional.js';
+import { createSingleCallFunction } from '../../../../base/common/functional.js';
 /**
  * The orthogonal distance to the slider at which dragging "resets". This implements "snapping"
  */
@@ -30,22 +30,22 @@ const GUTTER_DECORATION_WIDTH = 2;
 class MinimapOptions {
     constructor(configuration, theme, tokensColorTracker) {
         const options = configuration.options;
-        const pixelRatio = options.get(140 /* EditorOption.pixelRatio */);
-        const layoutInfo = options.get(142 /* EditorOption.layoutInfo */);
+        const pixelRatio = options.get(141 /* EditorOption.pixelRatio */);
+        const layoutInfo = options.get(143 /* EditorOption.layoutInfo */);
         const minimapLayout = layoutInfo.minimap;
-        const fontInfo = options.get(49 /* EditorOption.fontInfo */);
-        const minimapOpts = options.get(71 /* EditorOption.minimap */);
+        const fontInfo = options.get(50 /* EditorOption.fontInfo */);
+        const minimapOpts = options.get(72 /* EditorOption.minimap */);
         this.renderMinimap = minimapLayout.renderMinimap;
         this.size = minimapOpts.size;
         this.minimapHeightIsEditorHeight = minimapLayout.minimapHeightIsEditorHeight;
-        this.scrollBeyondLastLine = options.get(103 /* EditorOption.scrollBeyondLastLine */);
-        this.paddingTop = options.get(82 /* EditorOption.padding */).top;
-        this.paddingBottom = options.get(82 /* EditorOption.padding */).bottom;
+        this.scrollBeyondLastLine = options.get(104 /* EditorOption.scrollBeyondLastLine */);
+        this.paddingTop = options.get(83 /* EditorOption.padding */).top;
+        this.paddingBottom = options.get(83 /* EditorOption.padding */).bottom;
         this.showSlider = minimapOpts.showSlider;
         this.autohide = minimapOpts.autohide;
         this.pixelRatio = pixelRatio;
         this.typicalHalfwidthCharacterWidth = fontInfo.typicalHalfwidthCharacterWidth;
-        this.lineHeight = options.get(65 /* EditorOption.lineHeight */);
+        this.lineHeight = options.get(66 /* EditorOption.lineHeight */);
         this.minimapLeft = minimapLayout.minimapLeft;
         this.minimapWidth = minimapLayout.minimapWidth;
         this.minimapHeight = layoutInfo.height;
@@ -58,7 +58,7 @@ class MinimapOptions {
         this.fontScale = minimapLayout.minimapScale;
         this.minimapLineHeight = minimapLayout.minimapLineHeight;
         this.minimapCharWidth = 1 /* Constants.BASE_CHAR_WIDTH */ * this.fontScale;
-        this.charRenderer = once(() => MinimapCharRendererFactory.create(this.fontScale, fontInfo.fontFamily));
+        this.charRenderer = createSingleCallFunction(() => MinimapCharRendererFactory.create(this.fontScale, fontInfo.fontFamily));
         this.defaultBackgroundColor = tokensColorTracker.getColor(2 /* ColorId.DefaultBackground */);
         this.backgroundColor = MinimapOptions._getMinimapBackground(theme, this.defaultBackgroundColor);
         this.foregroundAlpha = MinimapOptions._getMinimapForegroundOpacity(theme);

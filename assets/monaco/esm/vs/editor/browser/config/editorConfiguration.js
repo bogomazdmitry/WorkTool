@@ -44,7 +44,7 @@ let EditorConfiguration = class EditorConfiguration extends Disposable {
         this._rawOptions = deepCloneAndMigrateOptions(options);
         this._validatedOptions = EditorOptionsUtil.validateOptions(this._rawOptions);
         this.options = this._computeOptions();
-        if (this.options.get(12 /* EditorOption.automaticLayout */)) {
+        if (this.options.get(13 /* EditorOption.automaticLayout */)) {
             this._containerObserver.startObserving();
         }
         this._register(EditorZoom.onDidChangeZoomLevel(() => this._recomputeOptions()));
@@ -80,7 +80,7 @@ let EditorConfiguration = class EditorConfiguration extends Disposable {
             lineNumbersDigitCount: this._lineNumbersDigitCount,
             emptySelectionClipboard: partialEnv.emptySelectionClipboard,
             pixelRatio: partialEnv.pixelRatio,
-            tabFocusMode: TabFocus.getTabFocusMode("editorFocus" /* TabFocusContext.Editor */),
+            tabFocusMode: TabFocus.getTabFocusMode(),
             accessibilitySupport: partialEnv.accessibilitySupport,
             glyphMarginDecorationLaneCount: this._glyphMarginDecorationLaneCount
         };

@@ -29,15 +29,16 @@ import { LineDecoration } from '../../../common/viewLayout/lineDecorations.js';
 import { RenderLineInput, renderViewLine } from '../../../common/viewLayout/viewLineRenderer.js';
 import { GhostTextReplacement } from './ghostText.js';
 import { ColumnRange, applyObservableDecorations } from './utils.js';
+export const GHOST_TEXT_DESCRIPTION = 'ghost-text';
 let GhostTextWidget = class GhostTextWidget extends Disposable {
     constructor(editor, model, languageService) {
         super();
         this.editor = editor;
         this.model = model;
         this.languageService = languageService;
-        this.isDisposed = observableValue('isDisposed', false);
+        this.isDisposed = observableValue(this, false);
         this.currentTextModel = observableFromEvent(this.editor.onDidChangeModel, () => this.editor.getModel());
-        this.uiState = derived('uiState', reader => {
+        this.uiState = derived(this, reader => {
             if (this.isDisposed.read(reader)) {
                 return undefined;
             }
@@ -85,7 +86,7 @@ let GhostTextWidget = class GhostTextWidget extends Disposable {
                     addToAdditionalLines([textBufferLine.substring(lastIdx, part.column - 1)], undefined);
                 }
                 if (lines.length > 0) {
-                    addToAdditionalLines(lines, 'ghost-text');
+                    addToAdditionalLines(lines, GHOST_TEXT_DESCRIPTION);
                     if (hiddenTextStartColumn === undefined && part.column <= textBufferLine.length) {
                         hiddenTextStartColumn = part.column;
                     }
@@ -106,7 +107,7 @@ let GhostTextWidget = class GhostTextWidget extends Disposable {
                 targetTextModel: textModel,
             };
         });
-        this.decorations = derived('decorations', reader => {
+        this.decorations = derived(this, reader => {
             const uiState = this.uiState.read(reader);
             if (!uiState) {
                 return [];
@@ -128,7 +129,7 @@ let GhostTextWidget = class GhostTextWidget extends Disposable {
                 decorations.push({
                     range: Range.fromPositions(new Position(uiState.lineNumber, p.column)),
                     options: {
-                        description: 'ghost-text',
+                        description: GHOST_TEXT_DESCRIPTION,
                         after: { content: p.text, inlineClassName: p.preview ? 'ghost-text-decoration-preview' : 'ghost-text-decoration', cursorStops: InjectedTextCursorStops.Left },
                         showIfCollapsed: true,
                     }
@@ -136,7 +137,8 @@ let GhostTextWidget = class GhostTextWidget extends Disposable {
             }
             return decorations;
         });
-        this.additionalLinesWidget = this._register(new AdditionalLinesWidget(this.editor, this.languageService.languageIdCodec, derived('lines', (reader) => {
+        this.additionalLinesWidget = this._register(new AdditionalLinesWidget(this.editor, this.languageService.languageIdCodec, derived(reader => {
+            /** @description lines */
             const uiState = this.uiState.read(reader);
             return uiState ? {
                 lineNumber: uiState.lineNumber,
@@ -164,14 +166,15 @@ class AdditionalLinesWidget extends Disposable {
         this.languageIdCodec = languageIdCodec;
         this.lines = lines;
         this._viewZoneId = undefined;
-        this.editorOptionsChanged = observableSignalFromEvent('editorOptionChanged', Event.filter(this.editor.onDidChangeConfiguration, e => e.hasChanged(32 /* EditorOption.disableMonospaceOptimizations */)
-            || e.hasChanged(115 /* EditorOption.stopRenderingLineAfter */)
-            || e.hasChanged(97 /* EditorOption.renderWhitespace */)
-            || e.hasChanged(92 /* EditorOption.renderControlCharacters */)
-            || e.hasChanged(50 /* EditorOption.fontLigatures */)
-            || e.hasChanged(49 /* EditorOption.fontInfo */)
-            || e.hasChanged(65 /* EditorOption.lineHeight */)));
-        this._register(autorun('update view zone', reader => {
+        this.editorOptionsChanged = observableSignalFromEvent('editorOptionChanged', Event.filter(this.editor.onDidChangeConfiguration, e => e.hasChanged(33 /* EditorOption.disableMonospaceOptimizations */)
+            || e.hasChanged(116 /* EditorOption.stopRenderingLineAfter */)
+            || e.hasChanged(98 /* EditorOption.renderWhitespace */)
+            || e.hasChanged(93 /* EditorOption.renderControlCharacters */)
+            || e.hasChanged(51 /* EditorOption.fontLigatures */)
+            || e.hasChanged(50 /* EditorOption.fontInfo */)
+            || e.hasChanged(66 /* EditorOption.lineHeight */)));
+        this._register(autorun(reader => {
+            /** @description update view zone */
             const lines = this.lines.read(reader);
             this.editorOptionsChanged.read(reader);
             if (lines) {
@@ -220,14 +223,14 @@ class AdditionalLinesWidget extends Disposable {
     }
 }
 function renderLines(domNode, tabSize, lines, opts, languageIdCodec) {
-    const disableMonospaceOptimizations = opts.get(32 /* EditorOption.disableMonospaceOptimizations */);
-    const stopRenderingLineAfter = opts.get(115 /* EditorOption.stopRenderingLineAfter */);
+    const disableMonospaceOptimizations = opts.get(33 /* EditorOption.disableMonospaceOptimizations */);
+    const stopRenderingLineAfter = opts.get(116 /* EditorOption.stopRenderingLineAfter */);
     // To avoid visual confusion, we don't want to render visible whitespace
     const renderWhitespace = 'none';
-    const renderControlCharacters = opts.get(92 /* EditorOption.renderControlCharacters */);
-    const fontLigatures = opts.get(50 /* EditorOption.fontLigatures */);
-    const fontInfo = opts.get(49 /* EditorOption.fontInfo */);
-    const lineHeight = opts.get(65 /* EditorOption.lineHeight */);
+    const renderControlCharacters = opts.get(93 /* EditorOption.renderControlCharacters */);
+    const fontLigatures = opts.get(51 /* EditorOption.fontLigatures */);
+    const fontInfo = opts.get(50 /* EditorOption.fontInfo */);
+    const lineHeight = opts.get(66 /* EditorOption.lineHeight */);
     const sb = new StringBuilder(10000);
     sb.appendString('<div class="suggest-preview-text">');
     for (let i = 0, len = lines.length; i < len; i++) {

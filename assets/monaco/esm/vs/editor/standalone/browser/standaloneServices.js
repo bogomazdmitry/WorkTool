@@ -295,13 +295,13 @@ let StandaloneKeybindingService = class StandaloneKeybindingService extends Abst
             }
         };
         const addCodeEditor = (codeEditor) => {
-            if (codeEditor.getOption(60 /* EditorOption.inDiffEditor */)) {
+            if (codeEditor.getOption(61 /* EditorOption.inDiffEditor */)) {
                 return;
             }
             addContainer(codeEditor.getContainerDomNode());
         };
         const removeCodeEditor = (codeEditor) => {
-            if (codeEditor.getOption(60 /* EditorOption.inDiffEditor */)) {
+            if (codeEditor.getOption(61 /* EditorOption.inDiffEditor */)) {
                 return;
             }
             removeContainer(codeEditor.getContainerDomNode());
@@ -656,7 +656,7 @@ StandaloneContextMenuService = __decorate([
     __param(5, IContextKeyService)
 ], StandaloneContextMenuService);
 class StandaloneAudioService {
-    playAudioCue(cue, allowManyInParallel) {
+    playAudioCue(cue, options) {
         return __awaiter(this, void 0, void 0, function* () {
         });
     }
@@ -708,6 +708,9 @@ export var StandaloneServices;
     const instantiationService = new InstantiationService(serviceCollection, true);
     serviceCollection.set(IInstantiationService, instantiationService);
     function get(serviceId) {
+        if (!initialized) {
+            initialize({});
+        }
         const r = serviceCollection.get(serviceId);
         if (!r) {
             throw new Error('Missing service ' + serviceId);

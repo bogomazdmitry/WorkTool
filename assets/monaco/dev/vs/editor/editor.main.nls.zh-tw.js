@@ -1,6 +1,6 @@
 /*!-----------------------------------------------------------
  * Copyright (c) Microsoft Corporation. All rights reserved.
- * Version: 0.41.0(38e1e3d097f84e336c311d071a9ffb5191d4ffd1)
+ * Version: 0.44.0(3e047efd345ff102c8c61b5398fb30845aaac166)
  * Released under the MIT license
  * https://github.com/microsoft/vscode/blob/main/LICENSE.txt
  *-----------------------------------------------------------*/
@@ -20,6 +20,10 @@ define("vs/editor/editor.main.nls.zh-tw", {
 	"vs/base/browser/ui/findinput/replaceInput": [
 		"輸入",
 		"保留案例",
+	],
+	"vs/base/browser/ui/hover/hoverWidget": [
+		"使用 {0} 在可存取檢視中檢查此項目。",
+		"透過目前無法透過按鍵繫結關係觸發的開啟可存取檢視命令，在可存取檢視中檢查此項目。",
 	],
 	"vs/base/browser/ui/iconLabel/iconLabelHover": [
 		"正在載入...",
@@ -109,20 +113,7 @@ define("vs/editor/editor.main.nls.zh-tw", {
 		"游標數目已限制為 {0}。請考慮使用 [尋找和取代](https://code.visualstudio.com/docs/editor/codebasics#_find-and-replace) 進行較大型的變更，或增加編輯器的多重游標限制設定。",
 		"增加多重游標限制",
 	],
-	"vs/editor/browser/widget/diffEditor.contribution": [
-		"可存取的 Diff 檢視器",
-		"移至下一個差異",
-		"開啟易存取差異檢視器",
-		"移至上一個差異",
-	],
-	"vs/editor/browser/widget/diffEditorWidget": [
-		"Diff 編輯器中用於插入的線條裝飾。",
-		"Diff 編輯器中用於移除的線條裝飾。",
-		" 使用 Shift + F7 瀏覽變更",
-		"因其中一個檔案過大而無法比較。",
-		"按一下以還原變更",
-	],
-	"vs/editor/browser/widget/diffEditorWidget2/accessibleDiffViewer": [
+	"vs/editor/browser/widget/diffEditor/accessibleDiffViewer": [
 		"易存取差異檢視器中的 [插入] 圖示。",
 		"易存取差異檢視器中的 [移除] 圖示。",
 		"易存取差異檢視器中的 [關閉] 圖示。",
@@ -138,45 +129,43 @@ define("vs/editor/editor.main.nls.zh-tw", {
 		"+ {0} 修改行 {1}",
 		"- {0} 原始行 {1}",
 	],
-	"vs/editor/browser/widget/diffEditorWidget2/colors": [
+	"vs/editor/browser/widget/diffEditor/colors": [
 		"在 Diff 編輯器中移動的文字的框線色彩。",
+		"在 Diff 編輯器中移動的文字的作用中框線色彩。",
 	],
-	"vs/editor/browser/widget/diffEditorWidget2/decorations": [
+	"vs/editor/browser/widget/diffEditor/decorations": [
 		"Diff 編輯器中用於插入的線條裝飾。",
 		"Diff 編輯器中用於移除的線條裝飾。",
 		"按一下以還原變更",
 	],
-	"vs/editor/browser/widget/diffEditorWidget2/diffEditorEditors": [
+	"vs/editor/browser/widget/diffEditor/diffEditor.contribution": [
+		"切換摺疊未變更的區域",
+		"切換顯示移動的程式碼區塊",
+		"當空間有限時切換使用內嵌檢視",
+		"空間有限時使用內嵌檢視",
+		"顯示移動的程式碼區塊",
+		"Diff 編輯器",
+		"切換側邊",
+		"結束比較移動",
+		"摺疊所有未變更的區域",
+		"顯示所有未變更的區域",
+		"可存取的 Diff 檢視器",
+		"移至下一個差異",
+		"開啟易存取差異檢視器",
+		"移至上一個差異",
+	],
+	"vs/editor/browser/widget/diffEditor/diffEditorEditors": [
 		" 使用 {0} 以開啟協助工具說明。",
 	],
-	"vs/editor/browser/widget/diffEditorWidget2/inlineDiffDeletedCodeMargin": [
-		"複製刪除的行",
-		"複製刪除的行",
-		"複製變更的行",
-		"複製變更的行",
-		"複製刪除的行 ({0})",
-		"複製變更的行 ({0})",
-		"還原此變更",
-	],
-	"vs/editor/browser/widget/diffEditorWidget2/unchangedRanges": [
+	"vs/editor/browser/widget/diffEditor/hideUnchangedRegionsFeature": [
 		"摺疊未變更的區域",
+		"按一下或拖曳以在上方顯示更多內容",
+		"全部顯示",
+		"按一下或拖曳以在下方顯示更多內容",
+		"{0} 條隱藏行",
+		"按兩下以展開",
 	],
-	"vs/editor/browser/widget/diffReview": [
-		"Diff 檢閱中 [插入] 的圖示。",
-		"Diff 檢閱中 [移除] 的圖示。",
-		"Diff 檢閱中 [關閉] 的圖示。",
-		"關閉",
-		"未變更任一行",
-		"已變更 1 行",
-		"已變更 {0} 行",
-		"{1} 項差異中的第 {0} 項: 原始行 {2}、{3}，修改行 {4}、{5}",
-		"空白",
-		"{0} 未變更行 {1}",
-		"{0} 原始行 {1} 修改的行 {2}",
-		"+ {0} 修改行 {1}",
-		"- {0} 原始行 {1}",
-	],
-	"vs/editor/browser/widget/inlineDiffMargin": [
+	"vs/editor/browser/widget/diffEditor/inlineDiffDeletedCodeMargin": [
 		"複製已刪除的行",
 		"複製已刪除的行",
 		"複製變更的行",
@@ -184,8 +173,12 @@ define("vs/editor/editor.main.nls.zh-tw", {
 		"複製已刪除的行 （{0}）",
 		"複製變更的行 ({0})",
 		"還原此變更",
-		"複製已刪除的行 （{0}）",
-		"複製變更的行 ({0})",
+	],
+	"vs/editor/browser/widget/diffEditor/movedBlocksLines": [
+		"行 {0}-{1} 的程式碼已移動，且有所變更",
+		"行 {0}-{1} 的程式碼已移動，且有所變更",
+		"程式碼已移至行 {0}-{1}",
+		"行 {0}-{1} 的程式碼已移動",
 	],
 	"vs/editor/common/config/editorConfigurationSchema": [
 		"編輯器",
@@ -218,6 +211,8 @@ define("vs/editor/editor.main.nls.zh-tw", {
 		"取消 Diff 計算前的逾時限制 (毫秒)。若無逾時，請使用 0。",
 		"要計算差異的檔案大小上限 (MB)。使用 0 表示無限制。",
 		"控制 Diff 編輯器要並排或內嵌顯示 Diff。",
+		"如果差異編輯器寬度小於此值，則使用內嵌檢視。",
+		"如果啟用且編輯器寬度太小，則會使用內嵌檢視。",
 		"啟用時，Diff 編輯器會在其字元邊緣顯示箭頭，以還原變更。",
 		"啟用時，Diff 編輯器會忽略前置或後置空格的變更。",
 		"控制 Diff 編輯器是否要為新增/移除的變更顯示 +/- 標記。",
@@ -227,9 +222,11 @@ define("vs/editor/editor.main.nls.zh-tw", {
 		"將依據 {0} 設定自動換行。",
 		"使用舊版差異演算法。",
 		"使用進階版差異演算法。",
-		"控制差異編輯器是否顯示未變更的區域。只有在設定了 {0} 時才有效。",
-		"控制差異編輯器是否應該顯示偵測到的程式碼移動。只有在設定了 {0} 時才有作用。",
-		"控制 Diff 編輯器使用新的或舊的實作。",
+		"控制差異編輯器是否顯示未變更的區域。",
+		"控制未變更區域的使用行數。",
+		"控制未變更區域的最小使用行數。",
+		"控制比較未變更的區域時，要使用多少行作為內容。",
+		"控制 Diff 編輯器是否應該顯示偵測到的程式碼移動。",
 		"控制差異編輯器是否顯示空白裝飾項目，以查看插入或刪除字元的位置。",
 	],
 	"vs/editor/common/config/editorOptions": [
@@ -278,6 +275,7 @@ define("vs/editor/editor.main.nls.zh-tw", {
 		"控制是否顯示暫留。",
 		"控制暫留顯示的延遲時間 (以毫秒為單位)。",
 		"控制當滑鼠移過時，是否應保持顯示暫留。",
+		"控制隱藏暫留之後的延遲毫秒。需要啟用 \'editor.hover.sticky\'。",
 		"如果有空間，則偏好在行上方顯示游標。",
 		"假設所有字元的寬度均相同。這是一種快速的演算法，適用於等寬字型，以及字符寬度相同的部分指令碼 (例如拉丁文字元)。",
 		"將外圍點計算委派給瀏覽器。這是緩慢的演算法，如果檔案較大可能會導致凍結，但在所有情況下都正常運作。",
@@ -286,6 +284,7 @@ define("vs/editor/editor.main.nls.zh-tw", {
 		"在編輯器頂端捲動期間顯示巢狀的目前範圍。",
 		"定義要顯示的自黏線數目上限。",
 		"定義要用於判斷要黏住的線條的模型。如果大綱模型不存在，則會回到摺疊提供者模型，其會回到縮排模型。這三種情況中會遵守此順序。",
+		"使用編輯器的水平捲軸，啟用自黏捲動小工具的捲動。",
 		"啟用編輯器中的內嵌提示。",
 		"已啟用內嵌提示",
 		"預設會顯示內嵌提示，並在按住 {0} 時隱藏",
@@ -436,6 +435,9 @@ define("vs/editor/editor.main.nls.zh-tw", {
 		"使用語言配置確定何時自動關閉括號。",
 		"僅當游標位於空白的左側時自動關閉括號。",
 		"控制編輯器是否應在使用者新增左括弧後，自動加上右括弧。",
+		"使用語言配置確定何時自動關閉註解。",
+		"僅當游標位於空白的左側時自動關閉註解。",
+		"控制使用者新增開啟的註解之後，編輯器是否應該自動關閉註解。",
 		"僅在自動插入相鄰的右引號或括弧時，才將其移除。",
 		"控制編輯器是否應在刪除時移除相鄰的右引號或括弧。",
 		"僅在自動插入右引號或括號時，才在其上方鍵入。",
@@ -474,7 +476,7 @@ define("vs/editor/editor.main.nls.zh-tw", {
 		"控制游標上下周圍可顯示的前置線 (最小為 0) 和後置線 (最小為 1) 的最小數目。在某些編輯器中稱為 \'scrollOff\' 或 \'scrollOffset\'。",
 		"只有通過鍵盤或 API 觸發時，才會施行 `cursorSurroundingLines`。",
 		"一律強制執行 `cursorSurroundingLines`",
-		"控制應施行 `cursorSurroundingLines` 的時機。",
+		"控制應強制執行 `#cursorSurroundingLines#` 的時機。",
 		"控制游標寬度，當 `#editor.cursorStyle#` 設定為 `line` 時。",
 		"控制編輯器是否允許透過拖放來移動選取項目。",
 		"使用新的 svg 轉譯方法。",
@@ -545,6 +547,7 @@ define("vs/editor/editor.main.nls.zh-tw", {
 		"不顯示程式碼片段建議。",
 		"控制程式碼片段是否隨其他建議顯示，以及其排序方式。",
 		"控制編輯器是否會使用動畫捲動",
+		"控制當顯示內嵌完成時，是否應提供協助工具提示給螢幕助讀程式使用者。",
 		"建議小工具的字型大小。當設定為 {0} 時，則會使用 {1} 的值。",
 		"建議小工具的行高。當設定為 {0} 時，則會使用 {1} 的值。最小值為 8。",
 		"控制建議是否應在鍵入觸發字元時自動顯示。",
@@ -650,7 +653,9 @@ define("vs/editor/editor.main.nls.zh-tw", {
 		"編輯器是否為唯讀",
 		"內容是否為 Diff 編輯器",
 		"內容是否為內嵌 Diff 編輯器",
+		"是否選取移動的程式碼區塊進行比較",
 		"是否顯示易存取差異檢視器",
+		"是否已達到差異編輯器並排呈現內嵌中斷點",
 		"\'editor.columnSelection\' 是否已啟用",
 		"編輯器是否有選取文字",
 		"編輯器是否有多個選取項目",
@@ -811,20 +816,22 @@ define("vs/editor/editor.main.nls.zh-tw", {
 	],
 	"vs/editor/contrib/codeAction/browser/codeActionContributions": [
 		"啟用/停用在 [程式碼動作] 功能表中顯示群組標頭。",
+		"啟用/停用目前不在診斷時顯示行內最接近的 Quickfix。",
 	],
 	"vs/editor/contrib/codeAction/browser/codeActionController": [
+		"內容: {0} 在行 {1} 和欄 {2}。",
 		"隱藏已停用項目",
 		"顯示已停用項目",
 	],
 	"vs/editor/contrib/codeAction/browser/codeActionMenu": [
 		"更多動作...",
-		"快速修正...",
-		"擷取...",
-		"內嵌...",
-		"重寫...",
-		"移動...",
-		"範圍陳述式...",
-		"來源動作...",
+		"快速修正",
+		"擷取",
+		"內嵌",
+		"重寫",
+		"移動",
+		"範圍陳述式",
+		"來源動作",
 	],
 	"vs/editor/contrib/codeAction/browser/lightBulbWidget": [
 		"顯示程式碼動作。偏好的快速修正可用 ({0})",
@@ -833,6 +840,7 @@ define("vs/editor/editor.main.nls.zh-tw", {
 	],
 	"vs/editor/contrib/codelens/browser/codelensController": [
 		"顯示目前行的 Code Lens 命令",
+		"選取命令",
 	],
 	"vs/editor/contrib/colorPicker/browser/colorPickerWidget": [
 		"按一下以切換色彩選項 (rgb/hsl/hex)",
@@ -889,6 +897,9 @@ define("vs/editor/editor.main.nls.zh-tw", {
 		"插入相對路徑",
 		"插入相對路徑",
 	],
+	"vs/editor/contrib/dropOrPasteInto/browser/dropIntoEditorContribution": [
+		"設定預設卸載提供者，以用於指定 MIME 類型的內容。",
+	],
 	"vs/editor/contrib/dropOrPasteInto/browser/dropIntoEditorController": [
 		"是否顯示卸除小工具",
 		"顯示卸除選項...",
@@ -898,6 +909,7 @@ define("vs/editor/editor.main.nls.zh-tw", {
 		"編輯器是否執行可取消的作業，例如「預覽參考」",
 	],
 	"vs/editor/contrib/find/browser/findController": [
+		"檔案太大，無法執行取代所有作業。",
 		"尋找",
 		"尋找(&&F)",
 		"覆寫 \"Use Regular Expression\" 旗標。\r\n日後將不會儲存此旗標。\r\n0: 不執行任何動作\r\n1: True\r\n2: False",
@@ -956,7 +968,7 @@ define("vs/editor/editor.main.nls.zh-tw", {
 		"摺疊全部區塊註解",
 		"摺疊所有區域",
 		"展開所有區域",
-		"折疊所選區域以外的所有區域",
+		"摺疊所選區域以外的所有區域",
 		"展開所選區域以外的所有區域",
 		"全部摺疊",
 		"全部展開",
@@ -1092,8 +1104,6 @@ define("vs/editor/editor.main.nls.zh-tw", {
 	],
 	"vs/editor/contrib/hover/browser/hover": [
 		"顯示或聚焦暫留",
-		"使用 {0} 在可存取檢視中檢查此項目",
-		"透過目前無法透過按鍵繫結關係觸發的開啟可存取檢視命令，在可存取檢視中檢查此項目",
 		"顯示定義預覽懸停",
 		"向上捲動暫留",
 		"向下捲動暫留",
@@ -1165,6 +1175,9 @@ define("vs/editor/editor.main.nls.zh-tw", {
 		"內嵌建議是否以空白字元開頭",
 		"內嵌建議的開頭是否為空白，且比 Tab 能插入的字元要小",
 		"是否應隱藏目前建議的其他建議",
+	],
+	"vs/editor/contrib/inlineCompletions/browser/inlineCompletionsController": [
+		"在可存取檢視中檢查此項目 ({0})",
 	],
 	"vs/editor/contrib/inlineCompletions/browser/inlineCompletionsHintsWidget": [
 		"[顯示下一個參數提示] 的圖示。",
@@ -1566,6 +1579,7 @@ define("vs/editor/editor.main.nls.zh-tw", {
 		"動作小工具",
 	],
 	"vs/platform/actionWidget/browser/actionWidget": [
+		"動作列中切換動作項目的背景色彩。",
 		"是否顯示動作小工具清單",
 		"隱藏動作小工具",
 		"選取上一個動作",
@@ -1694,8 +1708,10 @@ define("vs/editor/editor.main.nls.zh-tw", {
 	],
 	"vs/platform/quickinput/browser/commandsQuickAccess": [
 		"最近使用的",
+		"類似的命令",
 		"經常使用",
 		"其他命令",
+		"類似的命令",
 		"{0}, {1}",
 		"命令 \'{0}\' 造成錯誤",
 	],
@@ -1707,13 +1723,15 @@ define("vs/editor/editor.main.nls.zh-tw", {
 		"按 \'Enter\' 鍵確認您的輸入或按 \'Esc\' 鍵取消",
 		"{0}/{1}",
 		"輸入以縮小結果範圍。",
+	],
+	"vs/platform/quickinput/browser/quickInputController": [
 		"切換所有核取方塊",
 		"{0} 個結果",
 		"已選擇 {0}",
 		"確定",
 		"自訂",
 		"背面 ({0})",
-		"上一頁",
+		"返回",
 	],
 	"vs/platform/quickinput/browser/quickInputList": [
 		"快速輸入",
@@ -1922,8 +1940,9 @@ define("vs/editor/editor.main.nls.zh-tw", {
 		"用於尋找相符項目的縮圖標記色彩。",
 		"重複編輯器選取項目的縮圖標記色彩。",
 		"編輯器選取範圍的迷你地圖標記色彩。",
-		"錯誤的縮圖標記色彩。",
+		"資訊的縮圖標記色彩。",
 		"警告的縮圖標記色彩。",
+		"錯誤的縮圖標記色彩。",
 		"縮圖背景色彩。",
 		"在縮圖中呈現的前景元素不透明度。例如，\"#000000c0\" 會以不透明度 75% 轉譯元素。",
 		"縮圖滑桿背景色彩。",

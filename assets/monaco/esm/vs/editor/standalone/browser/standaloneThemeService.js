@@ -185,7 +185,7 @@ export class StandaloneThemeService extends Disposable {
         this._knownThemes.set(VS_DARK_THEME_NAME, newBuiltInTheme(VS_DARK_THEME_NAME));
         this._knownThemes.set(HC_BLACK_THEME_NAME, newBuiltInTheme(HC_BLACK_THEME_NAME));
         this._knownThemes.set(HC_LIGHT_THEME_NAME, newBuiltInTheme(HC_LIGHT_THEME_NAME));
-        const iconsStyleSheet = getIconsStyleSheet(this);
+        const iconsStyleSheet = this._register(getIconsStyleSheet(this));
         this._codiconCSS = iconsStyleSheet.getCSS();
         this._themeCSS = '';
         this._allCSS = `${this._codiconCSS}\n${this._themeCSS}`;
@@ -194,10 +194,10 @@ export class StandaloneThemeService extends Disposable {
         this._colorMapOverride = null;
         this.setTheme(VS_LIGHT_THEME_NAME);
         this._onOSSchemeChanged();
-        iconsStyleSheet.onDidChange(() => {
+        this._register(iconsStyleSheet.onDidChange(() => {
             this._codiconCSS = iconsStyleSheet.getCSS();
             this._updateCSS();
-        });
+        }));
         addMatchMediaChangeListener('(forced-colors: active)', () => {
             this._onOSSchemeChanged();
         });

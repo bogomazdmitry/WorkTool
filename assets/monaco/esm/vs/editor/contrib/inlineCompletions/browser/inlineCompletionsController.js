@@ -11,11 +11,11 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
+var InlineCompletionsController_1;
 import { alert } from '../../../../base/browser/ui/aria/aria.js';
 import { Event } from '../../../../base/common/event.js';
 import { Disposable, toDisposable } from '../../../../base/common/lifecycle.js';
-import { autorun, constObservable, observableFromEvent, observableValue } from '../../../../base/common/observable.js';
-import { disposableObservableValue, transaction } from '../../../../base/common/observableImpl/base.js';
+import { autorun, constObservable, disposableObservableValue, observableFromEvent, observableValue, transaction } from '../../../../base/common/observable.js';
 import { CoreEditingCommands } from '../../../browser/coreCommands.js';
 import { Position } from '../../../common/core/position.js';
 import { ILanguageFeatureDebounceService } from '../../../common/services/languageFeatureDebounce.js';
@@ -26,16 +26,18 @@ import { InlineCompletionContextKeys } from './inlineCompletionContextKeys.js';
 import { InlineCompletionsHintsWidget, InlineSuggestionHintsContentWidget } from './inlineCompletionsHintsWidget.js';
 import { InlineCompletionsModel, VersionIdChangeReason } from './inlineCompletionsModel.js';
 import { SuggestWidgetAdaptor } from './suggestWidgetInlineCompletionProvider.js';
+import { localize } from '../../../../nls.js';
 import { AudioCue, IAudioCueService } from '../../../../platform/audioCues/browser/audioCueService.js';
 import { ICommandService } from '../../../../platform/commands/common/commands.js';
 import { IConfigurationService } from '../../../../platform/configuration/common/configuration.js';
 import { IContextKeyService } from '../../../../platform/contextkey/common/contextkey.js';
 import { IInstantiationService } from '../../../../platform/instantiation/common/instantiation.js';
-let InlineCompletionsController = class InlineCompletionsController extends Disposable {
+import { IKeybindingService } from '../../../../platform/keybinding/common/keybinding.js';
+let InlineCompletionsController = InlineCompletionsController_1 = class InlineCompletionsController extends Disposable {
     static get(editor) {
-        return editor.getContribution(InlineCompletionsController.ID);
+        return editor.getContribution(InlineCompletionsController_1.ID);
     }
-    constructor(editor, instantiationService, contextKeyService, configurationService, commandService, debounceService, languageFeaturesService, audioCueService) {
+    constructor(editor, instantiationService, contextKeyService, configurationService, commandService, debounceService, languageFeaturesService, audioCueService, _keybindingService) {
         super();
         this.editor = editor;
         this.instantiationService = instantiationService;
@@ -45,11 +47,19 @@ let InlineCompletionsController = class InlineCompletionsController extends Disp
         this.debounceService = debounceService;
         this.languageFeaturesService = languageFeaturesService;
         this.audioCueService = audioCueService;
+        this._keybindingService = _keybindingService;
         this.model = disposableObservableValue('inlineCompletionModel', undefined);
-        this.textModelVersionId = observableValue('textModelVersionId', -1);
-        this.cursorPosition = observableValue('cursorPosition', new Position(1, 1));
-        this.suggestWidgetAdaptor = this._register(new SuggestWidgetAdaptor(this.editor, () => { var _a, _b; return (_b = (_a = this.model.get()) === null || _a === void 0 ? void 0 : _a.selectedInlineCompletion.get()) === null || _b === void 0 ? void 0 : _b.toSingleTextEdit(undefined); }, (tx) => this.updateObservables(tx, VersionIdChangeReason.Other)));
-        this._enabled = observableFromEvent(this.editor.onDidChangeConfiguration, () => this.editor.getOption(61 /* EditorOption.inlineSuggest */).enabled);
+        this.textModelVersionId = observableValue(this, -1);
+        this.cursorPosition = observableValue(this, new Position(1, 1));
+        this.suggestWidgetAdaptor = this._register(new SuggestWidgetAdaptor(this.editor, () => { var _a, _b; return (_b = (_a = this.model.get()) === null || _a === void 0 ? void 0 : _a.selectedInlineCompletion.get()) === null || _b === void 0 ? void 0 : _b.toSingleTextEdit(undefined); }, (tx) => this.updateObservables(tx, VersionIdChangeReason.Other), (item) => {
+            transaction(tx => {
+                var _a;
+                /** @description handleSuggestAccepted */
+                this.updateObservables(tx, VersionIdChangeReason.Other);
+                (_a = this.model.get()) === null || _a === void 0 ? void 0 : _a.handleSuggestAccepted(item);
+            });
+        }));
+        this._enabled = observableFromEvent(this.editor.onDidChangeConfiguration, () => this.editor.getOption(62 /* EditorOption.inlineSuggest */).enabled);
         this.ghostTextWidget = this._register(this.instantiationService.createInstance(GhostTextWidget, this.editor, {
             ghostText: this.model.map((v, reader) => v === null || v === void 0 ? void 0 : v.ghostText.read(reader)),
             minReservedLineCount: constObservable(0),
@@ -63,7 +73,7 @@ let InlineCompletionsController = class InlineCompletionsController extends Disp
             this.updateObservables(tx, VersionIdChangeReason.Other);
             const textModel = editor.getModel();
             if (textModel) {
-                const model = instantiationService.createInstance(InlineCompletionsModel, textModel, this.suggestWidgetAdaptor.selectedItem, this.cursorPosition, this.textModelVersionId, this._debounceValue, observableFromEvent(editor.onDidChangeConfiguration, () => editor.getOption(116 /* EditorOption.suggest */).preview), observableFromEvent(editor.onDidChangeConfiguration, () => editor.getOption(116 /* EditorOption.suggest */).previewMode), observableFromEvent(editor.onDidChangeConfiguration, () => editor.getOption(61 /* EditorOption.inlineSuggest */).mode), this._enabled);
+                const model = instantiationService.createInstance(InlineCompletionsModel, textModel, this.suggestWidgetAdaptor.selectedItem, this.cursorPosition, this.textModelVersionId, this._debounceValue, observableFromEvent(editor.onDidChangeConfiguration, () => editor.getOption(117 /* EditorOption.suggest */).preview), observableFromEvent(editor.onDidChangeConfiguration, () => editor.getOption(117 /* EditorOption.suggest */).previewMode), observableFromEvent(editor.onDidChangeConfiguration, () => editor.getOption(62 /* EditorOption.inlineSuggest */).mode), this._enabled);
                 this.model.set(model, tx);
             }
         })));
@@ -87,7 +97,7 @@ let InlineCompletionsController = class InlineCompletionsController extends Disp
             var _a;
             /** @description onDidChangeCursorPosition */
             this.updateObservables(tx, VersionIdChangeReason.Other);
-            if (e.reason === 3 /* CursorChangeReason.Explicit */) {
+            if (e.reason === 3 /* CursorChangeReason.Explicit */ || e.source === 'api') {
                 (_a = this.model.get()) === null || _a === void 0 ? void 0 : _a.stop(tx);
             }
         })));
@@ -118,8 +128,8 @@ let InlineCompletionsController = class InlineCompletionsController extends Disp
         }));
         this._register(this.editor.onDidBlurEditorWidget(() => {
             // This is a hidden setting very useful for debugging
-            if (this.configurationService.getValue('editor.inlineSuggest.keepOnBlur') ||
-                editor.getOption(61 /* EditorOption.inlineSuggest */).keepOnBlur) {
+            if (this.contextKeyService.getContextKeyValue('accessibleViewIsShown') || this.configurationService.getValue('editor.inlineSuggest.keepOnBlur') ||
+                editor.getOption(62 /* EditorOption.inlineSuggest */).keepOnBlur) {
                 return;
             }
             if (InlineSuggestionHintsContentWidget.dropDownVisible) {
@@ -131,8 +141,9 @@ let InlineCompletionsController = class InlineCompletionsController extends Disp
                 (_a = this.model.get()) === null || _a === void 0 ? void 0 : _a.stop(tx);
             });
         }));
-        this._register(autorun('forceRenderingAbove', reader => {
+        this._register(autorun(reader => {
             var _a;
+            /** @description forceRenderingAbove */
             const state = (_a = this.model.read(reader)) === null || _a === void 0 ? void 0 : _a.state.read(reader);
             if (state === null || state === void 0 ? void 0 : state.suggestItem) {
                 if (state.ghostText.lineCount >= 2) {
@@ -147,7 +158,8 @@ let InlineCompletionsController = class InlineCompletionsController extends Disp
             this.suggestWidgetAdaptor.stopForceRenderingAbove();
         }));
         let lastInlineCompletionId = undefined;
-        this._register(autorun('play audio cue & read suggestion', reader => {
+        this._register(autorun(reader => {
+            /** @description play audio cue & read suggestion */
             const model = this.model.read(reader);
             const state = model === null || model === void 0 ? void 0 : model.state.read(reader);
             if (!model || !state || !state.inlineCompletion) {
@@ -158,13 +170,28 @@ let InlineCompletionsController = class InlineCompletionsController extends Disp
                 lastInlineCompletionId = state.inlineCompletion.semanticId;
                 const lineText = model.textModel.getLineContent(state.ghostText.lineNumber);
                 this.audioCueService.playAudioCue(AudioCue.inlineSuggestion).then(() => {
-                    if (this.editor.getOption(7 /* EditorOption.screenReaderAnnounceInlineSuggestion */)) {
-                        alert(state.ghostText.renderForScreenReader(lineText));
+                    if (this.editor.getOption(8 /* EditorOption.screenReaderAnnounceInlineSuggestion */)) {
+                        this.provideScreenReaderUpdate(state.ghostText.renderForScreenReader(lineText));
                     }
                 });
             }
         }));
         this._register(new InlineCompletionsHintsWidget(this.editor, this.model, this.instantiationService));
+        this._register(this.configurationService.onDidChangeConfiguration(e => {
+            if (e.affectsConfiguration('accessibility.verbosity.inlineCompletions')) {
+                this.editor.updateOptions({ inlineCompletionsAccessibilityVerbose: this.configurationService.getValue('accessibility.verbosity.inlineCompletions') });
+            }
+        }));
+        this.editor.updateOptions({ inlineCompletionsAccessibilityVerbose: this.configurationService.getValue('accessibility.verbosity.inlineCompletions') });
+    }
+    provideScreenReaderUpdate(content) {
+        const accessibleViewShowing = this.contextKeyService.getContextKeyValue('accessibleViewIsShown');
+        const accessibleViewKeybinding = this._keybindingService.lookupKeybinding('editor.action.accessibleView');
+        let hint;
+        if (!accessibleViewShowing && accessibleViewKeybinding && this.editor.getOption(147 /* EditorOption.inlineCompletionsAccessibilityVerbose */)) {
+            hint = localize('showAccessibleViewHint', "Inspect this in the accessible view ({0})", accessibleViewKeybinding.getAriaLabel());
+        }
+        hint ? alert(content + ', ' + hint) : alert(content);
     }
     /**
      * Copies over the relevant state from the text model to observables.
@@ -190,13 +217,14 @@ let InlineCompletionsController = class InlineCompletionsController extends Disp
     }
 };
 InlineCompletionsController.ID = 'editor.contrib.inlineCompletionsController';
-InlineCompletionsController = __decorate([
+InlineCompletionsController = InlineCompletionsController_1 = __decorate([
     __param(1, IInstantiationService),
     __param(2, IContextKeyService),
     __param(3, IConfigurationService),
     __param(4, ICommandService),
     __param(5, ILanguageFeatureDebounceService),
     __param(6, ILanguageFeaturesService),
-    __param(7, IAudioCueService)
+    __param(7, IAudioCueService),
+    __param(8, IKeybindingService)
 ], InlineCompletionsController);
 export { InlineCompletionsController };

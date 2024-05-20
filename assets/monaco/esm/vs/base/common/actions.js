@@ -188,7 +188,7 @@ export function toAction(props) {
         class: undefined,
         enabled: (_a = props.enabled) !== null && _a !== void 0 ? _a : true,
         checked: (_b = props.checked) !== null && _b !== void 0 ? _b : false,
-        run: () => __awaiter(this, void 0, void 0, function* () { return props.run(); }),
+        run: (...args) => __awaiter(this, void 0, void 0, function* () { return props.run(...args); }),
         tooltip: props.label
     };
 }

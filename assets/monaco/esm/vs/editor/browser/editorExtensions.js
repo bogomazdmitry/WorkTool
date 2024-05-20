@@ -15,8 +15,9 @@ import { IInstantiationService } from '../../platform/instantiation/common/insta
 import { KeybindingsRegistry } from '../../platform/keybinding/common/keybindingsRegistry.js';
 import { Registry } from '../../platform/registry/common/platform.js';
 import { ITelemetryService } from '../../platform/telemetry/common/telemetry.js';
-import { withNullAsUndefined, assertType } from '../../base/common/types.js';
+import { assertType } from '../../base/common/types.js';
 import { ILogService } from '../../platform/log/common/log.js';
+import { getActiveElement } from '../../base/browser/dom.js';
 export class Command {
     constructor(opts) {
         this.id = opts.id;
@@ -106,7 +107,7 @@ export class MultiCommand extends Command {
         logService.trace(`Executing Command '${this.id}' which has ${this._implementations.length} bound.`);
         for (const impl of this._implementations) {
             if (impl.when) {
-                const context = contextKeyService.getContext(document.activeElement);
+                const context = contextKeyService.getContext(getActiveElement());
                 const value = impl.when.evaluate(context);
                 if (!value) {
                     continue;
@@ -167,7 +168,7 @@ export class EditorCommand extends Command {
         }
         return editor.invokeWithinContext((editorAccessor) => {
             const kbService = editorAccessor.get(IContextKeyService);
-            if (!kbService.contextMatchesRules(withNullAsUndefined(precondition))) {
+            if (!kbService.contextMatchesRules(precondition !== null && precondition !== void 0 ? precondition : undefined)) {
                 // precondition does not hold
                 return;
             }
@@ -269,12 +270,12 @@ export class EditorAction2 extends Action2 {
         }
         // precondition does hold
         return editor.invokeWithinContext((editorAccessor) => {
-            var _a;
+            var _a, _b;
             const kbService = editorAccessor.get(IContextKeyService);
             const logService = editorAccessor.get(ILogService);
-            const enabled = kbService.contextMatchesRules(withNullAsUndefined(this.desc.precondition));
+            const enabled = kbService.contextMatchesRules((_a = this.desc.precondition) !== null && _a !== void 0 ? _a : undefined);
             if (!enabled) {
-                logService.debug(`[EditorAction2] NOT running command because its precondition is FALSE`, this.desc.id, (_a = this.desc.precondition) === null || _a === void 0 ? void 0 : _a.serialize());
+                logService.debug(`[EditorAction2] NOT running command because its precondition is FALSE`, this.desc.id, (_b = this.desc.precondition) === null || _b === void 0 ? void 0 : _b.serialize());
                 return;
             }
             return this.runEditorCommand(editorAccessor, editor, ...args);

@@ -6,7 +6,6 @@ import { alert } from '../../../../base/browser/ui/aria/aria.js';
 import { TabFocus } from '../../../browser/config/tabFocus.js';
 import * as nls from '../../../../nls.js';
 import { Action2, registerAction2 } from '../../../../platform/actions/common/actions.js';
-import { IContextKeyService } from '../../../../platform/contextkey/common/contextkey.js';
 export class ToggleTabFocusModeAction extends Action2 {
     constructor() {
         super({
@@ -21,11 +20,10 @@ export class ToggleTabFocusModeAction extends Action2 {
             f1: true
         });
     }
-    run(accessor) {
-        const context = accessor.get(IContextKeyService).getContextKeyValue('focusedView') === 'terminal' ? "terminalFocus" /* TabFocusContext.Terminal */ : "editorFocus" /* TabFocusContext.Editor */;
-        const oldValue = TabFocus.getTabFocusMode(context);
+    run() {
+        const oldValue = TabFocus.getTabFocusMode();
         const newValue = !oldValue;
-        TabFocus.setTabFocusMode(newValue, context);
+        TabFocus.setTabFocusMode(newValue);
         if (newValue) {
             alert(nls.localize('toggle.tabMovesFocus.on', "Pressing Tab will now move focus to the next focusable element"));
         }

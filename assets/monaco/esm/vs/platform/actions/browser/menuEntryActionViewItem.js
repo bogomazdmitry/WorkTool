@@ -20,7 +20,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-import { $, addDisposableListener, append, asCSSUrl, EventType, ModifierKeyEmitter, prepend } from '../../../base/browser/dom.js';
+import { $, addDisposableListener, append, asCSSUrl, EventType, ModifierKeyEmitter, prepend, reset } from '../../../base/browser/dom.js';
 import { StandardKeyboardEvent } from '../../../base/browser/keyboardEvent.js';
 import { ActionViewItem, BaseActionViewItem, SelectActionViewItem } from '../../../base/browser/ui/actionbar/actionViewItems.js';
 import { DropdownMenuActionViewItem } from '../../../base/browser/ui/dropdown/dropdownActionViewItem.js';
@@ -101,7 +101,7 @@ function fillInActions(groups, target, useAlternativeActions, isPrimaryAction = 
         // inlining submenus with length 0 or 1 is easy,
         // larger submenus need to be checked with the overall limit
         const submenuActions = action.actions;
-        if (submenuActions.length <= 1 && shouldInlineSubmenu(action, group, target.length)) {
+        if (shouldInlineSubmenu(action, group, target.length)) {
             target.splice(index, 1, ...submenuActions);
         }
     }
@@ -224,14 +224,21 @@ let MenuEntryActionViewItem = class MenuEntryActionViewItem extends ActionViewIt
             });
         }
         else {
-            // icon path/url
-            label.style.backgroundImage = (isDark(this._themeService.getColorTheme().type)
+            // icon path/url - add special element with SVG-mask and icon color background
+            const svgUrl = isDark(this._themeService.getColorTheme().type)
                 ? asCSSUrl(icon.dark)
-                : asCSSUrl(icon.light));
+                : asCSSUrl(icon.light);
+            const svgIcon = $('span');
+            svgIcon.style.webkitMask = svgIcon.style.mask = `${svgUrl} no-repeat 50% 50%`;
+            svgIcon.style.background = 'var(--vscode-icon-foreground)';
+            svgIcon.style.display = 'inline-block';
+            svgIcon.style.width = '100%';
+            svgIcon.style.height = '100%';
+            label.appendChild(svgIcon);
             label.classList.add('icon');
             this._itemClassDispose.value = combinedDisposable(toDisposable(() => {
-                label.style.backgroundImage = '';
                 label.classList.remove('icon');
+                reset(label);
             }), this._themeService.onDidColorThemeChange(() => {
                 // refresh when the theme changes in case we go between dark <-> light
                 this.updateClass();

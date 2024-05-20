@@ -12,6 +12,28 @@ import * as dompurify from './dompurify/dompurify.js';
 import { Disposable, DisposableStore, toDisposable } from '../common/lifecycle.js';
 import { FileAccess, RemoteAuthorities } from '../common/network.js';
 import * as platform from '../common/platform.js';
+export const { registerWindow, getWindows, onDidCreateWindow } = (function () {
+    const windows = [];
+    const onDidCreateWindow = new event.Emitter();
+    return {
+        onDidCreateWindow: onDidCreateWindow.event,
+        registerWindow(window) {
+            windows.push(window);
+            const disposableStore = new DisposableStore();
+            disposableStore.add(toDisposable(() => {
+                const index = windows.indexOf(window);
+                if (index !== -1) {
+                    windows.splice(index, 1);
+                }
+            }));
+            onDidCreateWindow.fire({ window, disposableStore });
+            return disposableStore;
+        },
+        getWindows() {
+            return windows;
+        }
+    };
+})();
 export function clearNode(node) {
     while (node.firstChild) {
         node.firstChild.remove();
@@ -169,28 +191,31 @@ class AnimationFrameQueueItem {
     };
 })();
 export function getComputedStyle(el) {
-    return document.defaultView.getComputedStyle(el, null);
+    return el.ownerDocument.defaultView.getComputedStyle(el, null);
 }
 export function getClientArea(element) {
+    var _a;
+    const elDocument = element.ownerDocument;
+    const elWindow = (_a = elDocument.defaultView) === null || _a === void 0 ? void 0 : _a.window;
     // Try with DOM clientWidth / clientHeight
-    if (element !== document.body) {
+    if (element !== elDocument.body) {
         return new Dimension(element.clientWidth, element.clientHeight);
     }
     // If visual view port exits and it's on mobile, it should be used instead of window innerWidth / innerHeight, or document.body.clientWidth / document.body.clientHeight
-    if (platform.isIOS && window.visualViewport) {
-        return new Dimension(window.visualViewport.width, window.visualViewport.height);
+    if (platform.isIOS && (elWindow === null || elWindow === void 0 ? void 0 : elWindow.visualViewport)) {
+        return new Dimension(elWindow.visualViewport.width, elWindow.visualViewport.height);
     }
     // Try innerWidth / innerHeight
-    if (window.innerWidth && window.innerHeight) {
-        return new Dimension(window.innerWidth, window.innerHeight);
+    if ((elWindow === null || elWindow === void 0 ? void 0 : elWindow.innerWidth) && elWindow.innerHeight) {
+        return new Dimension(elWindow.innerWidth, elWindow.innerHeight);
     }
     // Try with document.body.clientWidth / document.body.clientHeight
-    if (document.body && document.body.clientWidth && document.body.clientHeight) {
-        return new Dimension(document.body.clientWidth, document.body.clientHeight);
+    if (elDocument.body && elDocument.body.clientWidth && elDocument.body.clientHeight) {
+        return new Dimension(elDocument.body.clientWidth, elDocument.body.clientHeight);
     }
     // Try with document.documentElement.clientWidth / document.documentElement.clientHeight
-    if (document.documentElement && document.documentElement.clientWidth && document.documentElement.clientHeight) {
-        return new Dimension(document.documentElement.clientWidth, document.documentElement.clientHeight);
+    if (elDocument.documentElement && elDocument.documentElement.clientWidth && elDocument.documentElement.clientHeight) {
+        return new Dimension(elDocument.documentElement.clientWidth, elDocument.documentElement.clientHeight);
     }
     throw new Error('Unable to figure out browser width and height');
 }
@@ -284,8 +309,8 @@ export function getTopLeftOffset(element) {
     let top = element.offsetTop;
     let left = element.offsetLeft;
     while ((element = element.parentNode) !== null
-        && element !== document.body
-        && element !== document.documentElement) {
+        && element !== element.ownerDocument.body
+        && element !== element.ownerDocument.documentElement) {
         top -= element.scrollTop;
         const c = isShadowRoot(element) ? null : getComputedStyle(element);
         if (c) {
@@ -316,10 +341,11 @@ export function size(element, width, height) {
  * Returns the position of a dom node relative to the entire page.
  */
 export function getDomNodePagePosition(domNode) {
+    var _a, _b, _c, _d;
     const bb = domNode.getBoundingClientRect();
     return {
-        left: bb.left + window.scrollX,
-        top: bb.top + window.scrollY,
+        left: bb.left + ((_b = (_a = domNode.ownerDocument.defaultView) === null || _a === void 0 ? void 0 : _a.scrollX) !== null && _b !== void 0 ? _b : 0),
+        top: bb.top + ((_d = (_c = domNode.ownerDocument.defaultView) === null || _c === void 0 ? void 0 : _c.scrollY) !== null && _d !== void 0 ? _d : 0),
         width: bb.width,
         height: bb.height
     };
@@ -336,7 +362,7 @@ export function getDomNodeZoomLevel(domNode) {
             zoom *= elementZoomLevel;
         }
         testElement = testElement.parentElement;
-    } while (testElement !== null && testElement !== document.documentElement);
+    } while (testElement !== null && testElement !== testElement.ownerDocument.documentElement);
     return zoom;
 }
 // Adapted from WinJS
@@ -404,8 +430,9 @@ export function isInShadowDOM(domNode) {
     return !!getShadowRoot(domNode);
 }
 export function getShadowRoot(domNode) {
+    var _a;
     while (domNode.parentNode) {
-        if (domNode === document.body) {
+        if (domNode === ((_a = domNode.ownerDocument) === null || _a === void 0 ? void 0 : _a.body)) {
             // reached the body
             return null;
         }
@@ -413,12 +440,25 @@ export function getShadowRoot(domNode) {
     }
     return isShadowRoot(domNode) ? domNode : null;
 }
+/**
+ * Returns the active element across all child windows.
+ * Use this instead of `document.activeElement` to handle multiple windows.
+ */
 export function getActiveElement() {
-    let result = document.activeElement;
+    let result = getActiveDocument().activeElement;
     while (result === null || result === void 0 ? void 0 : result.shadowRoot) {
         result = result.shadowRoot.activeElement;
     }
     return result;
+}
+/**
+ * Returns the active document across all child windows.
+ * Use this instead of `document` when reacting to dom events to handle multiple windows.
+ */
+export function getActiveDocument() {
+    var _a;
+    const documents = [document, ...getWindows().map(w => w.document)];
+    return (_a = documents.find(doc => doc.hasFocus())) !== null && _a !== void 0 ? _a : document;
 }
 export function createStyleSheet(container = document.getElementsByTagName('head')[0], beforeAppend) {
     const style = document.createElement('style');
@@ -566,9 +606,14 @@ export function restoreParentsScrollTop(node, state) {
 }
 class FocusTracker extends Disposable {
     static hasFocusWithin(element) {
-        const shadowRoot = getShadowRoot(element);
-        const activeElement = (shadowRoot ? shadowRoot.activeElement : document.activeElement);
-        return isAncestor(activeElement, element);
+        if (isHTMLElement(element)) {
+            const shadowRoot = getShadowRoot(element);
+            const activeElement = (shadowRoot ? shadowRoot.activeElement : element.ownerDocument.activeElement);
+            return isAncestor(activeElement, element);
+        }
+        else {
+            return isAncestor(window.document.activeElement, window.document);
+        }
     }
     constructor(element) {
         super();
@@ -610,8 +655,10 @@ class FocusTracker extends Disposable {
         };
         this._register(addDisposableListener(element, EventType.FOCUS, onFocus, true));
         this._register(addDisposableListener(element, EventType.BLUR, onBlur, true));
-        this._register(addDisposableListener(element, EventType.FOCUS_IN, () => this._refreshStateHandler()));
-        this._register(addDisposableListener(element, EventType.FOCUS_OUT, () => this._refreshStateHandler()));
+        if (element instanceof HTMLElement) {
+            this._register(addDisposableListener(element, EventType.FOCUS_IN, () => this._refreshStateHandler()));
+            this._register(addDisposableListener(element, EventType.FOCUS_OUT, () => this._refreshStateHandler()));
+        }
     }
 }
 /**

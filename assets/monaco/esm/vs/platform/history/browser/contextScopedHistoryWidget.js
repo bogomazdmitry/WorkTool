@@ -85,7 +85,7 @@ export { ContextScopedReplaceInput };
 KeybindingsRegistry.registerCommandAndKeybindingRule({
     id: 'history.showPrevious',
     weight: 200 /* KeybindingWeight.WorkbenchContrib */,
-    when: ContextKeyExpr.and(ContextKeyExpr.has(HistoryNavigationWidgetFocusContext), ContextKeyExpr.equals(HistoryNavigationBackwardsEnablementContext, true), historyNavigationVisible.isEqualTo(false)),
+    when: ContextKeyExpr.and(ContextKeyExpr.has(HistoryNavigationWidgetFocusContext), ContextKeyExpr.equals(HistoryNavigationBackwardsEnablementContext, true), ContextKeyExpr.not('isComposing'), historyNavigationVisible.isEqualTo(false)),
     primary: 16 /* KeyCode.UpArrow */,
     secondary: [512 /* KeyMod.Alt */ | 16 /* KeyCode.UpArrow */],
     handler: (accessor) => {
@@ -95,7 +95,7 @@ KeybindingsRegistry.registerCommandAndKeybindingRule({
 KeybindingsRegistry.registerCommandAndKeybindingRule({
     id: 'history.showNext',
     weight: 200 /* KeybindingWeight.WorkbenchContrib */,
-    when: ContextKeyExpr.and(ContextKeyExpr.has(HistoryNavigationWidgetFocusContext), ContextKeyExpr.equals(HistoryNavigationForwardsEnablementContext, true), historyNavigationVisible.isEqualTo(false)),
+    when: ContextKeyExpr.and(ContextKeyExpr.has(HistoryNavigationWidgetFocusContext), ContextKeyExpr.equals(HistoryNavigationForwardsEnablementContext, true), ContextKeyExpr.not('isComposing'), historyNavigationVisible.isEqualTo(false)),
     primary: 18 /* KeyCode.DownArrow */,
     secondary: [512 /* KeyMod.Alt */ | 18 /* KeyCode.DownArrow */],
     handler: (accessor) => {

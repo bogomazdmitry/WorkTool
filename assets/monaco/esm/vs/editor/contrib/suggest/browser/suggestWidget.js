@@ -20,6 +20,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var SuggestWidget_1;
 import * as dom from '../../../../base/browser/dom.js';
 import '../../../../base/browser/ui/codicons/codiconStyles.js'; // The codicon symbol styles are defined here and must be loaded
 import { List } from '../../../../base/browser/ui/list/listWidget.js';
@@ -45,6 +46,7 @@ import { Context as SuggestContext, suggestWidgetStatusbarMenu } from './suggest
 import { canExpandCompletionItem, SuggestDetailsOverlay, SuggestDetailsWidget } from './suggestWidgetDetails.js';
 import { getAriaId, ItemRenderer } from './suggestWidgetRenderer.js';
 import { getListStyles } from '../../../../platform/theme/browser/defaultStyles.js';
+import { status } from '../../../../base/browser/ui/aria/aria.js';
 /**
  * Suggest widget colors
  */
@@ -83,7 +85,7 @@ class PersistedWidgetSize {
         this._service.remove(this._key, 0 /* StorageScope.PROFILE */);
     }
 }
-let SuggestWidget = class SuggestWidget {
+let SuggestWidget = SuggestWidget_1 = class SuggestWidget {
     constructor(editor, _storageService, _contextKeyService, _themeService, instantiationService) {
         this.editor = editor;
         this._storageService = _storageService;
@@ -153,10 +155,10 @@ let SuggestWidget = class SuggestWidget {
         }));
         this._messageElement = dom.append(this.element.domNode, dom.$('.message'));
         this._listElement = dom.append(this.element.domNode, dom.$('.tree'));
-        const details = instantiationService.createInstance(SuggestDetailsWidget, this.editor);
+        const details = this._disposables.add(instantiationService.createInstance(SuggestDetailsWidget, this.editor));
         details.onDidClose(this.toggleDetails, this, this._disposables);
         this._details = new SuggestDetailsOverlay(details, this.editor);
-        const applyIconStyle = () => this.element.domNode.classList.toggle('no-icons', !this.editor.getOption(116 /* EditorOption.suggest */).showIcons);
+        const applyIconStyle = () => this.element.domNode.classList.toggle('no-icons', !this.editor.getOption(117 /* EditorOption.suggest */).showIcons);
         applyIconStyle();
         const renderer = instantiationService.createInstance(ItemRenderer, this.editor);
         this._disposables.add(renderer);
@@ -201,7 +203,7 @@ let SuggestWidget = class SuggestWidget {
             listInactiveFocusOutline: activeContrastBorder
         }));
         this._status = instantiationService.createInstance(SuggestWidgetStatus, this.element.domNode, suggestWidgetStatusbarMenu);
-        const applyStatusBarStyle = () => this.element.domNode.classList.toggle('with-status-bar', this.editor.getOption(116 /* EditorOption.suggest */).showStatusBar);
+        const applyStatusBarStyle = () => this.element.domNode.classList.toggle('with-status-bar', this.editor.getOption(117 /* EditorOption.suggest */).showStatusBar);
         applyStatusBarStyle();
         this._disposables.add(_themeService.onDidColorThemeChange(t => this._onThemeChange(t)));
         this._onThemeChange(_themeService.getColorTheme());
@@ -211,7 +213,7 @@ let SuggestWidget = class SuggestWidget {
         this._disposables.add(this._list.onDidChangeFocus(e => this._onListFocus(e)));
         this._disposables.add(this.editor.onDidChangeCursorSelection(() => this._onCursorSelectionChanged()));
         this._disposables.add(this.editor.onDidChangeConfiguration(e => {
-            if (e.hasChanged(116 /* EditorOption.suggest */)) {
+            if (e.hasChanged(117 /* EditorOption.suggest */)) {
                 applyStatusBarStyle();
                 applyIconStyle();
             }
@@ -313,10 +315,13 @@ let SuggestWidget = class SuggestWidget {
                     }
                 }, 250);
                 const sub = token.onCancellationRequested(() => loading.dispose());
-                const result = yield item.resolve(token);
-                loading.dispose();
-                sub.dispose();
-                return result;
+                try {
+                    return yield item.resolve(token);
+                }
+                finally {
+                    loading.dispose();
+                    sub.dispose();
+                }
             }));
             this._currentSuggestionDetails.then(() => {
                 if (index >= this._list.length || item !== this._list.element(index)) {
@@ -364,21 +369,23 @@ let SuggestWidget = class SuggestWidget {
                 break;
             case 1 /* State.Loading */:
                 this.element.domNode.classList.add('message');
-                this._messageElement.textContent = SuggestWidget.LOADING_MESSAGE;
+                this._messageElement.textContent = SuggestWidget_1.LOADING_MESSAGE;
                 dom.hide(this._listElement, this._status.element);
                 dom.show(this._messageElement);
                 this._details.hide();
                 this._show();
                 this._focusedItem = undefined;
+                status(SuggestWidget_1.LOADING_MESSAGE);
                 break;
             case 2 /* State.Empty */:
                 this.element.domNode.classList.add('message');
-                this._messageElement.textContent = SuggestWidget.NO_SUGGESTIONS_MESSAGE;
+                this._messageElement.textContent = SuggestWidget_1.NO_SUGGESTIONS_MESSAGE;
                 dom.hide(this._listElement, this._status.element);
                 dom.show(this._messageElement);
                 this._details.hide();
                 this._show();
                 this._focusedItem = undefined;
+                status(SuggestWidget_1.NO_SUGGESTIONS_MESSAGE);
                 break;
             case 3 /* State.Open */:
                 dom.hide(this._messageElement);
@@ -659,7 +666,7 @@ let SuggestWidget = class SuggestWidget {
             // happens when running tests
             return;
         }
-        const bodyBox = dom.getClientArea(document.body);
+        const bodyBox = dom.getClientArea(this.element.domNode.ownerDocument.body);
         const info = this.getLayoutInfo();
         if (!size) {
             size = info.defaultSize;
@@ -746,9 +753,9 @@ let SuggestWidget = class SuggestWidget {
         }
     }
     getLayoutInfo() {
-        const fontInfo = this.editor.getOption(49 /* EditorOption.fontInfo */);
-        const itemHeight = clamp(this.editor.getOption(118 /* EditorOption.suggestLineHeight */) || fontInfo.lineHeight, 8, 1000);
-        const statusBarHeight = !this.editor.getOption(116 /* EditorOption.suggest */).showStatusBar || this._state === 2 /* State.Empty */ || this._state === 1 /* State.Loading */ ? 0 : itemHeight;
+        const fontInfo = this.editor.getOption(50 /* EditorOption.fontInfo */);
+        const itemHeight = clamp(this.editor.getOption(119 /* EditorOption.suggestLineHeight */) || fontInfo.lineHeight, 8, 1000);
+        const statusBarHeight = !this.editor.getOption(117 /* EditorOption.suggest */).showStatusBar || this._state === 2 /* State.Empty */ || this._state === 1 /* State.Loading */ ? 0 : itemHeight;
         const borderWidth = this._details.widget.borderWidth;
         const borderHeight = 2 * borderWidth;
         return {
@@ -780,7 +787,7 @@ let SuggestWidget = class SuggestWidget {
 };
 SuggestWidget.LOADING_MESSAGE = nls.localize('suggestWidget.loading', "Loading...");
 SuggestWidget.NO_SUGGESTIONS_MESSAGE = nls.localize('suggestWidget.noSuggestions', "No suggestions.");
-SuggestWidget = __decorate([
+SuggestWidget = SuggestWidget_1 = __decorate([
     __param(1, IStorageService),
     __param(2, IContextKeyService),
     __param(3, IThemeService),

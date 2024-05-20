@@ -153,7 +153,7 @@ export class AcceptInlineCompletion extends EditorAction {
             kbOpts: {
                 primary: 2 /* KeyCode.Tab */,
                 weight: 200,
-                kbExpr: ContextKeyExpr.and(InlineCompletionContextKeys.inlineSuggestionVisible, EditorContextKeys.tabMovesFocus.toNegated(), InlineCompletionContextKeys.inlineSuggestionHasIndentationLessThanTabSize, SuggestContext.Visible.toNegated()),
+                kbExpr: ContextKeyExpr.and(InlineCompletionContextKeys.inlineSuggestionVisible, EditorContextKeys.tabMovesFocus.toNegated(), InlineCompletionContextKeys.inlineSuggestionHasIndentationLessThanTabSize, SuggestContext.Visible.toNegated(), EditorContextKeys.hoverFocused.toNegated()),
             }
         });
     }

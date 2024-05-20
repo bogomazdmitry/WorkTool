@@ -113,23 +113,23 @@ export class FindWidget extends Widget {
         this._tryUpdateWidgetWidth();
         this._findInput.inputBox.layout();
         this._register(this._codeEditor.onDidChangeConfiguration((e) => {
-            if (e.hasChanged(89 /* EditorOption.readOnly */)) {
-                if (this._codeEditor.getOption(89 /* EditorOption.readOnly */)) {
+            if (e.hasChanged(90 /* EditorOption.readOnly */)) {
+                if (this._codeEditor.getOption(90 /* EditorOption.readOnly */)) {
                     // Hide replace part if editor becomes read only
                     this._state.change({ isReplaceRevealed: false }, false);
                 }
                 this._updateButtons();
             }
-            if (e.hasChanged(142 /* EditorOption.layoutInfo */)) {
+            if (e.hasChanged(143 /* EditorOption.layoutInfo */)) {
                 this._tryUpdateWidgetWidth();
             }
             if (e.hasChanged(2 /* EditorOption.accessibilitySupport */)) {
                 this.updateAccessibilitySupport();
             }
-            if (e.hasChanged(40 /* EditorOption.find */)) {
-                const supportLoop = this._codeEditor.getOption(40 /* EditorOption.find */).loop;
+            if (e.hasChanged(41 /* EditorOption.find */)) {
+                const supportLoop = this._codeEditor.getOption(41 /* EditorOption.find */).loop;
                 this._state.change({ loop: supportLoop }, false);
-                const addExtraSpaceOnTop = this._codeEditor.getOption(40 /* EditorOption.find */).addExtraSpaceOnTop;
+                const addExtraSpaceOnTop = this._codeEditor.getOption(41 /* EditorOption.find */).addExtraSpaceOnTop;
                 if (addExtraSpaceOnTop && !this._viewZone) {
                     this._viewZone = new FindWidgetViewZone(0);
                     this._showViewZone();
@@ -173,7 +173,7 @@ export class FindWidget extends Widget {
             this._replaceInputFocused.set(false);
         }));
         this._codeEditor.addOverlayWidget(this);
-        if (this._codeEditor.getOption(40 /* EditorOption.find */).addExtraSpaceOnTop) {
+        if (this._codeEditor.getOption(41 /* EditorOption.find */).addExtraSpaceOnTop) {
             this._viewZone = new FindWidgetViewZone(0); // Put it before the first line then users can scroll beyond the first line.
         }
         this._register(this._codeEditor.onDidChangeModel(() => {
@@ -233,7 +233,7 @@ export class FindWidget extends Widget {
         }
         if (e.isReplaceRevealed) {
             if (this._state.isReplaceRevealed) {
-                if (!this._codeEditor.getOption(89 /* EditorOption.readOnly */) && !this._isReplaceVisible) {
+                if (!this._codeEditor.getOption(90 /* EditorOption.readOnly */) && !this._isReplaceVisible) {
                     this._isReplaceVisible = true;
                     this._replaceInput.width = dom.getTotalWidth(this._findInput.domNode);
                     this._updateButtons();
@@ -377,7 +377,7 @@ export class FindWidget extends Widget {
         this._replaceAllBtn.setEnabled(this._isVisible && this._isReplaceVisible && findInputIsNonEmpty);
         this._domNode.classList.toggle('replaceToggled', this._isReplaceVisible);
         this._toggleReplaceBtn.setExpanded(this._isReplaceVisible);
-        const canReplace = !this._codeEditor.getOption(89 /* EditorOption.readOnly */);
+        const canReplace = !this._codeEditor.getOption(90 /* EditorOption.readOnly */);
         this._toggleReplaceBtn.setEnabled(this._isVisible && canReplace);
     }
     _reveal() {
@@ -388,7 +388,7 @@ export class FindWidget extends Widget {
         if (!this._isVisible) {
             this._isVisible = true;
             const selection = this._codeEditor.getSelection();
-            switch (this._codeEditor.getOption(40 /* EditorOption.find */).autoFindInSelection) {
+            switch (this._codeEditor.getOption(41 /* EditorOption.find */).autoFindInSelection) {
                 case 'always':
                     this._toggleSelectionFind.checked = true;
                     break;
@@ -415,7 +415,7 @@ export class FindWidget extends Widget {
             }, 200));
             this._codeEditor.layoutOverlayWidget(this);
             let adjustEditorScrollTop = true;
-            if (this._codeEditor.getOption(40 /* EditorOption.find */).seedSearchStringFromSelection && selection) {
+            if (this._codeEditor.getOption(41 /* EditorOption.find */).seedSearchStringFromSelection && selection) {
                 const domNode = this._codeEditor.getDomNode();
                 if (domNode) {
                     const editorCoords = dom.getDomNodePagePosition(domNode);
@@ -460,7 +460,7 @@ export class FindWidget extends Widget {
         }
     }
     _layoutViewZone(targetScrollTop) {
-        const addExtraSpaceOnTop = this._codeEditor.getOption(40 /* EditorOption.find */).addExtraSpaceOnTop;
+        const addExtraSpaceOnTop = this._codeEditor.getOption(41 /* EditorOption.find */).addExtraSpaceOnTop;
         if (!addExtraSpaceOnTop) {
             this._removeViewZone();
             return;
@@ -483,7 +483,7 @@ export class FindWidget extends Widget {
         if (!this._isVisible) {
             return;
         }
-        const addExtraSpaceOnTop = this._codeEditor.getOption(40 /* EditorOption.find */).addExtraSpaceOnTop;
+        const addExtraSpaceOnTop = this._codeEditor.getOption(41 /* EditorOption.find */).addExtraSpaceOnTop;
         if (!addExtraSpaceOnTop) {
             return;
         }
@@ -509,7 +509,7 @@ export class FindWidget extends Widget {
             else {
                 let scrollAdjustment = this._getHeight();
                 // if the editor has top padding, factor that into the zone height
-                scrollAdjustment -= this._codeEditor.getOption(82 /* EditorOption.padding */).top;
+                scrollAdjustment -= this._codeEditor.getOption(83 /* EditorOption.padding */).top;
                 if (scrollAdjustment <= 0) {
                     return;
                 }

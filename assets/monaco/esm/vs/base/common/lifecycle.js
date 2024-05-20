@@ -1,8 +1,4 @@
-/*---------------------------------------------------------------------------------------------
- *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the MIT License. See License.txt in the project root for license information.
- *--------------------------------------------------------------------------------------------*/
-import { once } from './functional.js';
+import { createSingleCallFunction } from './functional.js';
 import { Iterable } from './iterator.js';
 // #region Disposable Tracking
 /**
@@ -51,11 +47,11 @@ if (TRACK_DISPOSABLES) {
         markAsSingleton(disposable) { }
     });
 }
-function trackDisposable(x) {
+export function trackDisposable(x) {
     disposableTracker === null || disposableTracker === void 0 ? void 0 : disposableTracker.trackDisposable(x);
     return x;
 }
-function markAsDisposed(disposable) {
+export function markAsDisposed(disposable) {
     disposableTracker === null || disposableTracker === void 0 ? void 0 : disposableTracker.markAsDisposed(disposable);
 }
 function setParentOfDisposable(child, parent) {
@@ -123,7 +119,7 @@ export function combinedDisposable(...disposables) {
  */
 export function toDisposable(fn) {
     const self = trackDisposable({
-        dispose: once(() => {
+        dispose: createSingleCallFunction(() => {
             markAsDisposed(self);
             fn();
         })
@@ -196,6 +192,18 @@ export class DisposableStore {
             this._toDispose.add(o);
         }
         return o;
+    }
+    /**
+     * Deletes the value from the store, but does not dispose it.
+     */
+    deleteAndLeak(o) {
+        if (!o) {
+            return;
+        }
+        if (this._toDispose.has(o)) {
+            this._toDispose.delete(o);
+            setParentOfDisposable(o, null);
+        }
     }
 }
 DisposableStore.DISABLE_DISPOSED_WARNING = false;

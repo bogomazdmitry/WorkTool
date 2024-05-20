@@ -1,5 +1,5 @@
 import { onUnexpectedError } from './errors.js';
-import { once as onceFn } from './functional.js';
+import { createSingleCallFunction } from './functional.js';
 import { combinedDisposable, Disposable, DisposableStore, toDisposable } from './lifecycle.js';
 import { LinkedList } from './linkedList.js';
 import { StopWatch } from './stopwatch.js';
@@ -122,7 +122,10 @@ export var Event;
     }
     Event.signal = signal;
     function any(...events) {
-        return (listener, thisArgs = null, disposables) => combinedDisposable(...events.map(event => event(e => listener.call(thisArgs, e), null, disposables)));
+        return (listener, thisArgs = null, disposables) => {
+            const disposable = combinedDisposable(...events.map(event => event(e => listener.call(thisArgs, e))));
+            return addAndReturnDisposable(disposable, disposables);
+        };
     }
     Event.any = any;
     /**
@@ -154,6 +157,19 @@ export var Event;
         const emitter = new Emitter(options);
         disposable === null || disposable === void 0 ? void 0 : disposable.add(emitter);
         return emitter.event;
+    }
+    /**
+     * Adds the IDisposable to the store if it's set, and returns it. Useful to
+     * Event function implementation.
+     */
+    function addAndReturnDisposable(d, store) {
+        if (store instanceof Array) {
+            store.push(d);
+        }
+        else if (store) {
+            store.add(d);
+        }
+        return d;
     }
     function debounce(event, merge, delay = 100, leading = false, flushOnListenerRemove = false, leakWarningThreshold, disposable) {
         let subscription;
@@ -300,7 +316,7 @@ export var Event;
      * this.onInstallExtension = Event.buffer(service.onInstallExtension, true);
      * ```
      */
-    function buffer(event, flushAfterTimeout = false, _buffer = []) {
+    function buffer(event, flushAfterTimeout = false, _buffer = [], disposable) {
         let buffer = _buffer.slice();
         let listener = event(e => {
             if (buffer) {
@@ -310,6 +326,9 @@ export var Event;
                 emitter.fire(e);
             }
         });
+        if (disposable) {
+            disposable.add(listener);
+        }
         const flush = () => {
             buffer === null || buffer === void 0 ? void 0 : buffer.forEach(e => emitter.fire(e));
             buffer = null;
@@ -318,6 +337,9 @@ export var Event;
             onWillAddFirstListener() {
                 if (!listener) {
                     listener = event(e => emitter.fire(e));
+                    if (disposable) {
+                        disposable.add(listener);
+                    }
                 }
             },
             onDidAddFirstListener() {
@@ -337,50 +359,12 @@ export var Event;
                 listener = null;
             }
         });
+        if (disposable) {
+            disposable.add(emitter);
+        }
         return emitter.event;
     }
     Event.buffer = buffer;
-    class ChainableEvent {
-        constructor(event) {
-            this.event = event;
-            this.disposables = new DisposableStore();
-        }
-        /** @see {@link Event.map} */
-        map(fn) {
-            return new ChainableEvent(map(this.event, fn, this.disposables));
-        }
-        /** @see {@link Event.forEach} */
-        forEach(fn) {
-            return new ChainableEvent(forEach(this.event, fn, this.disposables));
-        }
-        filter(fn) {
-            return new ChainableEvent(filter(this.event, fn, this.disposables));
-        }
-        /** @see {@link Event.reduce} */
-        reduce(merge, initial) {
-            return new ChainableEvent(reduce(this.event, merge, initial, this.disposables));
-        }
-        /** @see {@link Event.reduce} */
-        latch() {
-            return new ChainableEvent(latch(this.event, undefined, this.disposables));
-        }
-        debounce(merge, delay = 100, leading = false, flushOnListenerRemove = false, leakWarningThreshold) {
-            return new ChainableEvent(debounce(this.event, merge, delay, leading, flushOnListenerRemove, leakWarningThreshold, this.disposables));
-        }
-        /**
-         * Attach a listener to the event.
-         */
-        on(listener, thisArgs, disposables) {
-            return this.event(listener, thisArgs, disposables);
-        }
-        /** @see {@link Event.once} */
-        once(listener, thisArgs, disposables) {
-            return once(this.event)(listener, thisArgs, disposables);
-        }
-        dispose() {
-            this.disposables.dispose();
-        }
-    }
     /**
      * Wraps the event in an {@link IChainableEvent}, allowing a more functional programming style.
      *
@@ -393,16 +377,74 @@ export var Event;
      * ).event;
      *
      * // Using chain
-     * const onEnterPressChain = Event.chain(onKeyPress.event)
+     * const onEnterPressChain = Event.chain(onKeyPress.event, $ => $
      *   .map(e => new StandardKeyboardEvent(e))
      *   .filter(e => e.keyCode === KeyCode.Enter)
-     *   .event;
+     * );
      * ```
      */
-    function chain(event) {
-        return new ChainableEvent(event);
+    function chain(event, sythensize) {
+        const fn = (listener, thisArgs, disposables) => {
+            const cs = sythensize(new ChainableSynthesis());
+            return event(function (value) {
+                const result = cs.evaluate(value);
+                if (result !== HaltChainable) {
+                    listener.call(thisArgs, result);
+                }
+            }, undefined, disposables);
+        };
+        return fn;
     }
     Event.chain = chain;
+    const HaltChainable = Symbol('HaltChainable');
+    class ChainableSynthesis {
+        constructor() {
+            this.steps = [];
+        }
+        map(fn) {
+            this.steps.push(fn);
+            return this;
+        }
+        forEach(fn) {
+            this.steps.push(v => {
+                fn(v);
+                return v;
+            });
+            return this;
+        }
+        filter(fn) {
+            this.steps.push(v => fn(v) ? v : HaltChainable);
+            return this;
+        }
+        reduce(merge, initial) {
+            let last = initial;
+            this.steps.push(v => {
+                last = merge(last, v);
+                return last;
+            });
+            return this;
+        }
+        latch(equals = (a, b) => a === b) {
+            let firstCall = true;
+            let cache;
+            this.steps.push(value => {
+                const shouldEmit = firstCall || !equals(value, cache);
+                firstCall = false;
+                cache = value;
+                return shouldEmit ? value : HaltChainable;
+            });
+            return this;
+        }
+        evaluate(value) {
+            for (const step of this.steps) {
+                value = step(value);
+                if (value === HaltChainable) {
+                    break;
+                }
+            }
+            return value;
+        }
+    }
     /**
      * Creates an {@link Event} from a node event emitter.
      */
@@ -432,6 +474,22 @@ export var Event;
         return new Promise(resolve => once(event)(resolve));
     }
     Event.toPromise = toPromise;
+    /**
+     * Creates an event out of a promise that fires once when the promise is
+     * resolved with the result of the promise or `undefined`.
+     */
+    function fromPromise(promise) {
+        const result = new Emitter();
+        promise.then(res => {
+            result.fire(res);
+        }, () => {
+            result.fire(undefined);
+        }).finally(() => {
+            result.dispose();
+        });
+        return result.event;
+    }
+    Event.fromPromise = fromPromise;
     /**
      * Adds a listener to an event and calls the listener immediately with undefined as the event object.
      *
@@ -975,6 +1033,29 @@ export class MicrotaskEmitter extends Emitter {
         }
     }
 }
+/**
+ * An event emitter that multiplexes many events into a single event.
+ *
+ * @example Listen to the `onData` event of all `Thing`s, dynamically adding and removing `Thing`s
+ * to the multiplexer as needed.
+ *
+ * ```typescript
+ * const anythingDataMultiplexer = new EventMultiplexer<{ data: string }>();
+ *
+ * const thingListeners = DisposableMap<Thing, IDisposable>();
+ *
+ * thingService.onDidAddThing(thing => {
+ *   thingListeners.set(thing, anythingDataMultiplexer.add(thing.onData);
+ * });
+ * thingService.onDidRemoveThing(thing => {
+ *   thingListeners.deleteAndDispose(thing);
+ * });
+ *
+ * anythingDataMultiplexer.event(e => {
+ *   console.log('Something fired data ' + e.data)
+ * });
+ * ```
+ */
 export class EventMultiplexer {
     constructor() {
         this.hasListeners = false;
@@ -1000,7 +1081,7 @@ export class EventMultiplexer {
             const idx = this.events.indexOf(e);
             this.events.splice(idx, 1);
         };
-        return toDisposable(onceFn(dispose));
+        return toDisposable(createSingleCallFunction(dispose));
     }
     onFirstListenerAdd() {
         this.hasListeners = true;

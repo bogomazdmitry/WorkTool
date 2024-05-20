@@ -20,6 +20,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var LinkDetector_1;
 import { createCancelablePromise, RunOnceScheduler } from '../../../../base/common/async.js';
 import { CancellationToken } from '../../../../base/common/cancellation.js';
 import { onUnexpectedError } from '../../../../base/common/errors.js';
@@ -40,9 +41,9 @@ import { getLinks } from './getLinks.js';
 import * as nls from '../../../../nls.js';
 import { INotificationService } from '../../../../platform/notification/common/notification.js';
 import { IOpenerService } from '../../../../platform/opener/common/opener.js';
-let LinkDetector = class LinkDetector extends Disposable {
+let LinkDetector = LinkDetector_1 = class LinkDetector extends Disposable {
     static get(editor) {
-        return editor.getContribution(LinkDetector.ID);
+        return editor.getContribution(LinkDetector_1.ID);
     }
     constructor(editor, openerService, notificationService, languageFeaturesService, languageFeatureDebounceService) {
         super();
@@ -68,7 +69,7 @@ let LinkDetector = class LinkDetector extends Disposable {
             this.cleanUpActiveLinkDecoration();
         }));
         this._register(editor.onDidChangeConfiguration((e) => {
-            if (!e.hasChanged(69 /* EditorOption.links */)) {
+            if (!e.hasChanged(70 /* EditorOption.links */)) {
                 return;
             }
             // Remove any links (for the getting disabled case)
@@ -102,10 +103,13 @@ let LinkDetector = class LinkDetector extends Disposable {
     }
     computeLinksNow() {
         return __awaiter(this, void 0, void 0, function* () {
-            if (!this.editor.hasModel() || !this.editor.getOption(69 /* EditorOption.links */)) {
+            if (!this.editor.hasModel() || !this.editor.getOption(70 /* EditorOption.links */)) {
                 return;
             }
             const model = this.editor.getModel();
+            if (model.isTooLargeForSyncing()) {
+                return;
+            }
             if (!this.providers.has(model)) {
                 return;
             }
@@ -132,7 +136,7 @@ let LinkDetector = class LinkDetector extends Disposable {
         });
     }
     updateDecorations(links) {
-        const useMetaKey = (this.editor.getOption(76 /* EditorOption.multiCursorModifier */) === 'altKey');
+        const useMetaKey = (this.editor.getOption(77 /* EditorOption.multiCursorModifier */) === 'altKey');
         const oldDecorations = [];
         const keys = Object.keys(this.currentOccurrences);
         for (const decorationId of keys) {
@@ -157,7 +161,7 @@ let LinkDetector = class LinkDetector extends Disposable {
         });
     }
     _onEditorMouseMove(mouseEvent, withKey) {
-        const useMetaKey = (this.editor.getOption(76 /* EditorOption.multiCursorModifier */) === 'altKey');
+        const useMetaKey = (this.editor.getOption(77 /* EditorOption.multiCursorModifier */) === 'altKey');
         if (this.isEnabled(mouseEvent, withKey)) {
             this.cleanUpActiveLinkDecoration(); // always remove previous link decoration as their can only be one
             const occurrence = this.getLinkOccurrence(mouseEvent.target.position);
@@ -173,7 +177,7 @@ let LinkDetector = class LinkDetector extends Disposable {
         }
     }
     cleanUpActiveLinkDecoration() {
-        const useMetaKey = (this.editor.getOption(76 /* EditorOption.multiCursorModifier */) === 'altKey');
+        const useMetaKey = (this.editor.getOption(77 /* EditorOption.multiCursorModifier */) === 'altKey');
         if (this.activeLinkDecorationId) {
             const occurrence = this.currentOccurrences[this.activeLinkDecorationId];
             if (occurrence) {
@@ -275,7 +279,7 @@ let LinkDetector = class LinkDetector extends Disposable {
     }
 };
 LinkDetector.ID = 'editor.linkDetector';
-LinkDetector = __decorate([
+LinkDetector = LinkDetector_1 = __decorate([
     __param(1, IOpenerService),
     __param(2, INotificationService),
     __param(3, ILanguageFeaturesService),

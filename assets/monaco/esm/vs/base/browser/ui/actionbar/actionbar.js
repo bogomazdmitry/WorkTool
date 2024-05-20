@@ -132,14 +132,17 @@ export class ActionBar extends Disposable {
         this._register(this.focusTracker.onDidBlur(() => {
             if (DOM.getActiveElement() === this.domNode || !DOM.isAncestor(DOM.getActiveElement(), this.domNode)) {
                 this._onDidBlur.fire();
+                this.previouslyFocusedItem = this.focusedItem;
                 this.focusedItem = undefined;
-                this.previouslyFocusedItem = undefined;
                 this.triggerKeyDown = false;
             }
         }));
         this._register(this.focusTracker.onDidFocus(() => this.updateFocusedItem()));
         this.actionsList = document.createElement('ul');
         this.actionsList.className = 'actions-container';
+        if (this.options.highlightToggledItems) {
+            this.actionsList.classList.add('highlight-toggled');
+        }
         this.actionsList.setAttribute('role', this.options.ariaRole || 'toolbar');
         if (this.options.ariaLabel) {
             this.actionsList.setAttribute('aria-label', this.options.ariaLabel);

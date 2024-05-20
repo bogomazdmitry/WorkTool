@@ -63,11 +63,6 @@ let AbstractCodeEditorService = class AbstractCodeEditorService extends Disposab
         this._diffEditors[editor.getId()] = editor;
         this._onDiffEditorAdd.fire(editor);
     }
-    removeDiffEditor(editor) {
-        if (delete this._diffEditors[editor.getId()]) {
-            this._onDiffEditorRemove.fire(editor);
-        }
-    }
     listDiffEditors() {
         return Object.keys(this._diffEditors).map(id => this._diffEditors[id]);
     }

@@ -3,7 +3,6 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 import { VSBuffer } from './buffer.js';
-import { regExpFlags } from './strings.js';
 import { URI } from './uri.js';
 export function stringify(obj) {
     return JSON.stringify(obj, replacer);
@@ -19,7 +18,7 @@ function replacer(key, value) {
         return {
             $mid: 2 /* MarshalledId.Regexp */,
             source: value.source,
-            flags: regExpFlags(value),
+            flags: value.flags,
         };
     }
     return value;
@@ -32,7 +31,7 @@ export function revive(obj, depth = 0) {
         switch (obj.$mid) {
             case 1 /* MarshalledId.Uri */: return URI.revive(obj);
             case 2 /* MarshalledId.Regexp */: return new RegExp(obj.source, obj.flags);
-            case 16 /* MarshalledId.Date */: return new Date(obj.source);
+            case 17 /* MarshalledId.Date */: return new Date(obj.source);
         }
         if (obj instanceof VSBuffer
             || obj instanceof Uint8Array) {

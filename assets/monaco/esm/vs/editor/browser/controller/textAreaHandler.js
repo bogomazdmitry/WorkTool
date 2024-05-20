@@ -99,15 +99,15 @@ let TextAreaHandler = class TextAreaHandler extends ViewPart {
         this._scrollLeft = 0;
         this._scrollTop = 0;
         const options = this._context.configuration.options;
-        const layoutInfo = options.get(142 /* EditorOption.layoutInfo */);
+        const layoutInfo = options.get(143 /* EditorOption.layoutInfo */);
         this._setAccessibilityOptions(options);
         this._contentLeft = layoutInfo.contentLeft;
         this._contentWidth = layoutInfo.contentWidth;
         this._contentHeight = layoutInfo.height;
-        this._fontInfo = options.get(49 /* EditorOption.fontInfo */);
-        this._lineHeight = options.get(65 /* EditorOption.lineHeight */);
-        this._emptySelectionClipboard = options.get(36 /* EditorOption.emptySelectionClipboard */);
-        this._copyWithSyntaxHighlighting = options.get(24 /* EditorOption.copyWithSyntaxHighlighting */);
+        this._fontInfo = options.get(50 /* EditorOption.fontInfo */);
+        this._lineHeight = options.get(66 /* EditorOption.lineHeight */);
+        this._emptySelectionClipboard = options.get(37 /* EditorOption.emptySelectionClipboard */);
+        this._copyWithSyntaxHighlighting = options.get(25 /* EditorOption.copyWithSyntaxHighlighting */);
         this._visibleTextArea = null;
         this._selections = [new Selection(1, 1, 1, 1)];
         this._modelSelections = [new Selection(1, 1, 1, 1)];
@@ -125,12 +125,11 @@ let TextAreaHandler = class TextAreaHandler extends ViewPart {
         this.textArea.setAttribute('spellcheck', 'false');
         this.textArea.setAttribute('aria-label', this._getAriaLabel(options));
         this.textArea.setAttribute('aria-required', options.get(5 /* EditorOption.ariaRequired */) ? 'true' : 'false');
-        this.textArea.setAttribute('tabindex', String(options.get(122 /* EditorOption.tabIndex */)));
+        this.textArea.setAttribute('tabindex', String(options.get(123 /* EditorOption.tabIndex */)));
         this.textArea.setAttribute('role', 'textbox');
         this.textArea.setAttribute('aria-roledescription', nls.localize('editor', "editor"));
         this.textArea.setAttribute('aria-multiline', 'true');
-        this.textArea.setAttribute('aria-haspopup', 'false');
-        this.textArea.setAttribute('aria-autocomplete', 'both');
+        this.textArea.setAttribute('aria-autocomplete', options.get(90 /* EditorOption.readOnly */) ? 'none' : 'both');
         this._ensureReadOnlyAttribute();
         this.textAreaCover = createFastDomNode(document.createElement('div'));
         this.textAreaCover.setPosition('absolute');
@@ -309,7 +308,7 @@ let TextAreaHandler = class TextAreaHandler extends ViewPart {
                 const distanceToModelLineStart = startModelPosition.column - 1 - visibleBeforeCharCount;
                 const hiddenLineTextBefore = lineTextBeforeSelection.substring(0, lineTextBeforeSelection.length - visibleBeforeCharCount);
                 const { tabSize } = this._context.viewModel.model.getOptions();
-                const widthOfHiddenTextBefore = measureText(hiddenLineTextBefore, this._fontInfo, tabSize);
+                const widthOfHiddenTextBefore = measureText(this.textArea.domNode.ownerDocument, hiddenLineTextBefore, this._fontInfo, tabSize);
                 return { distanceToModelLineStart, widthOfHiddenTextBefore };
             })();
             const { distanceToModelLineEnd } = (() => {
@@ -410,7 +409,7 @@ let TextAreaHandler = class TextAreaHandler extends ViewPart {
     }
     _getWordBeforePosition(position) {
         const lineContent = this._context.viewModel.getLineContent(position.lineNumber);
-        const wordSeparators = getMapForWordSeparators(this._context.configuration.options.get(128 /* EditorOption.wordSeparators */));
+        const wordSeparators = getMapForWordSeparators(this._context.configuration.options.get(129 /* EditorOption.wordSeparators */));
         let column = position.column;
         let distance = 0;
         while (column > 1) {
@@ -472,10 +471,10 @@ let TextAreaHandler = class TextAreaHandler extends ViewPart {
         // we will size the textarea to match the width used for wrapping points computation (see `domLineBreaksComputer.ts`).
         // This is because screen readers will read the text in the textarea and we'd like that the
         // wrapping points in the textarea match the wrapping points in the editor.
-        const layoutInfo = options.get(142 /* EditorOption.layoutInfo */);
+        const layoutInfo = options.get(143 /* EditorOption.layoutInfo */);
         const wrappingColumn = layoutInfo.wrappingColumn;
         if (wrappingColumn !== -1 && this._accessibilitySupport !== 1 /* AccessibilitySupport.Disabled */) {
-            const fontInfo = options.get(49 /* EditorOption.fontInfo */);
+            const fontInfo = options.get(50 /* EditorOption.fontInfo */);
             this._textAreaWrapping = true;
             this._textAreaWidth = Math.round(wrappingColumn * fontInfo.typicalHalfwidthCharacterWidth);
         }
@@ -487,22 +486,22 @@ let TextAreaHandler = class TextAreaHandler extends ViewPart {
     // --- begin event handlers
     onConfigurationChanged(e) {
         const options = this._context.configuration.options;
-        const layoutInfo = options.get(142 /* EditorOption.layoutInfo */);
+        const layoutInfo = options.get(143 /* EditorOption.layoutInfo */);
         this._setAccessibilityOptions(options);
         this._contentLeft = layoutInfo.contentLeft;
         this._contentWidth = layoutInfo.contentWidth;
         this._contentHeight = layoutInfo.height;
-        this._fontInfo = options.get(49 /* EditorOption.fontInfo */);
-        this._lineHeight = options.get(65 /* EditorOption.lineHeight */);
-        this._emptySelectionClipboard = options.get(36 /* EditorOption.emptySelectionClipboard */);
-        this._copyWithSyntaxHighlighting = options.get(24 /* EditorOption.copyWithSyntaxHighlighting */);
+        this._fontInfo = options.get(50 /* EditorOption.fontInfo */);
+        this._lineHeight = options.get(66 /* EditorOption.lineHeight */);
+        this._emptySelectionClipboard = options.get(37 /* EditorOption.emptySelectionClipboard */);
+        this._copyWithSyntaxHighlighting = options.get(25 /* EditorOption.copyWithSyntaxHighlighting */);
         this.textArea.setAttribute('wrap', this._textAreaWrapping && !this._visibleTextArea ? 'on' : 'off');
         const { tabSize } = this._context.viewModel.model.getOptions();
         this.textArea.domNode.style.tabSize = `${tabSize * this._fontInfo.spaceWidth}px`;
         this.textArea.setAttribute('aria-label', this._getAriaLabel(options));
         this.textArea.setAttribute('aria-required', options.get(5 /* EditorOption.ariaRequired */) ? 'true' : 'false');
-        this.textArea.setAttribute('tabindex', String(options.get(122 /* EditorOption.tabIndex */)));
-        if (e.hasChanged(33 /* EditorOption.domReadOnly */) || e.hasChanged(89 /* EditorOption.readOnly */)) {
+        this.textArea.setAttribute('tabindex', String(options.get(123 /* EditorOption.tabIndex */)));
+        if (e.hasChanged(34 /* EditorOption.domReadOnly */) || e.hasChanged(90 /* EditorOption.readOnly */)) {
             this._ensureReadOnlyAttribute();
         }
         if (e.hasChanged(2 /* EditorOption.accessibilitySupport */)) {
@@ -573,7 +572,7 @@ let TextAreaHandler = class TextAreaHandler extends ViewPart {
         const options = this._context.configuration.options;
         // When someone requests to disable IME, we set the "readonly" attribute on the <textarea>.
         // This will prevent composition.
-        const useReadOnly = !IME.enabled || (options.get(33 /* EditorOption.domReadOnly */) && options.get(89 /* EditorOption.readOnly */));
+        const useReadOnly = !IME.enabled || (options.get(34 /* EditorOption.domReadOnly */) && options.get(90 /* EditorOption.readOnly */));
         if (useReadOnly) {
             this.textArea.setAttribute('readonly', 'true');
         }
@@ -740,11 +739,11 @@ let TextAreaHandler = class TextAreaHandler extends ViewPart {
         tac.setWidth(renderData.useCover ? renderData.width : 0);
         tac.setHeight(renderData.useCover ? renderData.height : 0);
         const options = this._context.configuration.options;
-        if (options.get(56 /* EditorOption.glyphMargin */)) {
+        if (options.get(57 /* EditorOption.glyphMargin */)) {
             tac.setClassName('monaco-editor-background textAreaCover ' + Margin.OUTER_CLASS_NAME);
         }
         else {
-            if (options.get(66 /* EditorOption.lineNumbers */).renderType !== 0 /* RenderLineNumbersType.Off */) {
+            if (options.get(67 /* EditorOption.lineNumbers */).renderType !== 0 /* RenderLineNumbersType.Off */) {
                 tac.setClassName('monaco-editor-background textAreaCover ' + LineNumbersOverlay.CLASS_NAME);
             }
             else {
@@ -757,7 +756,7 @@ TextAreaHandler = __decorate([
     __param(3, IKeybindingService)
 ], TextAreaHandler);
 export { TextAreaHandler };
-function measureText(text, fontInfo, tabSize) {
+function measureText(document, text, fontInfo, tabSize) {
     if (text.length === 0) {
         return 0;
     }

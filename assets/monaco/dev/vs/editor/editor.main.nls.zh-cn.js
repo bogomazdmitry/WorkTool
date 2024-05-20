@@ -1,6 +1,6 @@
 /*!-----------------------------------------------------------
  * Copyright (c) Microsoft Corporation. All rights reserved.
- * Version: 0.41.0(38e1e3d097f84e336c311d071a9ffb5191d4ffd1)
+ * Version: 0.44.0(3e047efd345ff102c8c61b5398fb30845aaac166)
  * Released under the MIT license
  * https://github.com/microsoft/vscode/blob/main/LICENSE.txt
  *-----------------------------------------------------------*/
@@ -20,6 +20,10 @@ define("vs/editor/editor.main.nls.zh-cn", {
 	"vs/base/browser/ui/findinput/replaceInput": [
 		"输入",
 		"保留大小写",
+	],
+	"vs/base/browser/ui/hover/hoverWidget": [
+		"在辅助视图中用 {0} 检查此项。",
+		"通过命令“打开辅助视图”在辅助视图中检查此项，该命令当前无法通过键绑定触发。",
 	],
 	"vs/base/browser/ui/iconLabel/iconLabelHover": [
 		"正在加载…",
@@ -109,20 +113,7 @@ define("vs/editor/editor.main.nls.zh-cn", {
 		"已将光标数限制为 {0}。请考虑使用 [查找和替换](https://code.visualstudio.com/docs/editor/codebasics#_find-and-replace)进行较大的更改或增加编辑器多光标限制设置。",
 		"增加多光标限制",
 	],
-	"vs/editor/browser/widget/diffEditor.contribution": [
-		"可访问的差异查看器",
-		"转至下一个差异",
-		"打开可访问差异查看器",
-		"转至上一个差异",
-	],
-	"vs/editor/browser/widget/diffEditorWidget": [
-		"差异编辑器中插入项的线条修饰。",
-		"差异编辑器中删除项的线条修饰。",
-		" 使用 Shift + F7 导航更改",
-		"文件过大，无法比较。",
-		"单击以还原更改",
-	],
-	"vs/editor/browser/widget/diffEditorWidget2/accessibleDiffViewer": [
+	"vs/editor/browser/widget/diffEditor/accessibleDiffViewer": [
 		"可访问差异查看器中“插入”的图标。",
 		"可访问差异查看器中“删除”的图标。",
 		"可访问差异查看器中“关闭”的图标。",
@@ -138,45 +129,43 @@ define("vs/editor/editor.main.nls.zh-cn", {
 		"+ {0}修改的行{1}",
 		"- {0}原始行{1}",
 	],
-	"vs/editor/browser/widget/diffEditorWidget2/colors": [
+	"vs/editor/browser/widget/diffEditor/colors": [
 		"在差异编辑器中移动的文本的边框颜色。",
+		"在差异编辑器中移动的文本的活动边框颜色。",
 	],
-	"vs/editor/browser/widget/diffEditorWidget2/decorations": [
+	"vs/editor/browser/widget/diffEditor/decorations": [
 		"差异编辑器中插入项的线条修饰。",
 		"差异编辑器中删除项的线条修饰。",
 		"单击以还原更改",
 	],
-	"vs/editor/browser/widget/diffEditorWidget2/diffEditorEditors": [
+	"vs/editor/browser/widget/diffEditor/diffEditor.contribution": [
+		"切换折叠未更改的区域",
+		"切换显示移动的代码块",
+		"在空间受限时切换使用内联视图",
+		"空间受限时使用内联视图",
+		"显示移动的代码块",
+		"差异编辑器",
+		"切换侧面",
+		"退出比较移动",
+		"折叠所有未更改的区域",
+		"显示所有未更改的区域",
+		"可访问的差异查看器",
+		"转至下一个差异",
+		"打开可访问差异查看器",
+		"转至上一个差异",
+	],
+	"vs/editor/browser/widget/diffEditor/diffEditorEditors": [
 		" 使用 {0} 打开辅助功能帮助。",
 	],
-	"vs/editor/browser/widget/diffEditorWidget2/inlineDiffDeletedCodeMargin": [
-		"复制已删除的行",
-		"复制已删除的行",
-		"复制更改的行",
-		"复制更改的行",
-		"复制已删除的行({0})",
-		"复制更改的行({0})",
-		"还原此更改",
-	],
-	"vs/editor/browser/widget/diffEditorWidget2/unchangedRanges": [
+	"vs/editor/browser/widget/diffEditor/hideUnchangedRegionsFeature": [
 		"折叠未更改的区域",
+		"单击或拖动可在上面显示更多内容",
+		"全部显示",
+		"单击或拖动可在下方显示更多内容",
+		"{0} 个隐藏的行",
+		"双击展开",
 	],
-	"vs/editor/browser/widget/diffReview": [
-		"差异评审中的“插入”图标。",
-		"差异评审中的“删除”图标。",
-		"差异评审中的“关闭”图标。",
-		"关闭",
-		"未更改行",
-		"更改了 1 行",
-		"更改了 {0} 行",
-		"差异 {0}/ {1}: 原始行 {2}，{3}，修改后的行 {4}，{5}",
-		"空白",
-		"{0} 未更改的行 {1}",
-		"{0}原始行{1}修改的行{2}",
-		"+ {0}修改的行{1}",
-		"- {0}原始行{1}",
-	],
-	"vs/editor/browser/widget/inlineDiffMargin": [
+	"vs/editor/browser/widget/diffEditor/inlineDiffDeletedCodeMargin": [
 		"复制已删除的行",
 		"复制已删除的行",
 		"复制更改的行",
@@ -184,8 +173,12 @@ define("vs/editor/editor.main.nls.zh-cn", {
 		"复制已删除的行({0})",
 		"复制更改的行({0})",
 		"还原此更改",
-		"复制已删除的行({0})",
-		"复制更改的行({0})",
+	],
+	"vs/editor/browser/widget/diffEditor/movedBlocksLines": [
+		"代码已移动至行 {0}-{1}，有更改",
+		"代码已从行 {0}-{1} 移动，有更改",
+		"代码已移动到行 {0} {1}",
+		"代码已从行 {0}-{1} 移动",
 	],
 	"vs/editor/common/config/editorConfigurationSchema": [
 		"编辑器",
@@ -218,6 +211,8 @@ define("vs/editor/editor.main.nls.zh-cn", {
 		"超时(以毫秒为单位)，之后将取消差异计算。使用0表示没有超时。",
 		"要为其计算差异的最大文件大小(MB)。使用 0 表示无限制。",
 		"控制差异编辑器的显示方式是并排还是内联。",
+		"如果差异编辑器宽度小于此值，则使用内联视图。",
+		"如果启用并且编辑器宽度太小，则使用内联视图。",
 		"启用后，差异编辑器会在其字形边距中显示箭头以还原更改。",
 		"启用后，差异编辑器将忽略前导空格或尾随空格中的更改。",
 		"控制差异编辑器是否为添加/删除的更改显示 +/- 指示符号。",
@@ -227,9 +222,11 @@ define("vs/editor/editor.main.nls.zh-cn", {
 		"行将根据 {0} 设置进行换行。",
 		"使用旧差异算法。",
 		"使用高级差异算法。",
-		"控制差异编辑器是否显示未更改的区域。仅当设置了 {0} 时才有效。",
-		"控制差异编辑器是否应显示检测到的代码移动情况。仅当设置了 {0} 时才有效。",
-		"控制差异编辑器是使用新实现还是旧实现。",
+		"控制差异编辑器是否显示未更改的区域。",
+		"控制用于未更改区域的行数。",
+		"控制将多少行用作未更改区域的最小值。",
+		"控制在比较未改变的区域时使用多少行作为上下文。",
+		"控制差异编辑器是否应显示检测到的代码移动。",
 		"控制差异编辑器是否显示空修饰，以查看插入或删除字符的位置。",
 	],
 	"vs/editor/common/config/editorOptions": [
@@ -278,6 +275,7 @@ define("vs/editor/editor.main.nls.zh-cn", {
 		"控制是否显示悬停提示。",
 		"控制显示悬停提示前的等待时间 (毫秒)。",
 		"控制当鼠标移动到悬停提示上时，其是否保持可见。",
+		"控制隐藏悬停后的延迟时间(毫秒)。需要启用 `editor.hover.sticky`。",
 		"如果有空间，首选在线条上方显示悬停。",
 		"假定所有字符的宽度相同。这是一种快速算法，适用于等宽字体和某些字形宽度相等的文字(如拉丁字符)。",
 		"将包装点计算委托给浏览器。这是一个缓慢算法，可能会导致大型文件被冻结，但它在所有情况下都正常工作。",
@@ -286,6 +284,7 @@ define("vs/editor/editor.main.nls.zh-cn", {
 		"在编辑器顶部的滚动过程中显示嵌套的当前作用域。",
 		"定义要显示的最大粘滞行数。",
 		"定义用于确定要粘贴的行的模型。如果大纲模型不存在，它将回退到回退到缩进模型的折叠提供程序模型上。在所有三种情况下都遵循此顺序。",
+		"使用编辑器的水平滚动条启用粘滞滚动小组件滚动。",
 		"在编辑器中启用内联提示。",
 		"已启用内嵌提示",
 		"默认情况下显示内嵌提示，并在按住 {0} 时隐藏",
@@ -436,6 +435,9 @@ define("vs/editor/editor.main.nls.zh-cn", {
 		"使用语言配置确定何时自动闭合括号。",
 		"仅当光标位于空白字符左侧时，才自动闭合括号。",
 		"控制编辑器是否在左括号后自动插入右括号。",
+		"使用语言配置确定何时自动关闭注释。",
+		"仅当光标位于空格左侧时自动关闭注释。",
+		"控制在用户添加打开注释后编辑器是否应自动关闭注释。",
 		"仅在自动插入时才删除相邻的右引号或右括号。",
 		"控制在删除时编辑器是否应删除相邻的右引号或右方括号。",
 		"仅在自动插入时才改写右引号或右括号。",
@@ -474,7 +476,7 @@ define("vs/editor/editor.main.nls.zh-cn", {
 		"控制光标周围可见的前置行(最小值为 0)和尾随行(最小值为 1)的最小数目。在其他一些编辑器中称为 “scrollOff” 或 “scrollOffset”。",
 		"仅当通过键盘或 API 触发时，才会强制执行\"光标环绕行\"。",
 		"始终强制执行 \"cursorSurroundingLines\"",
-		"控制何时应强制执行\"光标环绕行\"。",
+		"控制何时应强制执行\"#光标环绕行#\"。",
 		"当 `#editor.cursorStyle#` 设置为 `line` 时，控制光标的宽度。",
 		"控制在编辑器中是否允许通过拖放来移动选中内容。",
 		"将新的呈现方法与 svg 配合使用。",
@@ -545,6 +547,7 @@ define("vs/editor/editor.main.nls.zh-cn", {
 		"不显示代码片段建议。",
 		"控制代码片段是否与其他建议一起显示及其排列的位置。",
 		"控制编辑器是否使用动画滚动。",
+		"控制在显示内联完成时是否应向屏幕阅读器用户提供辅助功能提示。",
 		"建议小组件的字号。设置为 {0} 时，将使用 {1} 的值。",
 		"建议小组件的行高。设置为 {0} 时，将使用 {1} 的值。最小值为 8。",
 		"控制在键入触发字符后是否自动显示建议。",
@@ -577,9 +580,9 @@ define("vs/editor/editor.main.nls.zh-cn", {
 	"vs/editor/common/core/editorColorRegistry": [
 		"光标所在行高亮内容的背景颜色。",
 		"光标所在行四周边框的背景颜色。",
-		"背景颜色的高亮范围，喜欢通过快速打开和查找功能。颜色不能不透明，以免隐藏底层装饰。",
+		"背景颜色的高亮范围，喜欢通过快速打开和查找功能。颜色必须透明，以免隐藏下面的修饰效果。",
 		"高亮区域边框的背景颜色。",
-		"高亮显示符号的背景颜色，例如转到定义或转到下一个/上一个符号。颜色不能是不透明的，以免隐藏底层装饰。",
+		"高亮显示符号的背景颜色，例如转到定义或转到下一个/上一个符号。颜色必须透明，以免隐藏下面的修饰效果。",
 		"高亮显示符号周围的边框的背景颜色。",
 		"编辑器光标颜色。",
 		"编辑器光标的背景色。可以自定义块型光标覆盖字符的颜色。",
@@ -650,7 +653,9 @@ define("vs/editor/editor.main.nls.zh-cn", {
 		"编辑器是否为只读",
 		"上下文是否为差异编辑器",
 		"上下文是否为嵌入式差异编辑器",
+		"是否选择移动的代码块进行比较",
 		"可访问差异查看器是否可见",
+		"是否已到达差异编辑器并排呈现内联断点",
 		"是否已启用 \"editor.columnSelection\"",
 		"编辑器是否已选定文本",
 		"编辑器是否有多个选择",
@@ -811,20 +816,22 @@ define("vs/editor/editor.main.nls.zh-cn", {
 	],
 	"vs/editor/contrib/codeAction/browser/codeActionContributions": [
 		"启用/禁用在代码操作菜单中显示组标头。",
+		"启用/禁用在当前未进行诊断时显示行内最近的快速配置。",
 	],
 	"vs/editor/contrib/codeAction/browser/codeActionController": [
+		"上下文: {0} 位于行 {1} 和列 {2}。",
 		"隐藏已禁用项",
 		"显示已禁用项",
 	],
 	"vs/editor/contrib/codeAction/browser/codeActionMenu": [
 		"更多操作...",
-		"快速修复...",
-		"提取...",
-		"内联...",
-		"重写...",
-		"移动...",
-		"环绕方式...",
-		"源代码操作...",
+		"快速修复",
+		"提取",
+		"内联",
+		"重写",
+		"移动",
+		"外侧代码",
+		"源代码操作",
 	],
 	"vs/editor/contrib/codeAction/browser/lightBulbWidget": [
 		"显示代码操作。首选可用的快速修复({0})",
@@ -833,6 +840,7 @@ define("vs/editor/editor.main.nls.zh-cn", {
 	],
 	"vs/editor/contrib/codelens/browser/codelensController": [
 		"显示当前行的 Code Lens 命令",
+		"选择命令",
 	],
 	"vs/editor/contrib/colorPicker/browser/colorPickerWidget": [
 		"单击以切换颜色选项 (rgb/hsl/hex)",
@@ -889,6 +897,9 @@ define("vs/editor/editor.main.nls.zh-cn", {
 		"插入相对路径",
 		"插入相对路径",
 	],
+	"vs/editor/contrib/dropOrPasteInto/browser/dropIntoEditorContribution": [
+		"将默认放置提供程序配置为用于给定 MIME 类型的内容。",
+	],
 	"vs/editor/contrib/dropOrPasteInto/browser/dropIntoEditorController": [
 		"是否显示放置小组件",
 		"显示放置选项...",
@@ -898,6 +909,7 @@ define("vs/editor/editor.main.nls.zh-cn", {
 		"编辑器是否运行可取消的操作，例如“预览引用”",
 	],
 	"vs/editor/contrib/find/browser/findController": [
+		"文件太大，无法执行全部替换操作。",
 		"查找",
 		"查找(&&F)",
 		"重写“使用正则表达式”标记。\r\n将不会保留该标记供将来使用。\r\n0: 不执行任何操作\r\n1: True\r\n2: False",
@@ -956,7 +968,7 @@ define("vs/editor/editor.main.nls.zh-cn", {
 		"折叠所有块注释",
 		"折叠所有区域",
 		"展开所有区域",
-		"折叠除所选区域之外的所有区域",
+		"折叠除选定项以外的所有项",
 		"展开除所选区域之外的所有区域",
 		"全部折叠",
 		"全部展开",
@@ -1092,8 +1104,6 @@ define("vs/editor/editor.main.nls.zh-cn", {
 	],
 	"vs/editor/contrib/hover/browser/hover": [
 		"显示或聚焦悬停",
-		"在辅助视图中用 {0} 检查此项",
-		"通过命令“打开辅助视图”在辅助视图中检查此项，该命令当前无法通过键绑定触发",
 		"显示定义预览悬停",
 		"向上滚动悬停",
 		"向下滚动悬停",
@@ -1165,6 +1175,9 @@ define("vs/editor/editor.main.nls.zh-cn", {
 		"内联建议是否以空白开头",
 		"内联建议是否以小于选项卡插入内容的空格开头",
 		"是否应抑制当前建议",
+	],
+	"vs/editor/contrib/inlineCompletions/browser/inlineCompletionsController": [
+		"在辅助视图中检查此项 ({0})",
 	],
 	"vs/editor/contrib/inlineCompletions/browser/inlineCompletionsHintsWidget": [
 		"“显示下一个参数”提示的图标。",
@@ -1566,6 +1579,7 @@ define("vs/editor/editor.main.nls.zh-cn", {
 		"操作小组件",
 	],
 	"vs/platform/actionWidget/browser/actionWidget": [
+		"操作栏中切换的操作项的背景色。",
 		"操作小组件列表是否可见",
 		"隐藏操作小组件",
 		"选择上一个操作",
@@ -1685,7 +1699,7 @@ define("vs/editor/editor.main.nls.zh-cn", {
 		"在搜索时使用连续匹配。",
 		"控制在工作台中搜索列表和树时使用的匹配类型。",
 		"控制在单击文件夹名称时如何扩展树文件夹。请注意，如果不适用，某些树和列表可能会选择忽略此设置。",
-		"控制类型导航在工作台的列表和树中的工作方式。如果设置为 \"trigger\"，则在运行 \"list.triggerTypeNavigation\" 命令后，类型导航将开始。",
+		"控制类型导航在工作台的列表和树中的工作方式。如果设置为`trigger`，则在运行 `list.triggerTypeNavigation` 命令后，类型导航将开始。",
 	],
 	"vs/platform/markers/common/markers": [
 		"错误",
@@ -1694,8 +1708,10 @@ define("vs/editor/editor.main.nls.zh-cn", {
 	],
 	"vs/platform/quickinput/browser/commandsQuickAccess": [
 		"最近使用",
+		"类似命令",
 		"常用",
 		"其他命令",
+		"类似命令",
 		"{0}, {1}",
 		"命令 \"{0}\" 导致错误",
 	],
@@ -1707,6 +1723,8 @@ define("vs/editor/editor.main.nls.zh-cn", {
 		"按 \"Enter\" 以确认或按 \"Esc\" 以取消",
 		"{0}/{1}",
 		"在此输入可缩小结果范围。",
+	],
+	"vs/platform/quickinput/browser/quickInputController": [
 		"切换所有复选框",
 		"{0} 个结果",
 		"已选 {0} 项",
@@ -1812,7 +1830,7 @@ define("vs/editor/editor.main.nls.zh-cn", {
 		"与所选项内容相同的区域的边框颜色。",
 		"当前搜索匹配项的颜色。",
 		"其他搜索匹配项的颜色。颜色必须透明，以免隐藏下面的修饰效果。",
-		"限制搜索范围的颜色。颜色不能不透明，以免隐藏底层装饰。",
+		"限制搜索范围的颜色。颜色必须透明，以免隐藏下面的修饰效果。",
 		"当前搜索匹配项的边框颜色。",
 		"其他搜索匹配项的边框颜色。",
 		"限制搜索的范围的边框颜色。颜色必须透明，以免隐藏下面的修饰效果。",
@@ -1907,7 +1925,7 @@ define("vs/editor/editor.main.nls.zh-cn", {
 		"焦点导航路径的颜色",
 		"已选导航路径项的颜色。",
 		"导航路径项选择器的背景色。",
-		"当前标题背景的内联合并冲突。颜色不能不透明，以免隐藏底层装饰。",
+		"当前标题背景的内联合并冲突。颜色必须透明，以免隐藏下面的修饰效果。",
 		"内联合并冲突中的当前内容背景。颜色必须透明，以免隐藏下面的修饰效果。",
 		"内联合并冲突中的传入标题背景。颜色必须透明，以免隐藏下面的修饰效果。",
 		"内联合并冲突中的传入内容背景。颜色必须透明，以免隐藏下面的修饰效果。",
@@ -1922,8 +1940,9 @@ define("vs/editor/editor.main.nls.zh-cn", {
 		"用于查找匹配项的迷你地图标记颜色。",
 		"用于重复编辑器选择的缩略图标记颜色。",
 		"编辑器选区在迷你地图中对应的标记颜色。",
-		"用于错误的迷你地图标记颜色。",
+		"信息的迷你地图标记颜色。",
 		"用于警告的迷你地图标记颜色。",
+		"用于错误的迷你地图标记颜色。",
 		"迷你地图背景颜色。",
 		"在缩略图中呈现的前景元素的不透明度。例如，\"#000000c0\" 将呈现不透明度为 75% 的元素。",
 		"迷你地图滑块背景颜色。",

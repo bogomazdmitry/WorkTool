@@ -1,6 +1,6 @@
 /*!-----------------------------------------------------------
  * Copyright (c) Microsoft Corporation. All rights reserved.
- * Version: 0.41.0(38e1e3d097f84e336c311d071a9ffb5191d4ffd1)
+ * Version: 0.44.0(3e047efd345ff102c8c61b5398fb30845aaac166)
  * Released under the MIT license
  * https://github.com/microsoft/vscode/blob/main/LICENSE.txt
  *-----------------------------------------------------------*/
@@ -20,6 +20,10 @@ define("vs/editor/editor.main.nls.fr", {
 	"vs/base/browser/ui/findinput/replaceInput": [
 		"entrée",
 		"Préserver la casse",
+	],
+	"vs/base/browser/ui/hover/hoverWidget": [
+		"Inspectez ceci dans l’affichage accessible avec {0}.",
+		"Inspectez ceci dans l’affichage accessible via la commande Open Accessible View qui ne peut pas être déclenchée via une combinaison de touches pour l’instant.",
 	],
 	"vs/base/browser/ui/iconLabel/iconLabelHover": [
 		"Chargement...",
@@ -109,20 +113,7 @@ define("vs/editor/editor.main.nls.fr", {
 		"Le nombre de curseurs a été limité à {0}. Envisagez d’utiliser [rechercher et remplacer](https://code.visualstudio.com/docs/editor/codebasics#_find-and-replace) pour les modifications plus importantes ou augmentez la limite du nombre de curseurs multiples du paramètre.",
 		"Augmenter la limite de curseurs multiples",
 	],
-	"vs/editor/browser/widget/diffEditor.contribution": [
-		"Visionneuse Diff accessible",
-		"Accéder à la différence suivante",
-		"Ouvrir la visionneuse diff accessible",
-		"Accéder la différence précédente",
-	],
-	"vs/editor/browser/widget/diffEditorWidget": [
-		"Élément décoratif de ligne pour les insertions dans l\'éditeur de différences.",
-		"Élément décoratif de ligne pour les suppressions dans l\'éditeur de différences.",
-		" utiliser Maj + F7 pour parcourir les modifications",
-		"Impossible de comparer les fichiers car l\'un d\'eux est trop volumineux.",
-		"Cliquez pour rétablir la modification",
-	],
-	"vs/editor/browser/widget/diffEditorWidget2/accessibleDiffViewer": [
+	"vs/editor/browser/widget/diffEditor/accessibleDiffViewer": [
 		"Icône « Insérer » dans la visionneuse diff accessible.",
 		"Icône « Supprimer » dans la visionneuse diff accessible.",
 		"Icône de « Fermer » dans la visionneuse diff accessible.",
@@ -138,45 +129,43 @@ define("vs/editor/editor.main.nls.fr", {
 		"+ {0} ligne modifiée {1}",
 		"- {0} ligne d\'origine {1}",
 	],
-	"vs/editor/browser/widget/diffEditorWidget2/colors": [
+	"vs/editor/browser/widget/diffEditor/colors": [
 		"Couleur de bordure du texte déplacé dans l’éditeur de diff.",
+		"Couleur de bordure active du texte déplacé dans l’éditeur de différences.",
 	],
-	"vs/editor/browser/widget/diffEditorWidget2/decorations": [
+	"vs/editor/browser/widget/diffEditor/decorations": [
 		"Élément décoratif de ligne pour les insertions dans l\'éditeur de différences.",
 		"Élément décoratif de ligne pour les suppressions dans l\'éditeur de différences.",
 		"Cliquez pour rétablir la modification",
 	],
-	"vs/editor/browser/widget/diffEditorWidget2/diffEditorEditors": [
+	"vs/editor/browser/widget/diffEditor/diffEditor.contribution": [
+		"Activer/désactiver réduire les régions inchangées",
+		"Activer/désactiver l’affichage des blocs de code déplacés",
+		"Activer/désactiver Utiliser la vue inline lorsque l\'espace est limité",
+		"Utiliser la vue inline lorsque l\'espace est limité",
+		"Afficher les blocs de code déplacés",
+		"Éditeur de différences",
+		"Changer de côté",
+		"Quitter Comparer le déplacement",
+		"Réduire toutes les régions inchangées",
+		"Afficher toutes les régions inchangées",
+		"Visionneuse Diff accessible",
+		"Accéder à la différence suivante",
+		"Ouvrir la visionneuse diff accessible",
+		"Accéder la différence précédente",
+	],
+	"vs/editor/browser/widget/diffEditor/diffEditorEditors": [
 		" utilisez {0} pour ouvrir l’aide sur l’accessibilité.",
 	],
-	"vs/editor/browser/widget/diffEditorWidget2/inlineDiffDeletedCodeMargin": [
-		"Copier les lignes supprimées",
-		"Copier la ligne supprimée",
-		"Copier les lignes modifiées",
-		"Copier la ligne modifiée",
-		"Copier la ligne supprimée ({0})",
-		"Copier la ligne modifiée ({0})",
-		"Annuler la modification",
-	],
-	"vs/editor/browser/widget/diffEditorWidget2/unchangedRanges": [
+	"vs/editor/browser/widget/diffEditor/hideUnchangedRegionsFeature": [
 		"Replier la région inchangée",
+		"Cliquez ou faites glisser pour afficher plus d\'éléments au-dessus",
+		"Tout afficher",
+		"Cliquez ou faites glisser pour afficher plus d\'éléments en dessous",
+		"{0} lignes masquées",
+		"Double-cliquer pour déplier",
 	],
-	"vs/editor/browser/widget/diffReview": [
-		"Icône de l\'option Insérer dans la revue des différences.",
-		"Icône de l\'option Supprimer dans la revue des différences.",
-		"Icône de l\'option Fermer dans la revue des différences.",
-		"Fermer",
-		"aucune ligne changée",
-		"1 ligne changée",
-		"{0} lignes changées",
-		"Différence {0} sur {1} : ligne d\'origine {2}, {3}, ligne modifiée {4}, {5}",
-		"vide",
-		"{0} ligne inchangée {1}",
-		"{0} ligne d\'origine {1} ligne modifiée {2}",
-		"+ {0} ligne modifiée {1}",
-		"- {0} ligne d\'origine {1}",
-	],
-	"vs/editor/browser/widget/inlineDiffMargin": [
+	"vs/editor/browser/widget/diffEditor/inlineDiffDeletedCodeMargin": [
 		"Copier les lignes supprimées",
 		"Copier la ligne supprimée",
 		"Copier les lignes modifiées",
@@ -184,8 +173,12 @@ define("vs/editor/editor.main.nls.fr", {
 		"Copier la ligne supprimée ({0})",
 		"Copier la ligne modifiée ({0})",
 		"Annuler la modification",
-		"Copier la ligne supprimée ({0})",
-		"Copier la ligne modifiée ({0})",
+	],
+	"vs/editor/browser/widget/diffEditor/movedBlocksLines": [
+		"Code déplacé avec des modifications vers la ligne {0}-{1}",
+		"Code déplacé avec des modifications à partir de la ligne {0}-{1}",
+		"Code déplacé vers la ligne {0}-{1}",
+		"Code déplacé à partir de la ligne {0}-{1}",
 	],
 	"vs/editor/common/config/editorConfigurationSchema": [
 		"Éditeur",
@@ -218,6 +211,8 @@ define("vs/editor/editor.main.nls.fr", {
 		"Délai d\'expiration en millisecondes avant annulation du calcul de diff. Utilisez 0 pour supprimer le délai d\'expiration.",
 		"Taille de fichier maximale en Mo pour laquelle calculer les différences. Utilisez 0 pour ne pas avoir de limite.",
 		"Contrôle si l\'éditeur de différences affiche les différences en mode côte à côte ou inline.",
+		"Si l\'éditeur de différences est moins large que cette valeur, la vue inline est utilisée.",
+		"Si cette option est activée et que la largeur de l\'éditeur est trop étroite, la vue inline est utilisée.",
 		"Lorsqu’il est activé, l’éditeur de différences affiche des flèches dans sa marge de glyphe pour rétablir les modifications.",
 		"Quand il est activé, l\'éditeur de différences ignore les changements d\'espace blanc de début ou de fin.",
 		"Contrôle si l\'éditeur de différences affiche les indicateurs +/- pour les changements ajoutés/supprimés .",
@@ -227,9 +222,11 @@ define("vs/editor/editor.main.nls.fr", {
 		"Le retour automatique à la ligne dépend du paramètre {0}.",
 		"Utilise l’algorithme de comparaison hérité.",
 		"Utilise l’algorithme de comparaison avancé.",
-		"Contrôle si l’éditeur de différences affiche les régions inchangées. Fonctionne uniquement lorsque {0} est défini.",
-		"Contrôle si l’éditeur de différences doit afficher les déplacements de code détectés. Ne fonctionne que si {0} est activé.",
-		"Contrôle si l’éditeur de différences utilise la nouvelle ou l’ancienne implémentation.",
+		"Contrôle si l\'éditeur de différences affiche les régions inchangées.",
+		"Contrôle le nombre de lignes utilisées pour les régions inchangées.",
+		"Contrôle le nombre de lignes utilisées comme minimum pour les régions inchangées.",
+		"Contrôle le nombre de lignes utilisées comme contexte lors de la comparaison des régions inchangées.",
+		"Contrôle si l’éditeur de différences doit afficher les déplacements de code détectés.",
 		"Contrôle si l’éditeur de différences affiche des décorations vides pour voir où les caractères ont été insérés ou supprimés.",
 	],
 	"vs/editor/common/config/editorOptions": [
@@ -278,6 +275,7 @@ define("vs/editor/editor.main.nls.fr", {
 		"Contrôle si le pointage est affiché.",
 		"Contrôle le délai en millisecondes, après lequel le survol est affiché.",
 		"Contrôle si le pointage doit rester visible quand la souris est déplacée au-dessus.",
+		"Contrôle le délai en millisecondes, après lequel le pointage est masqué. Demande d\'activer \'editor.hover.sticky\'.",
 		"Préférez afficher les points au-dessus de la ligne, s’il y a de l’espace.",
 		"Suppose que tous les caractères ont la même largeur. Il s\'agit d\'un algorithme rapide qui fonctionne correctement pour les polices à espacement fixe et certains scripts (comme les caractères latins) où les glyphes ont la même largeur.",
 		"Délègue le calcul des points de wrapping au navigateur. Il s\'agit d\'un algorithme lent qui peut provoquer le gel des grands fichiers, mais qui fonctionne correctement dans tous les cas.",
@@ -286,6 +284,7 @@ define("vs/editor/editor.main.nls.fr", {
 		"Affiche les étendues actives imbriqués pendant le défilement en haut de l’éditeur.",
 		"Définit le nombre maximal de lignes rémanentes à afficher.",
 		"Définit le modèle à utiliser pour déterminer les lignes à coller. Si le modèle hiérarchique n’existe pas, il revient au modèle de fournisseur de pliage qui revient au modèle de mise en retrait. Cette demande est respectée dans les trois cas.",
+		"Activez le défilement du widget Sticky Scroll avec la barre de défilement horizontale de l\'éditeur.",
 		"Active les indicateurs inlay dans l’éditeur.",
 		"Les indicateurs d’inlay sont activés.",
 		"Les indicateurs d’inlay sont affichés par défaut et masqués lors de la conservation {0}",
@@ -436,6 +435,9 @@ define("vs/editor/editor.main.nls.fr", {
 		"Utilisez les configurations de langage pour déterminer quand fermer automatiquement les parenthèses.",
 		"Fermer automatiquement les parenthèses uniquement lorsque le curseur est à gauche de l’espace.",
 		"Contrôle si l’éditeur doit fermer automatiquement les parenthèses quand l’utilisateur ajoute une parenthèse ouvrante.",
+		"Utilisez les configurations de langage pour déterminer quand fermer automatiquement les commentaires.",
+		"Fermez automatiquement les commentaires seulement si le curseur est à gauche de l\'espace.",
+		"Contrôle si l\'éditeur doit fermer automatiquement les commentaires quand l\'utilisateur ajoute un commentaire ouvrant.",
 		"Supprimez les guillemets ou crochets fermants adjacents uniquement s\'ils ont été insérés automatiquement.",
 		"Contrôle si l\'éditeur doit supprimer les guillemets ou crochets fermants adjacents au moment de la suppression.",
 		"Tapez avant les guillemets ou les crochets fermants uniquement s\'ils sont automatiquement insérés.",
@@ -474,7 +476,7 @@ define("vs/editor/editor.main.nls.fr", {
 		"Contrôle le nombre minimal de lignes de début (0 minimum) et de fin (1 minimum) visibles autour du curseur. Également appelé « scrollOff » ou « scrollOffset » dans d\'autres éditeurs.",
 		"\'cursorSurroundingLines\' est appliqué seulement s\'il est déclenché via le clavier ou une API.",
 		"\'cursorSurroundingLines\' est toujours appliqué.",
-		"Contrôle quand \'cursorSurroundingLines\' doit être appliqué.",
+		"Contrôle le moment où #cursorSurroundingLines# doit être appliqué.",
 		"Détermine la largeur du curseur lorsque `#editor.cursorStyle#` est à `line`.",
 		"Contrôle si l’éditeur autorise le déplacement de sélections par glisser-déplacer.",
 		"Utilisez une nouvelle méthode de rendu avec des SVG.",
@@ -545,6 +547,7 @@ define("vs/editor/editor.main.nls.fr", {
 		"Ne pas afficher de suggestions d’extrait de code.",
 		"Contrôle si les extraits de code s\'affichent en même temps que d\'autres suggestions, ainsi que leur mode de tri.",
 		"Contrôle si l\'éditeur défile en utilisant une animation.",
+		"Contrôle si l\'indicateur d\'accessibilité doit être fourni aux utilisateurs du lecteur d\'écran lorsqu\'une complétion inline est affichée.",
 		"Taille de police pour le widget suggest. Lorsqu’elle est définie sur {0}, la valeur de {1} est utilisée.",
 		"Hauteur de ligne pour le widget suggest. Lorsqu’elle est définie sur {0}, la valeur de {1} est utilisée. La valeur minimale est 8.",
 		"Contrôle si les suggestions devraient automatiquement s’afficher lorsque vous tapez les caractères de déclencheur.",
@@ -650,7 +653,9 @@ define("vs/editor/editor.main.nls.fr", {
 		"Indique si l’éditeur est en lecture seule",
 		"Indique si le contexte est celui d\'un éditeur de différences",
 		"Indique si le contexte est celui d’un éditeur de différences intégré",
+		"Indique si un bloc de code déplacé est sélectionné pour être comparé",
 		"Indique si la visionneuse diff accessible est visible",
+		"Indique si le point d\'arrêt Render Side by Side ou inline de l\'éditeur de différences est atteint",
 		"Indique si \'editor.columnSelection\' est activé",
 		"Indique si du texte est sélectionné dans l\'éditeur",
 		"Indique si l\'éditeur a plusieurs sélections",
@@ -811,20 +816,22 @@ define("vs/editor/editor.main.nls.fr", {
 	],
 	"vs/editor/contrib/codeAction/browser/codeActionContributions": [
 		"Activez/désactivez l’affichage des en-têtes de groupe dans le menu d’action du code.",
+		"Activez/désactivez l’affichage du correctif rapide le plus proche dans une ligne lorsqu’il n’est pas sur un diagnostic.",
 	],
 	"vs/editor/contrib/codeAction/browser/codeActionController": [
+		"Contexte : {0} à la ligne {1} et à la colonne {2}.",
 		"Masquer désactivé",
 		"Afficher les éléments désactivés",
 	],
 	"vs/editor/contrib/codeAction/browser/codeActionMenu": [
 		"Plus d’actions...",
-		"Correction rapide...",
-		"Extraire...",
-		"Inline...",
-		"Réécrire...",
-		"Déplacer...",
-		"Entourer de...",
-		"Action de la source...",
+		"Correctif rapide",
+		"Extraire",
+		"Inline",
+		"Réécrire",
+		"Déplacer",
+		"Entourer de",
+		"Action source",
 	],
 	"vs/editor/contrib/codeAction/browser/lightBulbWidget": [
 		"Afficher les actions de code. Correctif rapide disponible par défaut ({0})",
@@ -833,6 +840,7 @@ define("vs/editor/editor.main.nls.fr", {
 	],
 	"vs/editor/contrib/codelens/browser/codelensController": [
 		"Afficher les commandes Code Lens de la ligne actuelle",
+		"Sélectionner une commande",
 	],
 	"vs/editor/contrib/colorPicker/browser/colorPickerWidget": [
 		"Cliquez pour activer/désactiver les options de couleur (rgb/hsl/hexadécimal).",
@@ -889,6 +897,9 @@ define("vs/editor/editor.main.nls.fr", {
 		"Insérer des chemins d’accès relatifs",
 		"Insérer un chemin d’accès relatif",
 	],
+	"vs/editor/contrib/dropOrPasteInto/browser/dropIntoEditorContribution": [
+		"Configure le fournisseur de dépôt par défaut à utiliser pour le contenu d’un type MIME donné.",
+	],
 	"vs/editor/contrib/dropOrPasteInto/browser/dropIntoEditorController": [
 		"Indique si le widget de suppression s’affiche",
 		"Afficher les options de suppression...",
@@ -898,6 +909,7 @@ define("vs/editor/editor.main.nls.fr", {
 		"Indique si l\'éditeur exécute une opération annulable, par exemple \'Avoir un aperçu des références\'",
 	],
 	"vs/editor/contrib/find/browser/findController": [
+		"Le fichier est trop volumineux pour effectuer une opération Tout remplacer.",
 		"Rechercher",
 		"&&Rechercher",
 		"Remplace l’indicateur « Utiliser une expression régulière ».\r\nL’indicateur ne sera pas enregistré à l’avenir.\r\n0 : Ne rien faire\r\n1 : Vrai\r\n2 : Faux",
@@ -956,8 +968,8 @@ define("vs/editor/editor.main.nls.fr", {
 		"Replier tous les commentaires de bloc",
 		"Replier toutes les régions",
 		"Déplier toutes les régions",
-		"Plier toutes les régions sauf celles sélectionnées",
-		"Déplier toutes les régions sauf celles sélectionnées",
+		"Plier tout, sauf les éléments sélectionnés",
+		"Déplier tout, sauf les éléments sélectionnés",
 		"Plier tout",
 		"Déplier tout",
 		"Atteindre le pli parent",
@@ -1092,8 +1104,6 @@ define("vs/editor/editor.main.nls.fr", {
 	],
 	"vs/editor/contrib/hover/browser/hover": [
 		"Afficher ou focus sur pointer",
-		"Inspecter ceci dans l’affichage accessible avec {0}",
-		"Inspecter ceci dans l’affichage accessible à l’aide de la commande Ouvrir l’affichage accessible qui n’est pas déclenchable via la combinaison de touches pour le moment",
 		"Afficher le pointeur de l\'aperçu de définition",
 		"Faire défiler le pointage vers le haut",
 		"Faire défiler le pointage vers le bas",
@@ -1166,6 +1176,9 @@ define("vs/editor/editor.main.nls.fr", {
 		"Indique si la suggestion incluse commence par un espace blanc inférieur à ce qui serait inséré par l’onglet.",
 		"Indique si les suggestions doivent être supprimées pour la suggestion actuelle",
 	],
+	"vs/editor/contrib/inlineCompletions/browser/inlineCompletionsController": [
+		"Inspecter ceci dans l’affichage accessible ({0})",
+	],
 	"vs/editor/contrib/inlineCompletions/browser/inlineCompletionsHintsWidget": [
 		"Icône d\'affichage du prochain conseil de paramètre.",
 		"Icône d\'affichage du précédent conseil de paramètre.",
@@ -1199,7 +1212,7 @@ define("vs/editor/editor.main.nls.fr", {
 		"Supprimer tout ce qui est à gauche",
 		"Supprimer tout ce qui est à droite",
 		"Joindre les lignes",
-		"Transposer les caractères autour du curseur",
+		"Transposer des caractères autour du curseur",
 		"Transformer en majuscule",
 		"Transformer en minuscule",
 		"Appliquer la casse \"1re lettre des mots en majuscule\"",
@@ -1566,6 +1579,7 @@ define("vs/editor/editor.main.nls.fr", {
 		"Widget d’action",
 	],
 	"vs/platform/actionWidget/browser/actionWidget": [
+		"Couleur d\'arrière-plan des éléments d\'action activés dans la barre d\'action.",
 		"Indique si la liste des widgets d’action est visible",
 		"Masquer le widget d’action",
 		"Sélectionner l’action précédente",
@@ -1685,7 +1699,7 @@ define("vs/editor/editor.main.nls.fr", {
 		"Utilisez des correspondances contiguës lors de la recherche.",
 		"Contrôle le type de correspondance utilisé lors de la recherche de listes et d’arborescences dans le banc d’essai.",
 		"Contrôle la façon dont les dossiers de l\'arborescence sont développés quand vous cliquez sur les noms de dossiers. Notez que certaines arborescences et listes peuvent choisir d\'ignorer ce paramètre, s\'il est non applicable.",
-		"Contrôle le fonctionnement de la navigation par type dans les listes et les arborescences du banc d’essai. Quand la valeur est \'trigger\', la navigation de type commence une fois que la commande \'list.triggerTypeNavigation\' est exécutée.",
+		"Contrôle le fonctionnement de la navigation de type dans les listes et les arborescences du banc d\'essai. Quand la valeur est \'trigger\', la navigation de type commence une fois que la commande \'list.triggerTypeNavigation\' est exécutée.",
 	],
 	"vs/platform/markers/common/markers": [
 		"Erreur",
@@ -1694,8 +1708,10 @@ define("vs/editor/editor.main.nls.fr", {
 	],
 	"vs/platform/quickinput/browser/commandsQuickAccess": [
 		"récemment utilisées",
+		"commandes similaires",
 		"utilisés le plus souvent",
 		"autres commandes",
+		"commandes similaires",
 		"{0}, {1}",
 		"La commande « {0} » a entraîné une erreur",
 	],
@@ -1707,13 +1723,15 @@ define("vs/editor/editor.main.nls.fr", {
 		"Appuyez sur \'Entrée\' pour confirmer votre saisie, ou sur \'Échap\' pour l\'annuler",
 		"{0}/{1}",
 		"Taper pour affiner les résultats.",
+	],
+	"vs/platform/quickinput/browser/quickInputController": [
 		"Activer/désactiver toutes les cases à cocher",
 		"{0} résultats",
 		"{0} Sélectionnés",
 		"OK",
 		"Personnalisé",
 		"Précédent ({0})",
-		"Précédent",
+		"Retour",
 	],
 	"vs/platform/quickinput/browser/quickInputList": [
 		"Entrée rapide",
@@ -1922,8 +1940,9 @@ define("vs/editor/editor.main.nls.fr", {
 		"Couleur de marqueur de la minimap pour les correspondances.",
 		"Couleur de marqueur minimap pour les sélections répétées de l’éditeur.",
 		"Couleur de marqueur du minimap pour la sélection de l\'éditeur.",
-		"Couleur de marqueur de minimap pour les erreurs.",
+		"Couleur de marqueur de minimap pour les informations.",
 		"Couleur de marqueur de minimap pour les avertissements.",
+		"Couleur de marqueur de minimap pour les erreurs.",
 		"Couleur d\'arrière-plan du minimap.",
 		"Opacité des éléments de premier plan rendus dans la minimap. Par exemple, « #000000c0 » affiche les éléments avec une opacité de 75 %.",
 		"Couleur d\'arrière-plan du curseur de minimap.",

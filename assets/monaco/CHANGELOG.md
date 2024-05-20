@@ -1,5 +1,16 @@
 # Monaco Editor Changelog
 
+## [0.44.0]
+
+- Removes old diff editor implementation.
+- Custom diff algorithms no longer can be passed via diff editor options, instead a service should be used ([see #3558 for more details](https://github.com/microsoft/monaco-editor/issues/3558)).
+
+## [0.42.0]
+
+- Uses new diff editor widget by default. Use `experimental.useVersion2: false` to use the old widget. The old widget will be replaced in the next update.
+- Diff editor uses inline mode by default when width is too small. Use the config option `useInlineViewWhenSpaceIsLimited` to control this behavior.
+- Fixes broken language features when a model is created before the editor.
+
 ## [0.41.0]
 
 - `IDiffEditor.diffReviewNext` was renamed to `IDiffEditor.accessibleDiffViewerNext`.

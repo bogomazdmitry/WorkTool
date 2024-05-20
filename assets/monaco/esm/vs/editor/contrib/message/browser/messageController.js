@@ -11,6 +11,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
+var MessageController_1;
 import { renderMarkdown } from '../../../../base/browser/markdownRenderer.js';
 import { alert } from '../../../../base/browser/ui/aria/aria.js';
 import { Event } from '../../../../base/common/event.js';
@@ -24,9 +25,9 @@ import * as nls from '../../../../nls.js';
 import { IContextKeyService, RawContextKey } from '../../../../platform/contextkey/common/contextkey.js';
 import { IOpenerService } from '../../../../platform/opener/common/opener.js';
 import * as dom from '../../../../base/browser/dom.js';
-let MessageController = class MessageController {
+let MessageController = MessageController_1 = class MessageController {
     static get(editor) {
-        return editor.getContribution(MessageController.ID);
+        return editor.getContribution(MessageController_1.ID);
     }
     constructor(editor, contextKeyService, _openerService) {
         this._openerService = _openerService;
@@ -34,7 +35,7 @@ let MessageController = class MessageController {
         this._messageListeners = new DisposableStore();
         this._mouseOverMessage = false;
         this._editor = editor;
-        this._visible = MessageController.MESSAGE_VISIBLE.bindTo(contextKeyService);
+        this._visible = MessageController_1.MESSAGE_VISIBLE.bindTo(contextKeyService);
     }
     dispose() {
         var _a;
@@ -60,7 +61,7 @@ let MessageController = class MessageController {
             if (this._mouseOverMessage) {
                 return; // override when mouse over message
             }
-            if (this._messageWidget.value && dom.isAncestor(document.activeElement, this._messageWidget.value.getDomNode())) {
+            if (this._messageWidget.value && dom.isAncestor(dom.getActiveElement(), this._messageWidget.value.getDomNode())) {
                 return; // override when focus is inside the message
             }
             this.closeMessage();
@@ -97,7 +98,7 @@ let MessageController = class MessageController {
 };
 MessageController.ID = 'editor.contrib.messageController';
 MessageController.MESSAGE_VISIBLE = new RawContextKey('messageVisible', false, nls.localize('messageVisible', 'Whether the editor is currently showing an inline message'));
-MessageController = __decorate([
+MessageController = MessageController_1 = __decorate([
     __param(1, IContextKeyService),
     __param(2, IOpenerService)
 ], MessageController);

@@ -20,7 +20,7 @@ import { IContextKeyService } from '../../../../platform/contextkey/common/conte
 import { EditorScopedLayoutService } from '../standaloneLayoutService.js';
 import { ICodeEditorService } from '../../../browser/services/codeEditorService.js';
 import { QuickInputService } from '../../../../platform/quickinput/browser/quickInputService.js';
-import { once } from '../../../../base/common/functional.js';
+import { createSingleCallFunction } from '../../../../base/common/functional.js';
 let EditorScopedQuickInputService = class EditorScopedQuickInputService extends QuickInputService {
     constructor(editor, instantiationService, contextKeyService, themeService, codeEditorService) {
         super(instantiationService, contextKeyService, themeService, new EditorScopedLayoutService(editor.getContainerDomNode(), codeEditorService));
@@ -65,7 +65,7 @@ let StandaloneQuickInputService = class StandaloneQuickInputService {
         if (!quickInputService) {
             const newQuickInputService = quickInputService = this.instantiationService.createInstance(EditorScopedQuickInputService, editor);
             this.mapEditorToService.set(editor, quickInputService);
-            once(editor.onDidDispose)(() => {
+            createSingleCallFunction(editor.onDidDispose)(() => {
                 newQuickInputService.dispose();
                 this.mapEditorToService.delete(editor);
             });

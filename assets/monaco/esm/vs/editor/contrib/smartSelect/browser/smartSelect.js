@@ -20,6 +20,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var SmartSelectController_1;
 import * as arrays from '../../../../base/common/arrays.js';
 import { CancellationToken } from '../../../../base/common/cancellation.js';
 import { onUnexpectedExternalError } from '../../../../base/common/errors.js';
@@ -55,9 +56,9 @@ class SelectionRanges {
         return res;
     }
 }
-let SmartSelectController = class SmartSelectController {
+let SmartSelectController = SmartSelectController_1 = class SmartSelectController {
     static get(editor) {
-        return editor.getContribution(SmartSelectController.ID);
+        return editor.getContribution(SmartSelectController_1.ID);
     }
     constructor(_editor, _languageFeaturesService) {
         this._editor = _editor;
@@ -76,7 +77,7 @@ let SmartSelectController = class SmartSelectController {
             const selections = this._editor.getSelections();
             const model = this._editor.getModel();
             if (!this._state) {
-                yield provideSelectionRanges(this._languageFeaturesService.selectionRangeProvider, model, selections.map(s => s.getPosition()), this._editor.getOption(111 /* EditorOption.smartSelect */), CancellationToken.None).then(ranges => {
+                yield provideSelectionRanges(this._languageFeaturesService.selectionRangeProvider, model, selections.map(s => s.getPosition()), this._editor.getOption(112 /* EditorOption.smartSelect */), CancellationToken.None).then(ranges => {
                     var _a;
                     if (!arrays.isNonEmptyArray(ranges) || ranges.length !== selections.length) {
                         // invalid result
@@ -123,7 +124,7 @@ let SmartSelectController = class SmartSelectController {
     }
 };
 SmartSelectController.ID = 'editor.contrib.smartSelectController';
-SmartSelectController = __decorate([
+SmartSelectController = SmartSelectController_1 = __decorate([
     __param(1, ILanguageFeaturesService)
 ], SmartSelectController);
 export { SmartSelectController };

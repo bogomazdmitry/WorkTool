@@ -14,10 +14,10 @@ export class AbstractLineHighlightOverlay extends DynamicViewOverlay {
         super();
         this._context = context;
         const options = this._context.configuration.options;
-        const layoutInfo = options.get(142 /* EditorOption.layoutInfo */);
-        this._lineHeight = options.get(65 /* EditorOption.lineHeight */);
-        this._renderLineHighlight = options.get(94 /* EditorOption.renderLineHighlight */);
-        this._renderLineHighlightOnlyWhenFocus = options.get(95 /* EditorOption.renderLineHighlightOnlyWhenFocus */);
+        const layoutInfo = options.get(143 /* EditorOption.layoutInfo */);
+        this._lineHeight = options.get(66 /* EditorOption.lineHeight */);
+        this._renderLineHighlight = options.get(95 /* EditorOption.renderLineHighlight */);
+        this._renderLineHighlightOnlyWhenFocus = options.get(96 /* EditorOption.renderLineHighlightOnlyWhenFocus */);
         this._contentLeft = layoutInfo.contentLeft;
         this._contentWidth = layoutInfo.contentWidth;
         this._selectionIsEmpty = true;
@@ -52,10 +52,10 @@ export class AbstractLineHighlightOverlay extends DynamicViewOverlay {
     }
     onConfigurationChanged(e) {
         const options = this._context.configuration.options;
-        const layoutInfo = options.get(142 /* EditorOption.layoutInfo */);
-        this._lineHeight = options.get(65 /* EditorOption.lineHeight */);
-        this._renderLineHighlight = options.get(94 /* EditorOption.renderLineHighlight */);
-        this._renderLineHighlightOnlyWhenFocus = options.get(95 /* EditorOption.renderLineHighlightOnlyWhenFocus */);
+        const layoutInfo = options.get(143 /* EditorOption.layoutInfo */);
+        this._lineHeight = options.get(66 /* EditorOption.lineHeight */);
+        this._renderLineHighlight = options.get(95 /* EditorOption.renderLineHighlight */);
+        this._renderLineHighlightOnlyWhenFocus = options.get(96 /* EditorOption.renderLineHighlightOnlyWhenFocus */);
         this._contentLeft = layoutInfo.contentLeft;
         this._contentWidth = layoutInfo.contentWidth;
         return true;

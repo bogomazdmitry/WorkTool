@@ -32,9 +32,9 @@ export class SelectionsOverlay extends DynamicViewOverlay {
         this._previousFrameVisibleRangesWithStyle = [];
         this._context = context;
         const options = this._context.configuration.options;
-        this._lineHeight = options.get(65 /* EditorOption.lineHeight */);
-        this._roundedSelection = options.get(99 /* EditorOption.roundedSelection */);
-        this._typicalHalfwidthCharacterWidth = options.get(49 /* EditorOption.fontInfo */).typicalHalfwidthCharacterWidth;
+        this._lineHeight = options.get(66 /* EditorOption.lineHeight */);
+        this._roundedSelection = options.get(100 /* EditorOption.roundedSelection */);
+        this._typicalHalfwidthCharacterWidth = options.get(50 /* EditorOption.fontInfo */).typicalHalfwidthCharacterWidth;
         this._selections = [];
         this._renderResult = null;
         this._context.addEventHandler(this);
@@ -47,9 +47,9 @@ export class SelectionsOverlay extends DynamicViewOverlay {
     // --- begin event handlers
     onConfigurationChanged(e) {
         const options = this._context.configuration.options;
-        this._lineHeight = options.get(65 /* EditorOption.lineHeight */);
-        this._roundedSelection = options.get(99 /* EditorOption.roundedSelection */);
-        this._typicalHalfwidthCharacterWidth = options.get(49 /* EditorOption.fontInfo */).typicalHalfwidthCharacterWidth;
+        this._lineHeight = options.get(66 /* EditorOption.lineHeight */);
+        this._roundedSelection = options.get(100 /* EditorOption.roundedSelection */);
+        this._typicalHalfwidthCharacterWidth = options.get(50 /* EditorOption.fontInfo */).typicalHalfwidthCharacterWidth;
         return true;
     }
     onCursorStateChanged(e) {

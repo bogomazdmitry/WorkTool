@@ -25,11 +25,11 @@ export class ViewCursor {
     constructor(context) {
         this._context = context;
         const options = this._context.configuration.options;
-        const fontInfo = options.get(49 /* EditorOption.fontInfo */);
-        this._cursorStyle = options.get(27 /* EditorOption.cursorStyle */);
-        this._lineHeight = options.get(65 /* EditorOption.lineHeight */);
+        const fontInfo = options.get(50 /* EditorOption.fontInfo */);
+        this._cursorStyle = options.get(28 /* EditorOption.cursorStyle */);
+        this._lineHeight = options.get(66 /* EditorOption.lineHeight */);
         this._typicalHalfwidthCharacterWidth = fontInfo.typicalHalfwidthCharacterWidth;
-        this._lineCursorWidth = Math.min(options.get(30 /* EditorOption.cursorWidth */), this._typicalHalfwidthCharacterWidth);
+        this._lineCursorWidth = Math.min(options.get(31 /* EditorOption.cursorWidth */), this._typicalHalfwidthCharacterWidth);
         this._isVisible = true;
         // Create the dom node
         this._domNode = createFastDomNode(document.createElement('div'));
@@ -63,11 +63,11 @@ export class ViewCursor {
     }
     onConfigurationChanged(e) {
         const options = this._context.configuration.options;
-        const fontInfo = options.get(49 /* EditorOption.fontInfo */);
-        this._cursorStyle = options.get(27 /* EditorOption.cursorStyle */);
-        this._lineHeight = options.get(65 /* EditorOption.lineHeight */);
+        const fontInfo = options.get(50 /* EditorOption.fontInfo */);
+        this._cursorStyle = options.get(28 /* EditorOption.cursorStyle */);
+        this._lineHeight = options.get(66 /* EditorOption.lineHeight */);
         this._typicalHalfwidthCharacterWidth = fontInfo.typicalHalfwidthCharacterWidth;
-        this._lineCursorWidth = Math.min(options.get(30 /* EditorOption.cursorWidth */), this._typicalHalfwidthCharacterWidth);
+        this._lineCursorWidth = Math.min(options.get(31 /* EditorOption.cursorWidth */), this._typicalHalfwidthCharacterWidth);
         applyFontInfo(this._domNode, fontInfo);
         return true;
     }

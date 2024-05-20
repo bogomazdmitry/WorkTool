@@ -267,7 +267,7 @@ export class EditorSimpleWorker {
         });
     }
     static computeDiff(originalTextModel, modifiedTextModel, options, algorithm) {
-        const diffAlgorithm = algorithm === 'advanced' ? linesDiffComputers.getAdvanced() : linesDiffComputers.getLegacy();
+        const diffAlgorithm = algorithm === 'advanced' ? linesDiffComputers.getDefault() : linesDiffComputers.getLegacy();
         const originalLines = originalTextModel.getLinesContent();
         const modifiedLines = modifiedTextModel.getLinesContent();
         const result = diffAlgorithm.computeDiff(originalLines, modifiedLines, options);
@@ -275,7 +275,7 @@ export class EditorSimpleWorker {
         function getLineChanges(changes) {
             return changes.map(m => {
                 var _a;
-                return ([m.originalRange.startLineNumber, m.originalRange.endLineNumberExclusive, m.modifiedRange.startLineNumber, m.modifiedRange.endLineNumberExclusive, (_a = m.innerChanges) === null || _a === void 0 ? void 0 : _a.map(m => [
+                return ([m.original.startLineNumber, m.original.endLineNumberExclusive, m.modified.startLineNumber, m.modified.endLineNumberExclusive, (_a = m.innerChanges) === null || _a === void 0 ? void 0 : _a.map(m => [
                         m.originalRange.startLineNumber,
                         m.originalRange.startColumn,
                         m.originalRange.endLineNumber,
@@ -332,6 +332,19 @@ export class EditorSimpleWorker {
                 const bRng = b.range ? 0 : 1;
                 return aRng - bRng;
             });
+            // merge adjacent edits
+            let writeIndex = 0;
+            for (let readIndex = 1; readIndex < edits.length; readIndex++) {
+                if (Range.getEndPosition(edits[writeIndex].range).equals(Range.getStartPosition(edits[readIndex].range))) {
+                    edits[writeIndex].range = Range.fromPositions(Range.getStartPosition(edits[writeIndex].range), Range.getEndPosition(edits[readIndex].range));
+                    edits[writeIndex].text += edits[readIndex].text;
+                }
+                else {
+                    writeIndex++;
+                    edits[writeIndex] = edits[readIndex];
+                }
+            }
+            edits.length = writeIndex + 1;
             for (let { range, text, eol } of edits) {
                 if (typeof eol === 'number') {
                     lastEol = eol;

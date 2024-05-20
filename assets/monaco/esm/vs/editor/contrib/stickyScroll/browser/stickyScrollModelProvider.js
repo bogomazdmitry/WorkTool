@@ -20,7 +20,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-import { DisposableStore } from '../../../../base/common/lifecycle.js';
+import { Disposable, DisposableStore } from '../../../../base/common/lifecycle.js';
 import { ILanguageFeaturesService } from '../../../common/services/languageFeatures.js';
 import { OutlineElement, OutlineGroup, OutlineModel } from '../../documentSymbols/browser/outlineModel.js';
 import { createCancelablePromise, Delayer } from '../../../../base/common/async.js';
@@ -43,14 +43,16 @@ var Status;
     Status[Status["INVALID"] = 1] = "INVALID";
     Status[Status["CANCELED"] = 2] = "CANCELED";
 })(Status || (Status = {}));
-let StickyModelProvider = class StickyModelProvider {
+let StickyModelProvider = class StickyModelProvider extends Disposable {
     constructor(_editor, _languageConfigurationService, _languageFeaturesService, defaultModel) {
+        super();
         this._editor = _editor;
         this._languageConfigurationService = _languageConfigurationService;
         this._languageFeaturesService = _languageFeaturesService;
         this._modelProviders = [];
         this._modelPromise = null;
-        this._updateScheduler = new Delayer(300);
+        this._updateScheduler = this._register(new Delayer(300));
+        this._updateOperation = this._register(new DisposableStore());
         const stickyModelFromCandidateOutlineProvider = new StickyModelFromCandidateOutlineProvider(_languageFeaturesService);
         const stickyModelFromSyntaxFoldingProvider = new StickyModelFromCandidateSyntaxFoldingProvider(this._editor, _languageFeaturesService);
         const stickyModelFromIndentationFoldingProvider = new StickyModelFromCandidateIndentationFoldingProvider(this._editor, _languageConfigurationService);
@@ -68,7 +70,6 @@ let StickyModelProvider = class StickyModelProvider {
                 this._modelProviders.push(stickyModelFromIndentationFoldingProvider);
                 break;
         }
-        this._store = new DisposableStore();
     }
     _cancelModelPromise() {
         if (this._modelPromise) {
@@ -78,12 +79,11 @@ let StickyModelProvider = class StickyModelProvider {
     }
     update(textModel, textModelVersionId, token) {
         return __awaiter(this, void 0, void 0, function* () {
-            this._store.clear();
-            this._store.add({
+            this._updateOperation.clear();
+            this._updateOperation.add({
                 dispose: () => {
-                    var _a;
                     this._cancelModelPromise();
-                    (_a = this._updateScheduler) === null || _a === void 0 ? void 0 : _a.cancel();
+                    this._updateScheduler.cancel();
                 }
             });
             this._cancelModelPromise();
@@ -97,14 +97,17 @@ let StickyModelProvider = class StickyModelProvider {
                     }
                     switch (status) {
                         case Status.CANCELED:
-                            this._store.clear();
+                            this._updateOperation.clear();
                             return null;
                         case Status.VALID:
                             return modelProvider.stickyModel;
                     }
                 }
                 return null;
-            }));
+            })).catch((error) => {
+                onUnexpectedError(error);
+                return null;
+            });
         });
     }
 };

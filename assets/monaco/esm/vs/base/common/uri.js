@@ -386,14 +386,14 @@ class Uri extends URI {
 }
 // reserved characters: https://tools.ietf.org/html/rfc3986#section-2.2
 const encodeTable = {
-    [58 /* CharCode.Colon */]: '%3A',
+    [58 /* CharCode.Colon */]: '%3A', // gen-delims
     [47 /* CharCode.Slash */]: '%2F',
     [63 /* CharCode.QuestionMark */]: '%3F',
     [35 /* CharCode.Hash */]: '%23',
     [91 /* CharCode.OpenSquareBracket */]: '%5B',
     [93 /* CharCode.CloseSquareBracket */]: '%5D',
     [64 /* CharCode.AtSign */]: '%40',
-    [33 /* CharCode.ExclamationMark */]: '%21',
+    [33 /* CharCode.ExclamationMark */]: '%21', // sub-delims
     [36 /* CharCode.DollarSign */]: '%24',
     [38 /* CharCode.Ampersand */]: '%26',
     [39 /* CharCode.SingleQuote */]: '%27',

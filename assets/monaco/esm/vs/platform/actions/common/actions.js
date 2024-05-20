@@ -22,6 +22,7 @@ var __rest = (this && this.__rest) || function (s, e) {
         }
     return t;
 };
+var MenuItemAction_1;
 import { SubmenuAction } from '../../../base/common/actions.js';
 import { ThemeIcon } from '../../../base/common/themables.js';
 import { MicrotaskEmitter } from '../../../base/common/event.js';
@@ -79,6 +80,7 @@ MenuId.ExplorerContextShare = new MenuId('ExplorerContextShare');
 MenuId.ExtensionContext = new MenuId('ExtensionContext');
 MenuId.GlobalActivity = new MenuId('GlobalActivity');
 MenuId.CommandCenter = new MenuId('CommandCenter');
+MenuId.CommandCenterCenter = new MenuId('CommandCenterCenter');
 MenuId.LayoutControlMenuSubmenu = new MenuId('LayoutControlMenuSubmenu');
 MenuId.LayoutControlMenu = new MenuId('LayoutControlMenu');
 MenuId.MenubarMainMenu = new MenuId('MenubarMainMenu');
@@ -119,6 +121,8 @@ MenuId.StatusBarRemoteIndicatorMenu = new MenuId('StatusBarRemoteIndicatorMenu')
 MenuId.StickyScrollContext = new MenuId('StickyScrollContext');
 MenuId.TestItem = new MenuId('TestItem');
 MenuId.TestItemGutter = new MenuId('TestItemGutter');
+MenuId.TestMessageContext = new MenuId('TestMessageContext');
+MenuId.TestMessageContent = new MenuId('TestMessageContent');
 MenuId.TestPeekElement = new MenuId('TestPeekElement');
 MenuId.TestPeekTitle = new MenuId('TestPeekTitle');
 MenuId.TouchBarContext = new MenuId('TouchBarContext');
@@ -178,7 +182,6 @@ MenuId.TerminalEditorInstanceContext = new MenuId('TerminalEditorInstanceContext
 MenuId.TerminalNewDropdownContext = new MenuId('TerminalNewDropdownContext');
 MenuId.TerminalTabContext = new MenuId('TerminalTabContext');
 MenuId.TerminalTabEmptyAreaContext = new MenuId('TerminalTabEmptyAreaContext');
-MenuId.TerminalInlineTabContext = new MenuId('TerminalInlineTabContext');
 MenuId.WebviewContext = new MenuId('WebviewContext');
 MenuId.InlineCompletionsActions = new MenuId('InlineCompletionsActions');
 MenuId.NewFile = new MenuId('NewFile');
@@ -191,6 +194,8 @@ MenuId.ChatContext = new MenuId('ChatContext');
 MenuId.ChatCodeBlock = new MenuId('ChatCodeblock');
 MenuId.ChatMessageTitle = new MenuId('ChatMessageTitle');
 MenuId.ChatExecute = new MenuId('ChatExecute');
+MenuId.ChatInputSide = new MenuId('ChatInputSide');
+MenuId.AccessibleView = new MenuId('AccessibleView');
 export const IMenuService = createDecorator('menuService');
 class MenuRegistryChangeEvent {
     static for(id) {
@@ -250,7 +255,10 @@ export const MenuRegistry = new class {
         }
         const rm = list.push(item);
         this._onDidChangeMenu.fire(MenuRegistryChangeEvent.for(id));
-        return toDisposable(rm);
+        return toDisposable(() => {
+            rm();
+            this._onDidChangeMenu.fire(MenuRegistryChangeEvent.for(id));
+        });
     }
     appendMenuItems(items) {
         const result = new DisposableStore();
@@ -300,7 +308,7 @@ export class SubmenuItemAction extends SubmenuAction {
 }
 // implements IAction, does NOT extend Action, so that no one
 // subscribes to events of Action or modified properties
-let MenuItemAction = class MenuItemAction {
+let MenuItemAction = MenuItemAction_1 = class MenuItemAction {
     static label(action, options) {
         return (options === null || options === void 0 ? void 0 : options.renderShortTitle) && action.shortTitle
             ? (typeof action.shortTitle === 'string' ? action.shortTitle : action.shortTitle.value)
@@ -311,7 +319,7 @@ let MenuItemAction = class MenuItemAction {
         this.hideActions = hideActions;
         this._commandService = _commandService;
         this.id = item.id;
-        this.label = MenuItemAction.label(item, options);
+        this.label = MenuItemAction_1.label(item, options);
         this.tooltip = (_b = (typeof item.tooltip === 'string' ? item.tooltip : (_a = item.tooltip) === null || _a === void 0 ? void 0 : _a.value)) !== null && _b !== void 0 ? _b : '';
         this.enabled = !item.precondition || contextKeyService.contextMatchesRules(item.precondition);
         this.checked = undefined;
@@ -333,7 +341,7 @@ let MenuItemAction = class MenuItemAction {
             icon = ThemeIcon.isThemeIcon(item.icon) ? item.icon : undefined;
         }
         this.item = item;
-        this.alt = alt ? new MenuItemAction(alt, undefined, options, hideActions, contextKeyService, _commandService) : undefined;
+        this.alt = alt ? new MenuItemAction_1(alt, undefined, options, hideActions, contextKeyService, _commandService) : undefined;
         this._options = options;
         this.class = icon && ThemeIcon.asClassName(icon);
     }
@@ -349,7 +357,7 @@ let MenuItemAction = class MenuItemAction {
         return this._commandService.executeCommand(this.id, ...runArgs);
     }
 };
-MenuItemAction = __decorate([
+MenuItemAction = MenuItemAction_1 = __decorate([
     __param(4, IContextKeyService),
     __param(5, ICommandService)
 ], MenuItemAction);

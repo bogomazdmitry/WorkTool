@@ -11,8 +11,8 @@ export class DecorationsOverlay extends DynamicViewOverlay {
         super();
         this._context = context;
         const options = this._context.configuration.options;
-        this._lineHeight = options.get(65 /* EditorOption.lineHeight */);
-        this._typicalHalfwidthCharacterWidth = options.get(49 /* EditorOption.fontInfo */).typicalHalfwidthCharacterWidth;
+        this._lineHeight = options.get(66 /* EditorOption.lineHeight */);
+        this._typicalHalfwidthCharacterWidth = options.get(50 /* EditorOption.fontInfo */).typicalHalfwidthCharacterWidth;
         this._renderResult = null;
         this._context.addEventHandler(this);
     }
@@ -24,8 +24,8 @@ export class DecorationsOverlay extends DynamicViewOverlay {
     // --- begin event handlers
     onConfigurationChanged(e) {
         const options = this._context.configuration.options;
-        this._lineHeight = options.get(65 /* EditorOption.lineHeight */);
-        this._typicalHalfwidthCharacterWidth = options.get(49 /* EditorOption.fontInfo */).typicalHalfwidthCharacterWidth;
+        this._lineHeight = options.get(66 /* EditorOption.lineHeight */);
+        this._typicalHalfwidthCharacterWidth = options.get(50 /* EditorOption.fontInfo */).typicalHalfwidthCharacterWidth;
         return true;
     }
     onDecorationsChanged(e) {

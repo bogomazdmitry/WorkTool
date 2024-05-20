@@ -51,6 +51,10 @@ exports.features = [
     "entry": "vs/editor/contrib/cursorUndo/browser/cursorUndo"
   },
   {
+    "label": "diffEditor",
+    "entry": "vs/editor/browser/widget/diffEditor/diffEditor.contribution"
+  },
+  {
     "label": "dnd",
     "entry": "vs/editor/contrib/dnd/browser/dnd"
   },

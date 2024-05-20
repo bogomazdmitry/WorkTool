@@ -12,6 +12,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 import * as browser from '../../../../base/browser/browser.js';
+import { getActiveDocument } from '../../../../base/browser/dom.js';
 import * as platform from '../../../../base/common/platform.js';
 import { CopyOptions, InMemoryClipboardMetadataManager } from '../../../browser/controller/textAreaInput.js';
 import { EditorAction, MultiCommand, registerEditorAction } from '../../../browser/editorExtensions.js';
@@ -159,13 +160,13 @@ class ExecCommandCopyWithSyntaxHighlightingAction extends EditorAction {
         if (!editor.hasModel()) {
             return;
         }
-        const emptySelectionClipboard = editor.getOption(36 /* EditorOption.emptySelectionClipboard */);
+        const emptySelectionClipboard = editor.getOption(37 /* EditorOption.emptySelectionClipboard */);
         if (!emptySelectionClipboard && editor.getSelection().isEmpty()) {
             return;
         }
         CopyOptions.forceCopyWithSyntaxHighlighting = true;
         editor.focus();
-        document.execCommand('copy');
+        editor.getContainerDomNode().ownerDocument.execCommand('copy');
         CopyOptions.forceCopyWithSyntaxHighlighting = false;
     }
 }
@@ -179,19 +180,19 @@ function registerExecCommandImpl(target, browserCommand) {
         const focusedEditor = accessor.get(ICodeEditorService).getFocusedCodeEditor();
         if (focusedEditor && focusedEditor.hasTextFocus()) {
             // Do not execute if there is no selection and empty selection clipboard is off
-            const emptySelectionClipboard = focusedEditor.getOption(36 /* EditorOption.emptySelectionClipboard */);
+            const emptySelectionClipboard = focusedEditor.getOption(37 /* EditorOption.emptySelectionClipboard */);
             const selection = focusedEditor.getSelection();
             if (selection && selection.isEmpty() && !emptySelectionClipboard) {
                 return true;
             }
-            document.execCommand(browserCommand);
+            focusedEditor.getContainerDomNode().ownerDocument.execCommand(browserCommand);
             return true;
         }
         return false;
     });
     // 2. (default) handle case when focus is somewhere else.
     target.addImplementation(0, 'generic-dom', (accessor, args) => {
-        document.execCommand(browserCommand);
+        getActiveDocument().execCommand(browserCommand);
         return true;
     });
 }
@@ -205,7 +206,7 @@ if (PasteAction) {
         // Only if editor text focus (i.e. not if editor has widget focus).
         const focusedEditor = codeEditorService.getFocusedCodeEditor();
         if (focusedEditor && focusedEditor.hasTextFocus()) {
-            const result = document.execCommand('paste');
+            const result = focusedEditor.getContainerDomNode().ownerDocument.execCommand('paste');
             // Use the clipboard service if document.execCommand('paste') was not successful
             if (!result && platform.isWeb) {
                 return (() => __awaiter(void 0, void 0, void 0, function* () {
@@ -216,7 +217,7 @@ if (PasteAction) {
                         let multicursorText = null;
                         let mode = null;
                         if (metadata) {
-                            pasteOnNewLine = (focusedEditor.getOption(36 /* EditorOption.emptySelectionClipboard */) && !!metadata.isFromEmptySelection);
+                            pasteOnNewLine = (focusedEditor.getOption(37 /* EditorOption.emptySelectionClipboard */) && !!metadata.isFromEmptySelection);
                             multicursorText = (typeof metadata.multicursorText !== 'undefined' ? metadata.multicursorText : null);
                             mode = metadata.mode;
                         }
@@ -235,7 +236,7 @@ if (PasteAction) {
     });
     // 2. Paste: (default) handle case when focus is somewhere else.
     PasteAction.addImplementation(0, 'generic-dom', (accessor, args) => {
-        document.execCommand('paste');
+        getActiveDocument().execCommand('paste');
         return true;
     });
 }

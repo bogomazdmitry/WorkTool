@@ -20,11 +20,11 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var GotoDefinitionAtPositionEditorContribution_1;
 import { createCancelablePromise } from '../../../../../base/common/async.js';
 import { onUnexpectedError } from '../../../../../base/common/errors.js';
 import { MarkdownString } from '../../../../../base/common/htmlContent.js';
 import { DisposableStore } from '../../../../../base/common/lifecycle.js';
-import { withNullAsUndefined } from '../../../../../base/common/types.js';
 import './goToDefinitionAtPosition.css';
 import { EditorState } from '../../../editorState/browser/editorState.js';
 import { registerEditorContribution } from '../../../../browser/editorExtensions.js';
@@ -39,7 +39,7 @@ import { DefinitionAction } from '../goToCommands.js';
 import { getDefinitionsAtPosition } from '../goToSymbol.js';
 import { ILanguageFeaturesService } from '../../../../common/services/languageFeatures.js';
 import { ModelDecorationInjectedTextOptions } from '../../../../common/model/textModel.js';
-let GotoDefinitionAtPositionEditorContribution = class GotoDefinitionAtPositionEditorContribution {
+let GotoDefinitionAtPositionEditorContribution = GotoDefinitionAtPositionEditorContribution_1 = class GotoDefinitionAtPositionEditorContribution {
     constructor(editor, textModelResolverService, languageService, languageFeaturesService) {
         this.textModelResolverService = textModelResolverService;
         this.languageService = languageService;
@@ -53,7 +53,7 @@ let GotoDefinitionAtPositionEditorContribution = class GotoDefinitionAtPositionE
         const linkGesture = new ClickLinkGesture(editor);
         this.toUnhook.add(linkGesture);
         this.toUnhook.add(linkGesture.onMouseMoveOrRelevantKeyDown(([mouseEvent, keyboardEvent]) => {
-            this.startFindDefinitionFromMouse(mouseEvent, withNullAsUndefined(keyboardEvent));
+            this.startFindDefinitionFromMouse(mouseEvent, keyboardEvent !== null && keyboardEvent !== void 0 ? keyboardEvent : undefined);
         }));
         this.toUnhook.add(linkGesture.onExecute((mouseEvent) => {
             if (this.isEnabled(mouseEvent)) {
@@ -72,7 +72,7 @@ let GotoDefinitionAtPositionEditorContribution = class GotoDefinitionAtPositionE
         }));
     }
     static get(editor) {
-        return editor.getContribution(GotoDefinitionAtPositionEditorContribution.ID);
+        return editor.getContribution(GotoDefinitionAtPositionEditorContribution_1.ID);
     }
     startFindDefinitionFromCursor(position) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -191,7 +191,7 @@ let GotoDefinitionAtPositionEditorContribution = class GotoDefinitionAtPositionE
     getPreviewValue(textEditorModel, startLineNumber, result) {
         let rangeToUse = result.range;
         const numberOfLinesInRange = rangeToUse.endLineNumber - rangeToUse.startLineNumber;
-        if (numberOfLinesInRange >= GotoDefinitionAtPositionEditorContribution.MAX_SOURCE_PREVIEW_LINES) {
+        if (numberOfLinesInRange >= GotoDefinitionAtPositionEditorContribution_1.MAX_SOURCE_PREVIEW_LINES) {
             rangeToUse = this.getPreviewRangeBasedOnIndentation(textEditorModel, startLineNumber);
         }
         const previewValue = this.stripIndentationFromPreviewRange(textEditorModel, startLineNumber, rangeToUse);
@@ -209,7 +209,7 @@ let GotoDefinitionAtPositionEditorContribution = class GotoDefinitionAtPositionE
     }
     getPreviewRangeBasedOnIndentation(textEditorModel, startLineNumber) {
         const startIndent = textEditorModel.getLineFirstNonWhitespaceColumn(startLineNumber);
-        const maxLineNumber = Math.min(textEditorModel.getLineCount(), startLineNumber + GotoDefinitionAtPositionEditorContribution.MAX_SOURCE_PREVIEW_LINES);
+        const maxLineNumber = Math.min(textEditorModel.getLineCount(), startLineNumber + GotoDefinitionAtPositionEditorContribution_1.MAX_SOURCE_PREVIEW_LINES);
         let endLineNumber = startLineNumber + 1;
         for (; endLineNumber < maxLineNumber; endLineNumber++) {
             const endIndent = textEditorModel.getLineFirstNonWhitespaceColumn(endLineNumber);
@@ -253,7 +253,7 @@ let GotoDefinitionAtPositionEditorContribution = class GotoDefinitionAtPositionE
     gotoDefinition(position, openToSide) {
         this.editor.setPosition(position);
         return this.editor.invokeWithinContext((accessor) => {
-            const canPeek = !openToSide && this.editor.getOption(86 /* EditorOption.definitionLinkOpensInPeek */) && !this.isInPeekEditor(accessor);
+            const canPeek = !openToSide && this.editor.getOption(87 /* EditorOption.definitionLinkOpensInPeek */) && !this.isInPeekEditor(accessor);
             const action = new DefinitionAction({ openToSide, openInPeek: canPeek, muteMessage: true }, { title: { value: '', original: '' }, id: '', precondition: undefined });
             return action.run(accessor);
         });
@@ -269,7 +269,7 @@ let GotoDefinitionAtPositionEditorContribution = class GotoDefinitionAtPositionE
 };
 GotoDefinitionAtPositionEditorContribution.ID = 'editor.contrib.gotodefinitionatposition';
 GotoDefinitionAtPositionEditorContribution.MAX_SOURCE_PREVIEW_LINES = 8;
-GotoDefinitionAtPositionEditorContribution = __decorate([
+GotoDefinitionAtPositionEditorContribution = GotoDefinitionAtPositionEditorContribution_1 = __decorate([
     __param(1, ITextModelService),
     __param(2, ILanguageService),
     __param(3, ILanguageFeaturesService)

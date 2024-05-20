@@ -11,6 +11,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
+var SnippetController2_1;
 import { DisposableStore } from '../../../../base/common/lifecycle.js';
 import { assertType } from '../../../../base/common/types.js';
 import { EditorCommand, registerEditorCommand, registerEditorContribution } from '../../../browser/editorExtensions.js';
@@ -32,9 +33,9 @@ const _defaultOptions = {
     clipboardText: undefined,
     overtypingCapturer: undefined
 };
-let SnippetController2 = class SnippetController2 {
+let SnippetController2 = SnippetController2_1 = class SnippetController2 {
     static get(editor) {
-        return editor.getContribution(SnippetController2.ID);
+        return editor.getContribution(SnippetController2_1.ID);
     }
     constructor(_editor, _logService, _languageFeaturesService, contextKeyService, _languageConfigurationService) {
         this._editor = _editor;
@@ -43,9 +44,9 @@ let SnippetController2 = class SnippetController2 {
         this._languageConfigurationService = _languageConfigurationService;
         this._snippetListener = new DisposableStore();
         this._modelVersionId = -1;
-        this._inSnippet = SnippetController2.InSnippetMode.bindTo(contextKeyService);
-        this._hasNextTabstop = SnippetController2.HasNextTabstop.bindTo(contextKeyService);
-        this._hasPrevTabstop = SnippetController2.HasPrevTabstop.bindTo(contextKeyService);
+        this._inSnippet = SnippetController2_1.InSnippetMode.bindTo(contextKeyService);
+        this._hasNextTabstop = SnippetController2_1.HasNextTabstop.bindTo(contextKeyService);
+        this._hasPrevTabstop = SnippetController2_1.HasPrevTabstop.bindTo(contextKeyService);
     }
     dispose() {
         var _a;
@@ -238,7 +239,7 @@ SnippetController2.ID = 'snippetController2';
 SnippetController2.InSnippetMode = new RawContextKey('inSnippetMode', false, localize('inSnippetMode', "Whether the editor in current in snippet mode"));
 SnippetController2.HasNextTabstop = new RawContextKey('hasNextTabstop', false, localize('hasNextTabstop', "Whether there is a next tab stop when in snippet mode"));
 SnippetController2.HasPrevTabstop = new RawContextKey('hasPrevTabstop', false, localize('hasPrevTabstop', "Whether there is a previous tab stop when in snippet mode"));
-SnippetController2 = __decorate([
+SnippetController2 = SnippetController2_1 = __decorate([
     __param(1, ILogService),
     __param(2, ILanguageFeaturesService),
     __param(3, IContextKeyService),

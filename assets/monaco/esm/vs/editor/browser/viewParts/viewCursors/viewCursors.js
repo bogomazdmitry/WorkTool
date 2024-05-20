@@ -15,10 +15,10 @@ export class ViewCursors extends ViewPart {
     constructor(context) {
         super(context);
         const options = this._context.configuration.options;
-        this._readOnly = options.get(89 /* EditorOption.readOnly */);
-        this._cursorBlinking = options.get(25 /* EditorOption.cursorBlinking */);
-        this._cursorStyle = options.get(27 /* EditorOption.cursorStyle */);
-        this._cursorSmoothCaretAnimation = options.get(26 /* EditorOption.cursorSmoothCaretAnimation */);
+        this._readOnly = options.get(90 /* EditorOption.readOnly */);
+        this._cursorBlinking = options.get(26 /* EditorOption.cursorBlinking */);
+        this._cursorStyle = options.get(28 /* EditorOption.cursorStyle */);
+        this._cursorSmoothCaretAnimation = options.get(27 /* EditorOption.cursorSmoothCaretAnimation */);
         this._selectionIsEmpty = true;
         this._isComposingInput = false;
         this._isVisible = false;
@@ -57,10 +57,10 @@ export class ViewCursors extends ViewPart {
     }
     onConfigurationChanged(e) {
         const options = this._context.configuration.options;
-        this._readOnly = options.get(89 /* EditorOption.readOnly */);
-        this._cursorBlinking = options.get(25 /* EditorOption.cursorBlinking */);
-        this._cursorStyle = options.get(27 /* EditorOption.cursorStyle */);
-        this._cursorSmoothCaretAnimation = options.get(26 /* EditorOption.cursorSmoothCaretAnimation */);
+        this._readOnly = options.get(90 /* EditorOption.readOnly */);
+        this._cursorBlinking = options.get(26 /* EditorOption.cursorBlinking */);
+        this._cursorStyle = options.get(28 /* EditorOption.cursorStyle */);
+        this._cursorSmoothCaretAnimation = options.get(27 /* EditorOption.cursorSmoothCaretAnimation */);
         this._updateBlinking();
         this._updateDomClassName();
         this._primaryCursor.onConfigurationChanged(e);

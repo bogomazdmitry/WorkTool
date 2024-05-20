@@ -11,7 +11,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 import * as DomUtils from './dom.js';
 import * as arrays from '../common/arrays.js';
 import { memoize } from '../common/decorators.js';
-import { Disposable, toDisposable } from '../common/lifecycle.js';
+import { Disposable, markAsSingleton, toDisposable } from '../common/lifecycle.js';
 import { LinkedList } from '../common/linkedList.js';
 export var EventType;
 (function (EventType) {
@@ -39,7 +39,7 @@ export class Gesture extends Disposable {
             return Disposable.None;
         }
         if (!Gesture.INSTANCE) {
-            Gesture.INSTANCE = new Gesture();
+            Gesture.INSTANCE = markAsSingleton(new Gesture());
         }
         const remove = Gesture.INSTANCE.targets.push(element);
         return toDisposable(remove);
@@ -49,7 +49,7 @@ export class Gesture extends Disposable {
             return Disposable.None;
         }
         if (!Gesture.INSTANCE) {
-            Gesture.INSTANCE = new Gesture();
+            Gesture.INSTANCE = markAsSingleton(new Gesture());
         }
         const remove = Gesture.INSTANCE.ignoreTargets.push(element);
         return toDisposable(remove);

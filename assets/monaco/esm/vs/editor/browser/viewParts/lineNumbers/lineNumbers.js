@@ -20,12 +20,12 @@ export class LineNumbersOverlay extends DynamicViewOverlay {
     }
     _readConfig() {
         const options = this._context.configuration.options;
-        this._lineHeight = options.get(65 /* EditorOption.lineHeight */);
-        const lineNumbers = options.get(66 /* EditorOption.lineNumbers */);
+        this._lineHeight = options.get(66 /* EditorOption.lineHeight */);
+        const lineNumbers = options.get(67 /* EditorOption.lineNumbers */);
         this._renderLineNumbers = lineNumbers.renderType;
         this._renderCustomLineNumbers = lineNumbers.renderFn;
-        this._renderFinalNewline = options.get(93 /* EditorOption.renderFinalNewline */);
-        const layoutInfo = options.get(142 /* EditorOption.layoutInfo */);
+        this._renderFinalNewline = options.get(94 /* EditorOption.renderFinalNewline */);
+        const layoutInfo = options.get(143 /* EditorOption.layoutInfo */);
         this._lineNumbersLeft = layoutInfo.lineNumbersLeft;
         this._lineNumbersWidth = layoutInfo.lineNumbersWidth;
     }

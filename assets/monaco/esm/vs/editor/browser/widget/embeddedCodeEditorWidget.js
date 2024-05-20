@@ -14,14 +14,14 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 import * as objects from '../../../base/common/objects.js';
 import { ICodeEditorService } from '../services/codeEditorService.js';
 import { CodeEditorWidget } from './codeEditorWidget.js';
+import { ILanguageConfigurationService } from '../../common/languages/languageConfigurationRegistry.js';
+import { ILanguageFeaturesService } from '../../common/services/languageFeatures.js';
+import { IAccessibilityService } from '../../../platform/accessibility/common/accessibility.js';
 import { ICommandService } from '../../../platform/commands/common/commands.js';
 import { IContextKeyService } from '../../../platform/contextkey/common/contextkey.js';
 import { IInstantiationService } from '../../../platform/instantiation/common/instantiation.js';
 import { INotificationService } from '../../../platform/notification/common/notification.js';
 import { IThemeService } from '../../../platform/theme/common/themeService.js';
-import { IAccessibilityService } from '../../../platform/accessibility/common/accessibility.js';
-import { ILanguageConfigurationService } from '../../common/languages/languageConfigurationRegistry.js';
-import { ILanguageFeaturesService } from '../../common/services/languageFeatures.js';
 let EmbeddedCodeEditorWidget = class EmbeddedCodeEditorWidget extends CodeEditorWidget {
     constructor(domElement, options, codeEditorWidgetOptions, parentEditor, instantiationService, codeEditorService, commandService, contextKeyService, themeService, notificationService, accessibilityService, languageConfigurationService, languageFeaturesService) {
         super(domElement, Object.assign(Object.assign({}, parentEditor.getRawOptions()), { overflowWidgetsDomNode: parentEditor.getOverflowWidgetsDomNode() }), codeEditorWidgetOptions, instantiationService, codeEditorService, commandService, contextKeyService, themeService, notificationService, accessibilityService, languageConfigurationService, languageFeaturesService);

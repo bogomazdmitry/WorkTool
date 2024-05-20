@@ -23,14 +23,13 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 import { CancellationTokenSource } from '../../../../base/common/cancellation.js';
 import { matchesSubString } from '../../../../base/common/filters.js';
 import { Disposable, MutableDisposable } from '../../../../base/common/lifecycle.js';
-import { derived } from '../../../../base/common/observable.js';
-import { disposableObservableValue, transaction } from '../../../../base/common/observableImpl/base.js';
+import { derived, disposableObservableValue, transaction } from '../../../../base/common/observable.js';
 import { Position } from '../../../common/core/position.js';
 import { InlineCompletionTriggerKind } from '../../../common/languages.js';
 import { ILanguageConfigurationService } from '../../../common/languages/languageConfigurationRegistry.js';
 import { ILanguageFeaturesService } from '../../../common/services/languageFeatures.js';
-import { SingleTextEdit } from './singleTextEdit.js';
 import { provideInlineCompletions } from './provideInlineCompletions.js';
+import { SingleTextEdit } from './singleTextEdit.js';
 let InlineCompletionsSource = class InlineCompletionsSource extends Disposable {
     constructor(textModel, versionId, _debounceValue, languageFeaturesService, languageConfigurationService) {
         super();
@@ -84,6 +83,7 @@ let InlineCompletionsSource = class InlineCompletionsSource extends Disposable {
             }
             this._updateOperation.clear();
             transaction(tx => {
+                /** @description Update completions with provider result */
                 target.set(completions, tx);
             });
             return true;
@@ -173,7 +173,7 @@ export class UpToDateInlineCompletions {
         this._refCount = 1;
         this._prependedInlineCompletionItems = [];
         this._rangeVersionIdValue = 0;
-        this._rangeVersionId = derived('ranges', reader => {
+        this._rangeVersionId = derived(this, reader => {
             this.versionId.read(reader);
             let changed = false;
             for (const i of this._inlineCompletions) {

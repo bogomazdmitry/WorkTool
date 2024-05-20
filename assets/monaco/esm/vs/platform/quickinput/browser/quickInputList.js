@@ -32,7 +32,6 @@ import { getCodiconAriaLabel, matchesFuzzyIconAware, parseLabelWithIcons } from 
 import { DisposableStore, dispose } from '../../../base/common/lifecycle.js';
 import * as platform from '../../../base/common/platform.js';
 import { ltrim } from '../../../base/common/strings.js';
-import { withNullAsUndefined } from '../../../base/common/types.js';
 import './media/quickInput.css';
 import { localize } from '../../../nls.js';
 import { getIconClass } from './quickInputUtils.js';
@@ -143,8 +142,8 @@ class ListElement {
     }
 }
 class ListElementRenderer {
-    constructor(colorScheme) {
-        this.colorScheme = colorScheme;
+    constructor(themeService) {
+        this.themeService = themeService;
     }
     get templateId() {
         return ListElementRenderer.ID;
@@ -172,6 +171,7 @@ class ListElementRenderer {
         const row2 = dom.append(rows, $('.quick-input-list-row'));
         // Label
         data.label = new IconLabel(row1, { supportHighlights: true, supportDescriptionHighlights: true, supportIcons: true });
+        data.toDisposeTemplate.push(data.label);
         data.icon = dom.prepend(data.label.element, $('.quick-input-list-icon'));
         // Keybinding
         const keybindingContainer = dom.append(row1, $('.quick-input-list-entry-keybinding'));
@@ -179,6 +179,7 @@ class ListElementRenderer {
         // Detail
         const detailContainer = dom.append(row2, $('.quick-input-list-label-meta'));
         data.detail = new IconLabel(detailContainer, { supportHighlights: true, supportIcons: true });
+        data.toDisposeTemplate.push(data.detail);
         // Separator
         data.separator = dom.append(data.entry, $('.quick-input-list-separator'));
         // Actions
@@ -188,22 +189,22 @@ class ListElementRenderer {
         return data;
     }
     renderElement(element, index, data) {
-        var _a, _b, _c;
+        var _a, _b, _c, _d;
         data.element = element;
-        element.element = withNullAsUndefined(data.entry);
+        element.element = (_a = data.entry) !== null && _a !== void 0 ? _a : undefined;
         const mainItem = element.item ? element.item : element.separator;
         data.checkbox.checked = element.checked;
         data.toDisposeElement.push(element.onChecked(checked => data.checkbox.checked = checked));
         const { labelHighlights, descriptionHighlights, detailHighlights } = element;
-        if ((_a = element.item) === null || _a === void 0 ? void 0 : _a.iconPath) {
-            const icon = isDark(this.colorScheme) ? element.item.iconPath.dark : ((_b = element.item.iconPath.light) !== null && _b !== void 0 ? _b : element.item.iconPath.dark);
+        if ((_b = element.item) === null || _b === void 0 ? void 0 : _b.iconPath) {
+            const icon = isDark(this.themeService.getColorTheme().type) ? element.item.iconPath.dark : ((_c = element.item.iconPath.light) !== null && _c !== void 0 ? _c : element.item.iconPath.dark);
             const iconUrl = URI.revive(icon);
             data.icon.className = 'quick-input-list-icon';
             data.icon.style.backgroundImage = dom.asCSSUrl(iconUrl);
         }
         else {
             data.icon.style.backgroundImage = '';
-            data.icon.className = ((_c = element.item) === null || _c === void 0 ? void 0 : _c.iconClass) ? `quick-input-list-icon ${element.item.iconClass}` : '';
+            data.icon.className = ((_d = element.item) === null || _d === void 0 ? void 0 : _d.iconClass) ? `quick-input-list-icon ${element.item.iconClass}` : '';
         }
         // Label
         const options = {
@@ -311,7 +312,7 @@ export var QuickInputListFocus;
     QuickInputListFocus[QuickInputListFocus["PreviousPage"] = 7] = "PreviousPage";
 })(QuickInputListFocus || (QuickInputListFocus = {}));
 export class QuickInputList {
-    constructor(parent, id, options) {
+    constructor(parent, id, options, themeService) {
         this.parent = parent;
         this.options = options;
         this.inputElements = [];
@@ -346,7 +347,7 @@ export class QuickInputList {
         this.container = dom.append(this.parent, $('.quick-input-list'));
         const delegate = new ListElementDelegate();
         const accessibilityProvider = new QuickInputAccessibilityProvider();
-        this.list = options.createList('QuickInput', this.container, delegate, [new ListElementRenderer(this.options.styles.colorScheme)], {
+        this.list = options.createList('QuickInput', this.container, delegate, [new ListElementRenderer(themeService)], {
             identityProvider: {
                 getId: element => {
                     var _a, _b, _c, _d, _e, _f, _g, _h;
@@ -415,50 +416,53 @@ export class QuickInputList {
                 this.list.setSelection([e.index]);
             }
         }));
-        const delayer = new ThrottledDelayer(options.hoverDelegate.delay);
-        // onMouseOver triggers every time a new element has been moused over
-        // even if it's on the same list item.
-        this.disposables.push(this.list.onMouseOver((e) => __awaiter(this, void 0, void 0, function* () {
-            var _a;
-            // If we hover over an anchor element, we don't want to show the hover because
-            // the anchor may have a tooltip that we want to show instead.
-            if (e.browserEvent.target instanceof HTMLAnchorElement) {
-                delayer.cancel();
-                return;
-            }
-            if (
-            // anchors are an exception as called out above so we skip them here
-            !(e.browserEvent.relatedTarget instanceof HTMLAnchorElement) &&
-                // check if the mouse is still over the same element
-                dom.isAncestor(e.browserEvent.relatedTarget, (_a = e.element) === null || _a === void 0 ? void 0 : _a.element)) {
-                return;
-            }
-            try {
-                yield delayer.trigger(() => __awaiter(this, void 0, void 0, function* () {
-                    if (e.element) {
-                        this.showHover(e.element);
-                    }
-                }));
-            }
-            catch (e) {
-                // Ignore cancellation errors due to mouse out
-                if (!isCancellationError(e)) {
-                    throw e;
+        if (options.hoverDelegate) {
+            const delayer = new ThrottledDelayer(options.hoverDelegate.delay);
+            // onMouseOver triggers every time a new element has been moused over
+            // even if it's on the same list item.
+            this.disposables.push(this.list.onMouseOver((e) => __awaiter(this, void 0, void 0, function* () {
+                var _a;
+                // If we hover over an anchor element, we don't want to show the hover because
+                // the anchor may have a tooltip that we want to show instead.
+                if (e.browserEvent.target instanceof HTMLAnchorElement) {
+                    delayer.cancel();
+                    return;
                 }
-            }
-        })));
-        this.disposables.push(this.list.onMouseOut(e => {
-            var _a;
-            // onMouseOut triggers every time a new element has been moused over
-            // even if it's on the same list item. We only want one event, so we
-            // check if the mouse is still over the same element.
-            if (dom.isAncestor(e.browserEvent.relatedTarget, (_a = e.element) === null || _a === void 0 ? void 0 : _a.element)) {
-                return;
-            }
-            delayer.cancel();
-        }));
+                if (
+                // anchors are an exception as called out above so we skip them here
+                !(e.browserEvent.relatedTarget instanceof HTMLAnchorElement) &&
+                    // check if the mouse is still over the same element
+                    dom.isAncestor(e.browserEvent.relatedTarget, (_a = e.element) === null || _a === void 0 ? void 0 : _a.element)) {
+                    return;
+                }
+                try {
+                    yield delayer.trigger(() => __awaiter(this, void 0, void 0, function* () {
+                        if (e.element) {
+                            this.showHover(e.element);
+                        }
+                    }));
+                }
+                catch (e) {
+                    // Ignore cancellation errors due to mouse out
+                    if (!isCancellationError(e)) {
+                        throw e;
+                    }
+                }
+            })));
+            this.disposables.push(this.list.onMouseOut(e => {
+                var _a;
+                // onMouseOut triggers every time a new element has been moused over
+                // even if it's on the same list item. We only want one event, so we
+                // check if the mouse is still over the same element.
+                if (dom.isAncestor(e.browserEvent.relatedTarget, (_a = e.element) === null || _a === void 0 ? void 0 : _a.element)) {
+                    return;
+                }
+                delayer.cancel();
+            }));
+            this.disposables.push(delayer);
+        }
         this.disposables.push(this._listElementChecked.event(_ => this.fireCheckedEvents()));
-        this.disposables.push(this._onChangedAllVisibleChecked, this._onChangedCheckedCount, this._onChangedVisibleCount, this._onChangedCheckedElements, this._onButtonTriggered, this._onSeparatorButtonTriggered, this._onLeave, this._onKeyDown, delayer);
+        this.disposables.push(this._onChangedAllVisibleChecked, this._onChangedCheckedCount, this._onChangedVisibleCount, this._onChangedCheckedElements, this._onButtonTriggered, this._onSeparatorButtonTriggered, this._onLeave, this._onKeyDown);
     }
     get onDidChangeFocus() {
         return Event.map(this.list.onDidChangeFocus, e => e.elements.map(e => e.item));
@@ -663,6 +667,9 @@ export class QuickInputList {
      */
     showHover(element) {
         var _a, _b, _c;
+        if (this.options.hoverDelegate === undefined) {
+            return;
+        }
         if (this._lastHover && !this._lastHover.isDisposed) {
             (_b = (_a = this.options.hoverDelegate).onDidHideHover) === null || _b === void 0 ? void 0 : _b.call(_a);
             (_c = this._lastHover) === null || _c === void 0 ? void 0 : _c.dispose();
@@ -713,15 +720,16 @@ export class QuickInputList {
         else {
             let currentSeparator;
             this.elements.forEach(element => {
+                var _a, _b, _c, _d;
                 let labelHighlights;
                 if (this.matchOnLabelMode === 'fuzzy') {
-                    labelHighlights = this.matchOnLabel ? withNullAsUndefined(matchesFuzzyIconAware(query, parseLabelWithIcons(element.saneLabel))) : undefined;
+                    labelHighlights = this.matchOnLabel ? (_a = matchesFuzzyIconAware(query, parseLabelWithIcons(element.saneLabel))) !== null && _a !== void 0 ? _a : undefined : undefined;
                 }
                 else {
-                    labelHighlights = this.matchOnLabel ? withNullAsUndefined(matchesContiguousIconAware(queryWithWhitespace, parseLabelWithIcons(element.saneLabel))) : undefined;
+                    labelHighlights = this.matchOnLabel ? (_b = matchesContiguousIconAware(queryWithWhitespace, parseLabelWithIcons(element.saneLabel))) !== null && _b !== void 0 ? _b : undefined : undefined;
                 }
-                const descriptionHighlights = this.matchOnDescription ? withNullAsUndefined(matchesFuzzyIconAware(query, parseLabelWithIcons(element.saneDescription || ''))) : undefined;
-                const detailHighlights = this.matchOnDetail ? withNullAsUndefined(matchesFuzzyIconAware(query, parseLabelWithIcons(element.saneDetail || ''))) : undefined;
+                const descriptionHighlights = this.matchOnDescription ? (_c = matchesFuzzyIconAware(query, parseLabelWithIcons(element.saneDescription || ''))) !== null && _c !== void 0 ? _c : undefined : undefined;
+                const detailHighlights = this.matchOnDetail ? (_d = matchesFuzzyIconAware(query, parseLabelWithIcons(element.saneDetail || ''))) !== null && _d !== void 0 ? _d : undefined : undefined;
                 if (labelHighlights || descriptionHighlights || detailHighlights) {
                     element.labelHighlights = labelHighlights;
                     element.descriptionHighlights = descriptionHighlights;

@@ -22,6 +22,8 @@ import { IContextKeyService, RawContextKey } from '../../contextkey/common/conte
 import { IContextViewService } from '../../contextview/browser/contextView.js';
 import { registerSingleton } from '../../instantiation/common/extensions.js';
 import { createDecorator, IInstantiationService } from '../../instantiation/common/instantiation.js';
+import { inputActiveOptionBackground, registerColor } from '../../theme/common/colorRegistry.js';
+registerColor('actionBar.toggledBackground', { dark: inputActiveOptionBackground, light: inputActiveOptionBackground, hcDark: inputActiveOptionBackground, hcLight: inputActiveOptionBackground, }, localize('actionBar.toggledBackground', 'Background color for toggled action items in action bar.'));
 const ActionWidgetContextKeys = {
     Visible: new RawContextKey('codeActionMenuVisible', false, localize('codeActionMenuVisible', "Whether the action widget list is visible"))
 };

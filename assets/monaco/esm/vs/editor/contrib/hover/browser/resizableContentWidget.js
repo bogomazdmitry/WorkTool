@@ -60,7 +60,7 @@ export class ResizableContentWidget extends Disposable {
             return;
         }
         const editorBox = dom.getDomNodePagePosition(editorDomNode);
-        const bodyBox = dom.getClientArea(document.body);
+        const bodyBox = dom.getClientArea(editorDomNode.ownerDocument.body);
         const mouseBottom = editorBox.top + mouseBox.top + mouseBox.height;
         return bodyBox.height - mouseBottom - BOTTOM_HEIGHT;
     }
@@ -71,7 +71,7 @@ export class ResizableContentWidget extends Disposable {
         const maxHeight = Math.min(Math.max(maxHeightAbove, maxHeightBelow), widgetHeight);
         const height = Math.min(widgetHeight, maxHeight);
         let renderingAbove;
-        if (this._editor.getOption(59 /* EditorOption.hover */).above) {
+        if (this._editor.getOption(60 /* EditorOption.hover */).above) {
             renderingAbove = height <= maxHeightAbove ? 1 /* ContentWidgetPositionPreference.ABOVE */ : 2 /* ContentWidgetPositionPreference.BELOW */;
         }
         else {

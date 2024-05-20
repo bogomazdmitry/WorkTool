@@ -20,6 +20,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var AbstractGotoSymbolQuickAccessProvider_1;
 import { DeferredPromise } from '../../../../base/common/async.js';
 import { CancellationTokenSource } from '../../../../base/common/cancellation.js';
 import { Codicon } from '../../../../base/common/codicons.js';
@@ -33,8 +34,8 @@ import { IOutlineModelService } from '../../documentSymbols/browser/outlineModel
 import { AbstractEditorNavigationQuickAccessProvider } from './editorNavigationQuickAccess.js';
 import { localize } from '../../../../nls.js';
 import { ILanguageFeaturesService } from '../../../common/services/languageFeatures.js';
-import { findLast } from '../../../../base/common/arrays.js';
-let AbstractGotoSymbolQuickAccessProvider = class AbstractGotoSymbolQuickAccessProvider extends AbstractEditorNavigationQuickAccessProvider {
+import { findLast } from '../../../../base/common/arraysFind.js';
+let AbstractGotoSymbolQuickAccessProvider = AbstractGotoSymbolQuickAccessProvider_1 = class AbstractGotoSymbolQuickAccessProvider extends AbstractEditorNavigationQuickAccessProvider {
     constructor(_languageFeaturesService, _outlineModelService, options = Object.create(null)) {
         super(options);
         this._languageFeaturesService = _languageFeaturesService;
@@ -136,7 +137,7 @@ let AbstractGotoSymbolQuickAccessProvider = class AbstractGotoSymbolQuickAccessP
             // Collect symbol picks
             picker.busy = true;
             try {
-                const query = prepareQuery(picker.value.substr(AbstractGotoSymbolQuickAccessProvider.PREFIX.length).trim());
+                const query = prepareQuery(picker.value.substr(AbstractGotoSymbolQuickAccessProvider_1.PREFIX.length).trim());
                 const items = yield this.doGetSymbolPicks(symbolsPromise, query, undefined, picksCts.token);
                 if (token.isCancellationRequested) {
                     return;
@@ -186,7 +187,7 @@ let AbstractGotoSymbolQuickAccessProvider = class AbstractGotoSymbolQuickAccessP
             if (token.isCancellationRequested) {
                 return [];
             }
-            const filterBySymbolKind = query.original.indexOf(AbstractGotoSymbolQuickAccessProvider.SCOPE_PREFIX) === 0;
+            const filterBySymbolKind = query.original.indexOf(AbstractGotoSymbolQuickAccessProvider_1.SCOPE_PREFIX) === 0;
             const filterPos = filterBySymbolKind ? 1 : 0;
             // Split between symbol and container query
             let symbolQuery;
@@ -367,8 +368,8 @@ let AbstractGotoSymbolQuickAccessProvider = class AbstractGotoSymbolQuickAccessP
 };
 AbstractGotoSymbolQuickAccessProvider.PREFIX = '@';
 AbstractGotoSymbolQuickAccessProvider.SCOPE_PREFIX = ':';
-AbstractGotoSymbolQuickAccessProvider.PREFIX_BY_CATEGORY = `${AbstractGotoSymbolQuickAccessProvider.PREFIX}${AbstractGotoSymbolQuickAccessProvider.SCOPE_PREFIX}`;
-AbstractGotoSymbolQuickAccessProvider = __decorate([
+AbstractGotoSymbolQuickAccessProvider.PREFIX_BY_CATEGORY = `${AbstractGotoSymbolQuickAccessProvider_1.PREFIX}${AbstractGotoSymbolQuickAccessProvider_1.SCOPE_PREFIX}`;
+AbstractGotoSymbolQuickAccessProvider = AbstractGotoSymbolQuickAccessProvider_1 = __decorate([
     __param(0, ILanguageFeaturesService),
     __param(1, IOutlineModelService)
 ], AbstractGotoSymbolQuickAccessProvider);

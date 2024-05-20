@@ -2,7 +2,7 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-import { findLast } from '../../../base/common/arrays.js';
+import { findLast } from '../../../base/common/arraysFind.js';
 import * as strings from '../../../base/common/strings.js';
 import { CursorColumns } from '../core/cursorColumns.js';
 import { Range } from '../core/range.js';

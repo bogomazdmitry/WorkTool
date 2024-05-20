@@ -18,6 +18,7 @@ import { Range } from '../common/core/range.js';
 import { EditorContextKeys } from '../common/editorContextKeys.js';
 import { ContextKeyExpr } from '../../platform/contextkey/common/contextkey.js';
 import { KeybindingsRegistry } from '../../platform/keybinding/common/keybindingsRegistry.js';
+import { getActiveElement } from '../../base/browser/dom.js';
 const CORE_WEIGHT = 0 /* KeybindingWeight.EditorCore */;
 export class CoreEditorCommand extends EditorCommand {
     runEditorCommand(accessor, editor, args) {
@@ -233,9 +234,9 @@ class EditorOrNativeTextInputCommand {
         // 2. handle case when focus is in some other `input` / `textarea`.
         target.addImplementation(1000, 'generic-dom-input-textarea', (accessor, args) => {
             // Only if focused on an element that allows for entering text
-            const activeElement = document.activeElement;
+            const activeElement = getActiveElement();
             if (activeElement && ['input', 'textarea'].indexOf(activeElement.tagName.toLowerCase()) >= 0) {
-                this.runDOMCommand();
+                this.runDOMCommand(activeElement);
                 return true;
             }
             return false;
@@ -1479,12 +1480,12 @@ export var CoreNavigationCommands;
         constructor() {
             super(SelectAllCommand);
         }
-        runDOMCommand() {
+        runDOMCommand(activeElement) {
             if (isFirefox) {
-                document.activeElement.focus();
-                document.activeElement.select();
+                activeElement.focus();
+                activeElement.select();
             }
-            document.execCommand('selectAll');
+            activeElement.ownerDocument.execCommand('selectAll');
         }
         runEditorCommand(accessor, editor, args) {
             const viewModel = editor._getViewModel();
@@ -1654,11 +1655,11 @@ export var CoreEditingCommands;
         constructor() {
             super(UndoCommand);
         }
-        runDOMCommand() {
-            document.execCommand('undo');
+        runDOMCommand(activeElement) {
+            activeElement.ownerDocument.execCommand('undo');
         }
         runEditorCommand(accessor, editor, args) {
-            if (!editor.hasModel() || editor.getOption(89 /* EditorOption.readOnly */) === true) {
+            if (!editor.hasModel() || editor.getOption(90 /* EditorOption.readOnly */) === true) {
                 return;
             }
             return editor.getModel().undo();
@@ -1668,11 +1669,11 @@ export var CoreEditingCommands;
         constructor() {
             super(RedoCommand);
         }
-        runDOMCommand() {
-            document.execCommand('redo');
+        runDOMCommand(activeElement) {
+            activeElement.ownerDocument.execCommand('redo');
         }
         runEditorCommand(accessor, editor, args) {
-            if (!editor.hasModel() || editor.getOption(89 /* EditorOption.readOnly */) === true) {
+            if (!editor.hasModel() || editor.getOption(90 /* EditorOption.readOnly */) === true) {
                 return;
             }
             return editor.getModel().redo();
