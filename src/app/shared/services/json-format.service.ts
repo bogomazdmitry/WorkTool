@@ -16,7 +16,7 @@ export class JsonFormatService {
     }
 
     if (Array.isArray(obj)) {
-      return obj.map(this.sortObjectKeys);
+      return obj.map(this.sortObjectKeys.bind(this));
     }
 
     const sortedKeys = Object.keys(obj).sort();
