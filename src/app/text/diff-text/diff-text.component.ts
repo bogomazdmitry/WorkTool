@@ -1,4 +1,5 @@
 import {
+  AfterViewInit,
   Component,
   HostListener,
   OnDestroy,
@@ -8,13 +9,15 @@ import {
 import { DiffEditorComponent } from 'ngx-monaco-editor-v2';
 import { STORAGE_KEYS } from 'app/shared/static/local-storage-keys';
 import { ThemeService } from '../../shared/services/theme.service';
+import { AllowIn, ShortcutInput } from 'ng-keyboard-shortcuts';
+import { JsonFormatService } from 'app/shared/services/json-format.service';
 
 @Component({
   selector: 'app-diff-text',
   templateUrl: './diff-text.component.html',
   styleUrls: ['./diff-text.component.scss'],
 })
-export class DiffTextComponent implements OnInit, OnDestroy {
+export class DiffTextComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild(DiffEditorComponent) public diffEditorComponent:
     | DiffEditorComponent
     | undefined;
@@ -27,15 +30,19 @@ export class DiffTextComponent implements OnInit, OnDestroy {
   public editor: any;
   public modifiedModel = {
     code: '',
-    language: 'text/plain',
+    language: 'json',
   };
   public originalModel = {
     code: '',
-    language: 'text/plain',
+    language: 'json',
   };
   public wrapText = false;
+  shortcuts: ShortcutInput[] = [];
 
-  constructor(private themeService: ThemeService) {
+  constructor(
+    private themeService: ThemeService,
+    private jsonFormatService: JsonFormatService
+  ) {
     this.codeEditorOptions.theme = this.themeService.getVsTheme();
 
     this.themeService.getChangingThemeSubject().subscribe(() => {
@@ -86,6 +93,14 @@ export class DiffTextComponent implements OnInit, OnDestroy {
     }
   }
 
+  ngAfterViewInit(): void {
+    this.shortcuts.push({
+      key: 'cmd + alt + f',
+      allowIn: [AllowIn.Textarea, AllowIn.Input, AllowIn.ContentEditable],
+      command: this.jsonFormat.bind(this),
+    });
+  }
+
   public onInitEditor(editor: any) {
     this.editor = editor;
     editor.getModel().original.onDidChangeContent(() => {
@@ -111,6 +126,26 @@ export class DiffTextComponent implements OnInit, OnDestroy {
     };
   }
 
+  public jsonFormat(): void {
+    try {
+      this.originalModel = {
+        ...this.originalModel,
+        code: this.jsonFormatService.jsonFormat(this.getOriginalText()),
+      };
+    } catch (e) {
+      console.error('Invalid JSON in original', e);
+    }
+
+    try {
+      this.originalModel = {
+        ...this.originalModel,
+        code: this.jsonFormatService.jsonFormat(this.getModifiedText()),
+      };
+    } catch (e) {
+      console.error('Invalid JSON in modified', e);
+    }
+  }
+
   public saveModel() {
     this.saveText();
     this.saveSettings();
@@ -131,5 +166,22 @@ export class DiffTextComponent implements OnInit, OnDestroy {
   public saveText() {
     this.saveOriginalText();
     this.saveModifiedText();
+  }
+
+  private sortObjectKeys(obj: any): any {
+    if (typeof obj !== 'object' || obj === null) {
+      return obj;
+    }
+
+    if (Array.isArray(obj)) {
+      return obj.map(this.sortObjectKeys);
+    }
+
+    const sortedKeys = Object.keys(obj).sort();
+    const result: any = {};
+    for (const key of sortedKeys) {
+      result[key] = this.sortObjectKeys(obj[key]);
+    }
+    return result;
   }
 }

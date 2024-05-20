@@ -4,9 +4,13 @@ import {
   HostListener,
   OnDestroy,
   OnInit,
+  ViewChild,
 } from '@angular/core';
+import { EditorComponent } from 'ngx-monaco-editor-v2';
 import { STORAGE_KEYS } from 'app/shared/static/local-storage-keys';
+import { ThemeService } from '../../shared/services/theme.service';
 import { ShortcutInput, AllowIn } from 'ng-keyboard-shortcuts';
+import { JsonFormatService } from 'app/shared/services/json-format.service';
 
 @Component({
   selector: 'app-text-format',
@@ -14,8 +18,35 @@ import { ShortcutInput, AllowIn } from 'ng-keyboard-shortcuts';
   styleUrls: ['./text-format.component.scss'],
 })
 export class TextFormatComponent implements OnInit, AfterViewInit, OnDestroy {
+  @ViewChild('monacoEditor')
+  monacoEditor!: EditorComponent;
+
+  public codeEditorOptions = {
+    theme: 'vs-light',
+    language: 'json',
+    automaticLayout: true,
+    minimap: {
+      enabled: false,
+    },
+    formatOnPaste: true,
+    formatOnType: true,
+  };
   public text = '';
   shortcuts: ShortcutInput[] = [];
+
+  constructor(
+    private themeService: ThemeService,
+    private jsonFormatService: JsonFormatService
+  ) {
+    this.codeEditorOptions.theme = this.themeService.getVsTheme();
+
+    this.themeService.getChangingThemeSubject().subscribe(() => {
+      this.codeEditorOptions = {
+        ...this.codeEditorOptions,
+        theme: this.themeService.getVsTheme(),
+      };
+    });
+  }
 
   @HostListener('window:beforeunload', ['$event'])
   public onBeforeUnload() {
@@ -40,11 +71,28 @@ export class TextFormatComponent implements OnInit, AfterViewInit, OnDestroy {
         command: this.invertCase.bind(this),
       },
       {
-        key: 'cmd + alt + f',
+        key: 'cmd + alt + p',
         allowIn: [AllowIn.Textarea, AllowIn.Input],
         command: this.pdfFormat.bind(this),
+      },
+      {
+        key: 'cmd + alt + e',
+        allowIn: [AllowIn.Textarea, AllowIn.Input],
+        command: this.jsonFormat.bind(this),
       }
     );
+  }
+
+  public jsonFormat(): void {
+    this.text = this.jsonFormatService.jsonFormat(this.text);
+  }
+
+  public toLowerCase() {
+    this.text = this.text.toLowerCase();
+  }
+
+  public toUpperCase() {
+    this.text = this.text.toUpperCase();
   }
 
   public invertCase() {
@@ -71,22 +119,14 @@ export class TextFormatComponent implements OnInit, AfterViewInit, OnDestroy {
     this.saveText();
   }
 
-  public ngOnInit() {
-    const savedText = localStorage.getItem(STORAGE_KEYS.formatText.text);
+  public ngOnInit(): void {
+    const savedText = localStorage.getItem(STORAGE_KEYS.jsonFormatText.text);
     if (savedText !== null) {
       this.text = savedText;
     }
   }
 
   public saveText() {
-    localStorage.setItem(STORAGE_KEYS.formatText.text, this.text);
-  }
-
-  public toLowerCase() {
-    this.text = this.text.toLowerCase();
-  }
-
-  public toUpperCase() {
-    this.text = this.text.toUpperCase();
+    localStorage.setItem(STORAGE_KEYS.jsonFormatText.text, this.text);
   }
 }
