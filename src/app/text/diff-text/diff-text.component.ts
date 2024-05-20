@@ -137,8 +137,8 @@ export class DiffTextComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     try {
-      this.originalModel = {
-        ...this.originalModel,
+      this.modifiedModel = {
+        ...this.modifiedModel,
         code: this.jsonFormatService.jsonFormat(this.getModifiedText()),
       };
     } catch (e) {
@@ -166,22 +166,5 @@ export class DiffTextComponent implements OnInit, AfterViewInit, OnDestroy {
   public saveText() {
     this.saveOriginalText();
     this.saveModifiedText();
-  }
-
-  private sortObjectKeys(obj: any): any {
-    if (typeof obj !== 'object' || obj === null) {
-      return obj;
-    }
-
-    if (Array.isArray(obj)) {
-      return obj.map(this.sortObjectKeys);
-    }
-
-    const sortedKeys = Object.keys(obj).sort();
-    const result: any = {};
-    for (const key of sortedKeys) {
-      result[key] = this.sortObjectKeys(obj[key]);
-    }
-    return result;
   }
 }
