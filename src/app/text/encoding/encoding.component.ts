@@ -9,6 +9,7 @@ import { EditorComponent } from 'ngx-monaco-editor-v2';
 import * as pako from 'pako';
 import { ThemeService } from 'app/shared/services/theme.service';
 import { STORAGE_KEYS } from 'app/shared/static/local-storage-keys';
+import { JsonFormatService } from 'app/shared/services/json-format.service';
 
 @Component({
   selector: 'app-encoding',
@@ -53,7 +54,10 @@ export class EncodingComponent implements OnInit, OnDestroy {
     wordWrap: 'on',
   };
 
-  constructor(private themeService: ThemeService) {
+  constructor(
+    private themeService: ThemeService,
+    private jsonFormatService: JsonFormatService
+  ) {
     this.codeEditorOptionsInput.theme = this.themeService.getVsTheme();
     this.codeEditorOptionsOutput.theme = this.themeService.getVsTheme();
 
@@ -157,10 +161,17 @@ export class EncodingComponent implements OnInit, OnDestroy {
     localStorage.setItem(STORAGE_KEYS.encoding.right, this.rightText);
   }
 
-  public format(): void {
-    this.monacoEditorOutput['_editor']
-      .getAction('editor.action.formatDocument')
-      .run();
+  public formatJson(): void {
+    try {
+      this.leftText = this.jsonFormatService.jsonFormat(this.leftText);
+    } catch {
+      // skip error handling
+    }
+    try {
+      this.rightText = this.jsonFormatService.jsonFormat(this.rightText);
+    } catch {
+      // skip error handling
+    }
   }
 
   ngOnDestroy() {
