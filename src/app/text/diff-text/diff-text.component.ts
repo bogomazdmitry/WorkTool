@@ -26,6 +26,7 @@ export class DiffTextComponent implements OnInit, AfterViewInit, OnDestroy {
     originalEditable: true,
     readOnly: false,
     wordWrap: this.getWrappedText(),
+    useInlineViewWhenSpaceIsLimited: false,
   };
   public editor: any;
   public modifiedModel = {

@@ -20,6 +20,7 @@ export class CheckEnglishComponent implements OnInit, AfterViewInit, OnDestroy {
   public codeEditorOptions = {
     theme: 'vs-dark',
     wordWrap: 'on',
+    useInlineViewWhenSpaceIsLimited: false,
   };
   public diffHidden = true;
   public leftText = '';
