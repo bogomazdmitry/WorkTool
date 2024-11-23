@@ -95,11 +95,18 @@ export class DiffTextComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngAfterViewInit(): void {
-    this.shortcuts.push({
-      key: 'cmd + alt + f',
-      allowIn: [AllowIn.Textarea, AllowIn.Input, AllowIn.ContentEditable],
-      command: this.jsonFormat.bind(this),
-    });
+    this.shortcuts.push(
+      {
+        key: 'cmd + alt + f',
+        allowIn: [AllowIn.Textarea, AllowIn.Input, AllowIn.ContentEditable],
+        command: this.jsonFormat.bind(this),
+      },
+      {
+        key: 'cmd + alt + s',
+        allowIn: [AllowIn.Textarea, AllowIn.Input, AllowIn.ContentEditable],
+        command: this.jsonSort.bind(this),
+      }
+    );
   }
 
   public onInitEditor(editor: any) {
@@ -129,25 +136,41 @@ export class DiffTextComponent implements OnInit, AfterViewInit, OnDestroy {
 
   public jsonFormat(): void {
     try {
-      this.editor.getModel().original.setValue(this.jsonFormatService.jsonFormat(this.getOriginalText()));
+      this.editor
+        .getModel()
+        .original.setValue(
+          this.jsonFormatService.jsonFormat(this.getOriginalText())
+        );
     } catch (e) {
       console.error('Invalid JSON in original', e);
     }
     try {
-      this.editor.getModel().modified.setValue(this.jsonFormatService.jsonFormat(this.getModifiedText()));
+      this.editor
+        .getModel()
+        .modified.setValue(
+          this.jsonFormatService.jsonFormat(this.getModifiedText())
+        );
     } catch (e) {
       console.error('Invalid JSON in modified', e);
     }
   }
 
-  public jsonFormatAndSortKeyObjects(): void {
+  public jsonSort(): void {
     try {
-      this.editor.getModel().original.setValue(this.jsonFormatService.jsonSort(this.getOriginalText()));
+      this.editor
+        .getModel()
+        .original.setValue(
+          this.jsonFormatService.jsonSort(this.getOriginalText())
+        );
     } catch (e) {
       console.error('Invalid JSON in original', e);
     }
     try {
-      this.editor.getModel().modified.setValue(this.jsonFormatService.jsonSort(this.getModifiedText()));
+      this.editor
+        .getModel()
+        .modified.setValue(
+          this.jsonFormatService.jsonSort(this.getModifiedText())
+        );
     } catch (e) {
       console.error('Invalid JSON in modified', e);
     }

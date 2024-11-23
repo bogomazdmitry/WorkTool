@@ -96,7 +96,6 @@ export class TextFormatComponent implements OnInit, AfterViewInit, OnDestroy {
     this.text = this.jsonFormatService.jsonSort(this.text);
   }
 
-
   public toLowerCase() {
     this.text = this.text.toLowerCase();
   }
