@@ -117,6 +117,7 @@ export class DiffTextComponent implements OnInit, AfterViewInit, OnDestroy {
     editor.getModel().modified.onDidChangeContent(() => {
       this.saveModifiedText();
     });
+    this.moveToOriginal();
   }
 
   public onWrapToggleChange(): void {
@@ -196,5 +197,27 @@ export class DiffTextComponent implements OnInit, AfterViewInit, OnDestroy {
   public saveText() {
     this.saveOriginalText();
     this.saveModifiedText();
+  }
+
+  private moveToOriginal(): void {
+    this.moveTo(
+      this.editor.getOriginalEditor(),
+      this.editor.getModel().original
+    );
+  }
+
+  private moveToModified(): void {
+    this.moveTo(
+      this.editor.getModifiedEditor(),
+      this.editor.getModel().modified
+    );
+  }
+
+  private moveTo(editor: any, textEditor: any): void {
+    editor.focus();
+    const range = textEditor.getFullModelRange();
+    console.log(this.editor.setSelection);
+    console.log(range);
+    editor.setSelection(range);
   }
 }
