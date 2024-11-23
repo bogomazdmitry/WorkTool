@@ -1,0 +1,20 @@
+<div class="card h-100">
+    <div class="card-body d-flex flex-column gap-3 h-100">
+        <div class="d-flex gap-2 flex-wrap justify-content-center align-items-end">
+            <div class="btn-group">
+                <button class="btn" mat-raised-button color="primary" (click)="convertCurlToPython()">Curl to
+                    python</button>
+            </div>
+        </div>
+        <div class="h-100 d-flex flex-column">
+            <div class="d-flex gap-2 h-100 right-left-container">
+                <ngx-monaco-editor focusOnInit #monacoEditorInput [options]="codeEditorOptionsInput"
+                    [(ngModel)]="leftText" class="left h-100"
+                    [ngStyle]="{'width': leftWidth + '%'}"></ngx-monaco-editor>
+                <div class="divider" (mousedown)="onMouseDown($event)"></div>
+                <ngx-monaco-editor #monacoEditorOutput [options]="codeEditorOptionsOutput" [(ngModel)]="rightText"
+                    class="right h-100" [ngStyle]="{'width': rightWidth + '%'}"></ngx-monaco-editor>
+            </div>
+        </div>
+    </div>
+</div>

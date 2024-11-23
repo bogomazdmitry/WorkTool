@@ -111,9 +111,7 @@ export class EncodingComponent implements OnInit, OnDestroy {
     const containerWidth = (
       document.querySelector('.right-left-container') as HTMLElement
     ).offsetWidth;
-    const moveX = event.clientX - this.startX; // насколько сместился курсор
-
-    // Вычисляем новую ширину левой части в процентах
+    const moveX = event.clientX - this.startX;
     this.leftWidth = ((this.startWidth + moveX) / containerWidth) * 100;
     this.rightWidth = 100 - this.leftWidth;
   };

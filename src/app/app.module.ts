@@ -10,11 +10,13 @@ import { RedirectComponent } from './redirect.component';
 import { ServiceWorkerModule } from '@angular/service-worker';
 import { AngularFireModule } from '@angular/fire/compat';
 import { AngularFirestoreModule } from '@angular/fire/compat/firestore';
+import { HttpModule } from './http/http.module';
 
 @NgModule({
   declarations: [AppComponent, RedirectComponent],
   imports: [
     TextModule,
+    HttpModule,
     ChatGptModule,
     AppRoutingModule,
     SharedModule,
