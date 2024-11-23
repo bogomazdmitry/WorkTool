@@ -23,6 +23,7 @@ export const STORAGE_KEYS = {
     left: 'left-diff-text',
     right: 'right-diff-text',
     wrap: 'wrap-diff-text',
+    autoSelect: 'auto-select-text',
   },
   theme: 'theme',
   wide: 'wide',

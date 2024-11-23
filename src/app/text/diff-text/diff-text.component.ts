@@ -38,6 +38,7 @@ export class DiffTextComponent implements OnInit, AfterViewInit, OnDestroy {
     language: 'json',
   };
   public wrapText = false;
+  public autoSelect = true;
   shortcuts: ShortcutInput[] = [];
 
   constructor(
@@ -92,6 +93,12 @@ export class DiffTextComponent implements OnInit, AfterViewInit, OnDestroy {
         wordWrap: this.getWrappedText(),
       };
     }
+    const savedAutoSelecting = localStorage.getItem(
+      STORAGE_KEYS.diffText.autoSelect
+    );
+    if (savedAutoSelecting !== null) {
+      this.autoSelect = savedAutoSelecting === 'true';
+    }
   }
 
   ngAfterViewInit(): void {
@@ -117,7 +124,13 @@ export class DiffTextComponent implements OnInit, AfterViewInit, OnDestroy {
     editor.getModel().modified.onDidChangeContent(() => {
       this.saveModifiedText();
     });
-    this.moveToOriginal();
+    if (this.autoSelect) {
+      this.autoSelectingFeature();
+    }
+  }
+
+  public onAutoSelectingToggleChange(): void {
+    window.location.reload();
   }
 
   public onWrapToggleChange(): void {
@@ -192,6 +205,10 @@ export class DiffTextComponent implements OnInit, AfterViewInit, OnDestroy {
 
   public saveSettings() {
     localStorage.setItem(STORAGE_KEYS.diffText.wrap, String(this.wrapText));
+    localStorage.setItem(
+      STORAGE_KEYS.diffText.autoSelect,
+      String(this.autoSelect)
+    );
   }
 
   public saveText() {
@@ -200,24 +217,53 @@ export class DiffTextComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   private moveToOriginal(): void {
-    this.moveTo(
-      this.editor.getOriginalEditor(),
-      this.editor.getModel().original
-    );
+    this.moveTo(this.editor.getOriginalEditor());
   }
 
   private moveToModified(): void {
-    this.moveTo(
-      this.editor.getModifiedEditor(),
-      this.editor.getModel().modified
-    );
+    this.moveTo(this.editor.getModifiedEditor());
   }
 
-  private moveTo(editor: any, textEditor: any): void {
+  private moveTo(editor: any): void {
     editor.focus();
-    const range = textEditor.getFullModelRange();
-    console.log(this.editor.setSelection);
-    console.log(range);
+    const range = editor.getModel().getFullModelRange();
     editor.setSelection(range);
+  }
+
+  private autoSelectingFeature() {
+    this.moveToOriginal();
+    this.editor
+      .getModifiedEditor()
+      .onDidChangeModelContent((event: { changes: any[] }) => {
+        event.changes.forEach((change: { text: string | string[] }) => {
+          if (change.text.length > 2) {
+            if (this.isAllTextSelected(this.editor.getModifiedEditor())) {
+              this.moveToOriginal();
+            }
+          }
+        });
+      });
+    this.editor
+      .getOriginalEditor()
+      .onDidChangeModelContent((event: { changes: any[] }) => {
+        event.changes.forEach((change: { text: string | string[] }) => {
+          if (change.text.length > 2) {
+            if (this.isAllTextSelected(this.editor.getOriginalEditor())) {
+              this.moveToModified();
+            }
+          }
+        });
+      });
+  }
+
+  private isAllTextSelected(editor: any) {
+    const model = editor.getModel();
+    const selection = editor.getSelection();
+    const fullRange = model.getFullModelRange();
+
+    return (
+      selection.endLineNumber === fullRange.endLineNumber &&
+      selection.endColumn === fullRange.endColumn
+    );
   }
 }
