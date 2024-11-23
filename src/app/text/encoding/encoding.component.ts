@@ -141,6 +141,23 @@ export class EncodingComponent implements OnInit, OnDestroy {
     const binaryString = String.fromCharCode(...compressed);
     this.rightText = btoa(binaryString);
   }
+  base64Encode() {
+    try {
+      this.rightText = btoa(unescape(encodeURIComponent(this.leftText)));
+    } catch (e) {
+      console.error('Error encoding to Base64:', e);
+      this.rightText = 'Invalid input for Base64 encoding';
+    }
+  }
+
+  base64Decode() {
+    try {
+      this.rightText = decodeURIComponent(escape(atob(this.leftText)));
+    } catch (e) {
+      console.error('Error decoding Base64:', e);
+      this.rightText = 'Invalid Base64 input';
+    }
+  }
 
   urlDecode() {
     this.rightText = decodeURIComponent(this.leftText);
