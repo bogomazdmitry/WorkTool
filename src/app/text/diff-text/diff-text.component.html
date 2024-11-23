@@ -5,6 +5,10 @@
         <button class="btn" mat-raised-button color="primary" matTooltip="CMD/Ctrl + Alt + F" (click)="jsonFormat()">
           Json format
         </button>
+        <button class="btn" mat-raised-button color="primary" matTooltip="CMD/Ctrl + Alt + F"
+          (click)="jsonFormatAndSortKeyObjects()">
+          Json sort
+        </button>
       </div>
       <div>
         <mat-slide-toggle [(ngModel)]="wrapText" (change)="onWrapToggleChange()">

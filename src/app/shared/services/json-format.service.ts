@@ -6,6 +6,11 @@ import { Injectable } from '@angular/core';
 export class JsonFormatService {
   public jsonFormat(text: string): string {
     let modifiedJson = JSON.parse(text);
+    return JSON.stringify(modifiedJson, null, 2);
+  }
+
+  public jsonSort(text: string): string {
+    let modifiedJson = JSON.parse(text);
     modifiedJson = this.sortObjectKeys(modifiedJson);
     return JSON.stringify(modifiedJson, null, 2);
   }

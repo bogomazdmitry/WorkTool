@@ -129,19 +129,25 @@ export class DiffTextComponent implements OnInit, AfterViewInit, OnDestroy {
 
   public jsonFormat(): void {
     try {
-      this.originalModel = {
-        ...this.originalModel,
-        code: this.jsonFormatService.jsonFormat(this.getOriginalText()),
-      };
+      this.editor.getModel().original.setValue(this.jsonFormatService.jsonFormat(this.getOriginalText()));
     } catch (e) {
       console.error('Invalid JSON in original', e);
     }
-
     try {
-      this.modifiedModel = {
-        ...this.modifiedModel,
-        code: this.jsonFormatService.jsonFormat(this.getModifiedText()),
-      };
+      this.editor.getModel().modified.setValue(this.jsonFormatService.jsonFormat(this.getModifiedText()));
+    } catch (e) {
+      console.error('Invalid JSON in modified', e);
+    }
+  }
+
+  public jsonFormatAndSortKeyObjects(): void {
+    try {
+      this.editor.getModel().original.setValue(this.jsonFormatService.jsonSort(this.getOriginalText()));
+    } catch (e) {
+      console.error('Invalid JSON in original', e);
+    }
+    try {
+      this.editor.getModel().modified.setValue(this.jsonFormatService.jsonSort(this.getModifiedText()));
     } catch (e) {
       console.error('Invalid JSON in modified', e);
     }

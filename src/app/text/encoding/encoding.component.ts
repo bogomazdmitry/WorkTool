@@ -161,7 +161,7 @@ export class EncodingComponent implements OnInit, OnDestroy {
     localStorage.setItem(STORAGE_KEYS.encoding.right, this.rightText);
   }
 
-  public formatJson(): void {
+  public jsonFormat(): void {
     try {
       this.leftText = this.jsonFormatService.jsonFormat(this.leftText);
     } catch {
@@ -169,6 +169,19 @@ export class EncodingComponent implements OnInit, OnDestroy {
     }
     try {
       this.rightText = this.jsonFormatService.jsonFormat(this.rightText);
+    } catch {
+      // skip error handling
+    }
+  }
+
+  public jsonSort(): void {
+    try {
+      this.leftText = this.jsonFormatService.jsonSort(this.leftText);
+    } catch {
+      // skip error handling
+    }
+    try {
+      this.rightText = this.jsonFormatService.jsonSort(this.rightText);
     } catch {
       // skip error handling
     }

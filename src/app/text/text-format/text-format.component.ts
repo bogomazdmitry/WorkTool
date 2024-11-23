@@ -79,6 +79,11 @@ export class TextFormatComponent implements OnInit, AfterViewInit, OnDestroy {
         key: 'cmd + alt + e',
         allowIn: [AllowIn.Textarea, AllowIn.Input],
         command: this.jsonFormat.bind(this),
+      },
+      {
+        key: 'cmd + alt + s',
+        allowIn: [AllowIn.Textarea, AllowIn.Input],
+        command: this.jsonSort.bind(this),
       }
     );
   }
@@ -86,6 +91,11 @@ export class TextFormatComponent implements OnInit, AfterViewInit, OnDestroy {
   public jsonFormat(): void {
     this.text = this.jsonFormatService.jsonFormat(this.text);
   }
+
+  public jsonSort(): void {
+    this.text = this.jsonFormatService.jsonSort(this.text);
+  }
+
 
   public toLowerCase() {
     this.text = this.text.toLowerCase();
