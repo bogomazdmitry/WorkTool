@@ -73,48 +73,149 @@ export class CurlToPythonComponent {
     const pythonScript = this.parseCurlToPython(this.leftText);
     this.rightText = pythonScript || 'Could not parse the CURL command.';
   }
-
   parseCurlToPython(curl: string): string {
     try {
-      const lines = curl.split('\\\n').join(' ').split(' ');
-      const url = lines.find((line) => line.startsWith('http')) || '';
+      curl = curl.replace(/^\s*curl\s+/, '');
+
+      const parts: string[] = [];
+      let current = '';
+      let inQuotes = false;
+      let quoteChar = '';
+
+      const chars = curl.replace(/\\\n/g, ' ').split('');
+
+      for (const char of chars) {
+        if ((char === '"' || char === "'") && !inQuotes) {
+          inQuotes = true;
+          quoteChar = char;
+          continue;
+        }
+        if (char === quoteChar && inQuotes) {
+          inQuotes = false;
+          quoteChar = '';
+          continue;
+        }
+        if (char === ' ' && !inQuotes) {
+          if (current) {
+            parts.push(current);
+            current = '';
+          }
+          continue;
+        }
+        current += char;
+      }
+      if (current) {
+        parts.push(current);
+      }
+
+      let url = '';
       const headers: { [key: string]: string } = {};
-      const data: { [key: string]: any } = {};
+      const cookies: { [key: string]: string } = {};
+      let data: any = {};
       let method = 'get';
 
-      // Parse through the CURL lines
-      for (let i = 0; i < lines.length; i++) {
-        const line = lines[i].trim();
+      for (let i = 0; i < parts.length; i++) {
+        const part = parts[i];
 
-        if (line === '-X') {
-          method = lines[i + 1].toLowerCase();
-          i++;
-        } else if (line === '-H') {
-          const [key, value] = lines[i + 1].split(':').map((s) => s.trim());
-          headers[key] = value;
-          i++;
-        } else if (line === '-d' || line === '--data') {
-          const body = lines[i + 1];
-          Object.assign(data, JSON.parse(body));
-          i++;
+        if (part.startsWith('http://') || part.startsWith('https://')) {
+          url = part.replace(/["']/g, '');
+          continue;
+        }
+
+        switch (part) {
+          case '-X':
+          case '--request':
+            if (i + 1 < parts.length) {
+              method = parts[++i].toLowerCase();
+            }
+            break;
+
+          case '-H':
+          case '--header':
+            if (i + 1 < parts.length) {
+              const headerPart = parts[++i];
+              const colonIndex = headerPart.indexOf(':');
+              if (colonIndex !== -1) {
+                const key = headerPart.slice(0, colonIndex).trim();
+                const value = headerPart
+                  .slice(colonIndex + 1)
+                  .trim()
+                  .replace(/["']/g, '');
+                if (key.toLowerCase() === 'cookie') {
+                  const cookiePairs = value.split(';');
+                  cookiePairs.forEach((pair) => {
+                    const [cookieKey, cookieValue] = pair.trim().split('=');
+                    if (cookieKey && cookieValue) {
+                      cookies[cookieKey] = cookieValue;
+                    }
+                  });
+                } else {
+                  headers[key] = value;
+                }
+              }
+            }
+            break;
+
+          case '-b':
+          case '--cookie':
+            if (i + 1 < parts.length) {
+              const cookiePart = parts[++i].replace(/["']/g, '');
+              const cookiePairs = cookiePart.split(';');
+              cookiePairs.forEach((pair) => {
+                const [key, value] = pair.trim().split('=');
+                if (key && value) {
+                  cookies[key] = value;
+                }
+              });
+            }
+            break;
+
+          case '-d':
+          case '--data':
+          case '--data-raw':
+            if (i + 1 < parts.length) {
+              try {
+                const dataStr = parts[++i].replace(/^['"]|['"]$/g, '');
+                data = JSON.parse(dataStr);
+              } catch (e) {
+                data = parts[i];
+              }
+            }
+            break;
         }
       }
 
-      // Create the Python script
-      const rightText = `
+      let pythonCode = `
 import requests
 
 url = "${url}"
-headers = ${JSON.stringify(headers, null, 4)}
-data = ${JSON.stringify(data, null, 4)}
+`;
 
-response = requests.${method}(url, headers=headers, json=data)
-print(response.json())
-      `;
-      return rightText.trim();
-    } catch (error) {
+      if (Object.keys(headers).length) {
+        pythonCode += `headers = ${JSON.stringify(headers, null, 4)}\n`;
+      }
+
+      if (Object.keys(cookies).length) {
+        pythonCode += `cookies = ${JSON.stringify(cookies, null, 4)}\n`;
+      }
+
+      if (Object.keys(data).length) {
+        pythonCode += `data = ${JSON.stringify(data, null, 4)}\n`;
+      }
+
+      const requestParams = ['url'];
+      if (Object.keys(headers).length) requestParams.push('headers=headers');
+      if (Object.keys(cookies).length) requestParams.push('cookies=cookies');
+      if (Object.keys(data).length) requestParams.push('json=data');
+
+      pythonCode += `
+response = requests.${method}(${requestParams.join(', ')})
+`;
+
+      return pythonCode.trim();
+    } catch (error: any) {
       console.error('Error parsing CURL command:', error);
-      return '';
+      throw new Error(`Failed to parse CURL command: ${error.message}`);
     }
   }
 
