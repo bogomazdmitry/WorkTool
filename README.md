@@ -10,6 +10,10 @@ Create web applications on github pages for any text operations.
 - Working with json
 - Text comparison
 - Encoding with gunzip+base64
+- Curl to Python converter 
+
+### Deprecated
+
 - Check English text with chat-gpt
 - Quiz with chat-gpt with saving
 
@@ -21,8 +25,9 @@ Create web applications on github pages for any text operations.
 - Changing width of active zone
 - Saving to local storage
 - Small animations
-- Shortcuts for most buttons
+- Shortcuts for most buttons [works incorrect for now]
 - Save router state (If you move to "/" you will be redirect to previous page)
+- Auto focus mode on diff page
 
 ### Tech
 
