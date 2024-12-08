@@ -39,8 +39,8 @@ Create web applications on github pages for any text operations.
 
 ## How to build to github pages manually
 
-ng build --base-href "https://bogomazdmitry.github.io/WorkTool/"
+ng build --base-href "https://bogomazdmitry.github.io/work-tool/"
 
-npx angular-cli-ghpages --dir=dist/angular-worktool
+npx angular-cli-ghpages --dir=dist/angular-work-tool
 
-https://bogomazdmitry.github.io/WorkTool/
+https://bogomazdmitry.github.io/work-tool/

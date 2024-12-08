@@ -1,13 +1,13 @@
 {
-  "name": "angular-worktool",
+  "name": "angular-work-tool",
   "version": "1.0.0",
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
-    "build:prod": "ng build --base-href \"https://bogomazdmitry.github.io/WorkTool/\"",
-    "deploy": "npx angular-cli-ghpages --dir=dist/angular-worktool --no-silent",
+    "build:prod": "ng build --base-href \"https://bogomazdmitry.github.io/work-tool/\"",
+    "deploy": "npx angular-cli-ghpages --dir=dist/angular-work-tool --no-silent",
     "test": "ng test",
     "lint": "ng lint"
   },

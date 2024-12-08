@@ -1,6 +1,6 @@
 {
-  "name": "Worktool",
-  "short_name": "Worktool",
+  "name": "work-tool",
+  "short_name": "work-tool",
   "theme_color": "#383434",
   "background_color": "#fafafa",
   "display": "standalone",

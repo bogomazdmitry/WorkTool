@@ -3,7 +3,7 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
-    "angular-worktool": {
+    "angular-work-tool": {
       "projectType": "application",
       "schematics": {
         "@schematics/angular:component": {
@@ -20,7 +20,7 @@
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
-            "outputPath": "dist/angular-worktool",
+            "outputPath": "dist/angular-work-tool",
             "index": "src/index.html",
             "main": "src/main.ts",
             "polyfills": "src/polyfills.ts",
@@ -94,10 +94,10 @@
           "builder": "@angular-devkit/build-angular:dev-server",
           "configurations": {
             "production": {
-              "buildTarget": "angular-worktool:build:production"
+              "buildTarget": "angular-work-tool:build:production"
             },
             "development": {
-              "buildTarget": "angular-worktool:build:development"
+              "buildTarget": "angular-work-tool:build:development"
             }
           },
           "defaultConfiguration": "development"
@@ -105,7 +105,7 @@
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "buildTarget": "angular-worktool:build"
+            "buildTarget": "angular-work-tool:build"
           }
         },
         "test": {
